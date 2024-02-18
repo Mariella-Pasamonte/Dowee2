@@ -1,22 +1,30 @@
+import ReactDOM from "react-dom/client";
 import {BrowserRouter, Routes, Route} from "react-router-dom";
-import React from "react";
-import logo from './logo.svg';
-import Test from "./pages/test";
-import Test2 from "./pages/test2";
+import React, {useState} from "react";
+import {
+  Test, 
+  Login, 
+  Home
+} from "./pages";
 import './App.css';
 
 function App(){
+  const [user, setUser] = useState(false);
   return (
     <BrowserRouter>
       <Routes>
         <Route
           index
-          path="/Test"
+          path="/"
+          element={<Login />}
+        />
+        <Route
+          path="/test"
           element={<Test />}
         />
         <Route
-          path="/Test2"
-          element={<Test2 />}
+          path="/home"
+          element={<Home />}
         />
       </Routes>
     </BrowserRouter>
@@ -24,3 +32,5 @@ function App(){
 }
 
 export default App;
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);

@@ -1,9 +1,11 @@
 import React from "react";
 
-export default function test(){
+const Test=()=>{
     return(
         <>
-            <h1>This is test page.</h1>
+            <h1 className="text-white">This is test page.</h1>
         </>
     );
 }
+
+export default Test;
