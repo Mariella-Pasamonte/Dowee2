@@ -4,6 +4,51 @@ Doify is a comprehensive solution designed to tackle the challenges of time trac
 |Internal Release Code|Version|Date Released   |
 |:-------------------:|:-----:|:--------------:|
 |DW.010.000           |v1.0.0 |2024-02-06 20:35|
+|DW.010.001           |v1.0.1 |2024-02-06 16:01|
+
+## DW.010.001 Release Notes (reverse chronological order)
+* Intuitive User Authentication Interface: We have successfully redesigned the login interface to be more user-friendly.
+* Accessible Homepage/Dashboard: Users now have access to the main interface of the project.
+* Create a branch for frontend.
+* All commit messages:
+  * commit 13b792701c7803496a84a65e0ec40a2b2fec4026
+
+    Author: Mariella Pasamonte
+
+    Date: Sun Feb 18 17:03 2024 +0800
+
+    Create UI for Login and Home page
+
+    1. Create UI for Login and Home pages based from design in Figma.
+    2. Has functional browser routing between pages.
+
+  * commit f766ceed433a69ac0f07c6028857a7a6649ccb5c
+
+    Author: Mariella Pasamonte
+
+    Date: Thur Feb 8 23:07 2024 +0800
+
+    Add Frontend code files
+
+    Add Frontend code files I created before making the repository
+    
+  * commit 84d0583f333e525954027fb14b0b6763d56ae4fd
+
+    Author: Mariella Pasamonte
+
+    Date: Thur Feb 8 22:38 2024 +0800
+
+    New branch with READMD.md
+
+    Create a branch named frontend for developing frontend of Doify Project
+    
+  * commit beb7a4779754f0b6fd81bda75bfee80169716289
+
+    Author: Mariella Pasamonte
+
+    Date: Tue Feb 6 15:00 2024 +0800
+
+    Initial commit
 
 ## DW.010.000 Release Notes (reverse chronological order)
 * Creation of The Official Doify Project Repository and Markdown Website
