@@ -5,7 +5,26 @@ Doify is a comprehensive solution designed to tackle the challenges of time trac
 |:-------------------:|:-----:|:--------------:|
 |DW.010.000           |v1.0.0 |2024-02-06 20:35|
 |DW.010.001           |v1.0.1 |2024-02-06 16:01|
+|DW.010.002           |v1.0.2 |2024-02-06 10:38|
 
+## DW.010.002 Release Notes (reverse chronological order)
+* Add 'New Project Setup' feature.
+* Sidebar design is improved.
+* Issues:
+  * 'New Project Setup' can only add Project Title, Client Name, Email Address, Contact Number, and Project Description.
+* All commit messages:
+  * commit 996b78100457feb7c1d711c68ae8a1253e6d3c98
+
+    Author: Mariella Pasamonte
+
+    Add feature New Project Setup
+
+    1. Project Modal can add most details of the new project to add.
+    2. Sidebar can now display names of the projects available.
+    3. Design of Sidebar is improved.
+   
+    
+       
 ## DW.010.001 Release Notes (reverse chronological order)
 * Intuitive User Authentication Interface: We have successfully redesigned the login interface to be more user-friendly.
 * Accessible Homepage/Dashboard: Users now have access to the main interface of the project.
