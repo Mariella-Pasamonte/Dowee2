@@ -9,17 +9,15 @@ const Login = () => {
     const navigate = useNavigate();
     
     const handleUsernameChange = (e) => {
-        console.log(e.target.value);
         setUsername(e.target.value);
     }
 
     const handlePasswordChange = (e) =>{
-        console.log(e.target.value);
         setPassword(e.target.value);
     }
     const checkCredentials=(e)=>{
         setUsername(username);
-        setPassword(password)
+        setPassword(password);
         navigate("/home");
     }
     return(
@@ -38,28 +36,31 @@ const Login = () => {
                                         <div className="mb-2 xl:mb-5" >
                                             <p className="font-Montserrat font-light text-xl xl:text-2xl">Welcome to Doify</p>
                                         </div>
-                                        <div className="mt-3 xl:mt-5" >
-                                            <p className="font-Montserrat text-base">Username</p>
-                                        </div>
-                                        <input 
-                                            id="username" 
-                                            name="username"
-                                            type="text"
-                                            placeholder="Enter your username" 
-                                            onChange={handleUsernameChange}
-                                            className="p-2 font-Montserrat rounded-lg bg-opacity-10 bg-white text-white/25 w-full text-sm focus:outline-[0.5px] focus:outline-white/10 focus:text-white xl:text-base xl:p-3"
-                                        />
-                                        <div className="mt-4 xl:mt-7" >
-                                            <p className="text-base font-montserrat">Password</p>
-                                        </div>
-                                        <input 
-                                            id="password" 
-                                            name="password"
-                                            type="password"
-                                            placeholder="Enter your password" 
-                                            onChange={handlePasswordChange}
-                                            className="p-2 font-Montserrat rounded-lg bg-opacity-10 bg-white text-white/25 w-full text-sm focus:outline-[0.5px] focus:outline-white/10 focus:text-white xl:text-base xl:p-3"
-                                        />
+                                        <form>
+                                            <div className="mt-3 xl:mt-5" >
+                                                <p className="font-Montserrat text-base">Username</p>
+                                            </div>
+                                            <input 
+                                                id="username" 
+                                                name="username"
+                                                type="text"
+                                                placeholder="Enter your username" 
+                                                onChange={handleUsernameChange}
+                                                required
+                                                className="p-2 font-Montserrat rounded-lg bg-opacity-10 bg-white text-white/25 w-full text-sm block focus:outline-[0.5px] focus:outline-white/10 focus:text-white dark:text-white xl:text-base xl:p-3"
+                                            />
+                                            <div className="mt-4 xl:mt-7" >
+                                                <p className="text-base font-montserrat">Password</p>
+                                            </div>
+                                            <input 
+                                                id="password" 
+                                                name="password"
+                                                type="password"
+                                                placeholder="Enter your password" 
+                                                onChange={handlePasswordChange}
+                                                className="p-2 font-Montserrat rounded-lg bg-opacity-10 bg-white text-white/25 w-full text-sm focus:outline-[0.5px] focus:outline-white/10 focus:text-white dark:text-white xl:text-base xl:p-3"
+                                            />
+                                        </form>
                                         <div className="w-full flex flex-row justify-end text-sm mt-2 mb-3 font-Montserrat">
                                             <Link to="/test" className="hover:underline">Forgot Password?</Link>
                                         </div>
@@ -87,28 +88,31 @@ const Login = () => {
                                 <div className="mb-2 xl:mb-5" >
                                     <p className="font-Montserrat font-light text-xl xl:text-2xl">Welcome to Doify</p>
                                 </div>
-                                <div className="mt-3 xl:mt-5" >
-                                    <p className="font-Montserrat text-base">Username</p>
-                                </div>
-                                <input 
-                                    id="username" 
-                                    name="username"
-                                    type="text"
-                                    defaultValue="Enter your username" 
-                                    onChange={handleUsernameChange}
-                                    className="p-2 font-Montserrat rounded-lg bg-opacity-10 bg-white text-white/25 w-full text-sm focus:outline-[0.5px] focus:outline-white/10 focus:text-white xl:text-base xl:p-3"
-                                />
-                                <div className="mt-4 xl:mt-7" >
-                                    <p className="text-base font-montserrat">Password</p>
-                                </div>
-                                <input 
-                                    id="password" 
-                                    name="password"
-                                    type="password"
-                                    defaultValue="Enter your password" 
-                                    onChange={handlePasswordChange}
-                                    className="p-2 font-Montserrat rounded-lg bg-opacity-10 bg-white text-white/25 w-full text-sm focus:outline-[0.5px] focus:outline-white/10 focus:text-white xl:text-base xl:p-3"
-                                />
+                                <form>
+                                    <div className="mt-3 xl:mt-5" >
+                                        <p className="font-Montserrat text-base">Username</p>
+                                    </div>
+                                    <input 
+                                        id="username" 
+                                        name="username"
+                                        type="text"
+                                        placeholder="Enter your username" 
+                                        onChange={handleUsernameChange}
+                                        required
+                                        className="p-2 font-Montserrat rounded-lg bg-opacity-10 bg-white text-white/25 w-full text-sm block focus:outline-[0.5px] focus:outline-white/10 focus:text-white dark:text-white xl:text-base xl:p-3"
+                                    />
+                                    <div className="mt-4 xl:mt-7" >
+                                        <p className="text-base font-montserrat">Password</p>
+                                    </div>
+                                    <input 
+                                        id="password" 
+                                        name="password"
+                                        type="password"
+                                        placeholder="Enter your password" 
+                                        onChange={handlePasswordChange}
+                                        className="p-2 font-Montserrat rounded-lg bg-opacity-10 bg-white text-white/25 w-full text-sm focus:outline-[0.5px] focus:outline-white/10 focus:text-white dark:text-white xl:text-base xl:p-3"
+                                    />
+                                </form>
                                 <div className="w-full flex flex-row justify-end text-sm mt-2 mb-3 font-Montserrat">
                                     <Link to="/test" className="hover:underline">Forgot Password?</Link>
                                 </div>
