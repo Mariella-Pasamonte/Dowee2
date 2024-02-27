@@ -1,20 +1,18 @@
 import React, {useState} from 'react';
 
-let nextId = 0;
-
-function ProjectModal({ closeModal, projects }){
-    const [projTitle, setProjTitle] = useState('');
+function ProjectModal({ closeModal, projects, length}){
+    const [projTitle, setProjTitle] = useState('Project '+String(length).padStart(2,'0'));
     const [clientName, setClientName]= useState('');
     const [emailAddress, setEmailAddress] = useState('');
     const [contactNum, setContactNum] = useState('');
     const [projDescription, setProjDescription] = useState("");
+    var idnum = length;
     
-
     function addProject(){
         closeModal(false);
         projects(
             {
-                id: ++nextId,
+                id: idnum,
                 name: projTitle,
                 clientName: clientName,
                 clientemAdd: emailAddress,
@@ -44,6 +42,7 @@ function ProjectModal({ closeModal, projects }){
                                 id="projTitle"
                                 name="projTitle"
                                 type="text"
+                                value={projTitle}
                                 onChange={e=>setProjTitle(e.target.value)}
                                 defaultValue="Project 01" 
                                 className="mt-1 rounded border-[1px] border-[#B2F6FF]/50 bg-inherit pt-1 pl-1"

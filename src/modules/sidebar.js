@@ -14,10 +14,12 @@ const list = [
     },
 ];
 
+
 function Sidebar(){
     const [openModal, setOpenModal] = useState(false)
     const [projList, setProjList] = useState(list)
     var newProject = []
+    var length = projList.length
 
     function addNewProject(newProject){
         setProjList(previous=>[
@@ -40,10 +42,10 @@ function Sidebar(){
                             <div className='font-Inter text-xl my-1'>
                                 My Projects
                             </div>
-                            <div className='w-1/5 h-full flex flex-col justify-center'>
+                            <div className='w-1/5 flex flex-col justify-center'>
                                 <button 
                                     onClick={()=>setOpenModal(true)}
-                                    className="w-3/4 h-3/4 p-1 bg-[#23353C] flex flex-row justify-center rounded text-center hover:bg-[#3A6576]"
+                                    className="w-3/4 h-fit p-1 bg-[#23353C] flex flex-row justify-center rounded text-center hover:bg-[#3A6576]"
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
                                         <path fillRule="evenodd" d="M5.625 1.5H9a3.75 3.75 0 0 1 3.75 3.75v1.875c0 1.036.84 1.875 1.875 1.875H16.5a3.75 3.75 0 0 1 3.75 3.75v7.875c0 1.035-.84 1.875-1.875 1.875H5.625a1.875 1.875 0 0 1-1.875-1.875V3.375c0-1.036.84-1.875 1.875-1.875ZM12.75 12a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25V18a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V12Z" clipRule="evenodd" />
@@ -51,7 +53,7 @@ function Sidebar(){
                                     </svg>
                                 </button>
                                 <div className='w-1/4 flex flex-col justify-center'>
-                                    {openModal && <ProjectModal closeModal={setOpenModal} projects={addNewProject} />}
+                                    {openModal && <ProjectModal closeModal={setOpenModal} projects={addNewProject} length={length}/>}
                                 </div>
                             </div>
                         </div>
