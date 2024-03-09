@@ -28,7 +28,7 @@ function App(){
           <Route
             index
             path="/"
-            element={loggedInUser ? <Navigate to="/home" />:<Login loggedInUser={setLoggedInUser}/>}
+            element={<Login loggedInUser={setLoggedInUser}/>}
           />
           <Route
             path="/home"

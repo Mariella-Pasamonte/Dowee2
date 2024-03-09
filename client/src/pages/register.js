@@ -1,6 +1,9 @@
-import React, {useState} from "react";
+import React, {useState, useCallback, useEffect, useRef} from "react";
 import {Link, useNavigate} from "react-router-dom";
+import InputMask from 'react-input-mask';
 import { Calendar } from "@natscale/react-calendar";
+import { getClickedDate, convertToBirthDate } from "../utilities/date";
+import {InputLabel, ErrorToast} from '../components';
 import '@natscale/react-calendar/dist/main.css';
 
 const Register = () => {
@@ -8,48 +11,107 @@ const Register = () => {
     const [lastName, setLastName] = useState('');
     const [emailAddress, setEmailAddress] = useState('');
     const [gender, setGender] = useState('');
-    const [birthday, setBirthday] = useState();
+    const [birthday, setBirthday] = useState('');
     const [calendarDate, setCalendarDate] = useState(new Date());
     const [contactNum, setContactNum] = useState('');
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [userDetails, setUserDetails] = useState([]);
     const [showCalendar, setShowCalendar]= useState(false);
+    const [isFilled, setIsFilled] = useState(true);
+    const [isFilledError, setIsFilledError] = useState(false);
+    const [isValidDateError, setIsValidDateError] = useState(false);
     const navigate = useNavigate();
-    
-    const getClickedDate=(newDate)=>{
-        var today = new Date();
-        var day = String(newDate.getDate()).padStart(2,'0');
-        var year = newDate.getFullYear();
-        var month = String(newDate.getMonth()+1).padStart(2,'0');
+    const today = new Date();
+    const calendarDivRef = useRef(null);
 
-        today=`${month}/${day}/${year}`;
-        
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+          if (calendarDivRef.current && !calendarDivRef.current.contains(e.target)) {
+            setShowCalendar(false);
+          }
+        };
+
+        document.addEventListener('click', handleClickOutside);
+
+        return () => {
+          document.removeEventListener('click', handleClickOutside);
+        };
+    }, []);
+
+    const getBirthday = (e) =>{
+        setBirthday(e.target.value);
+        convertToBirthDate(e.target.value,setIsValidDateError,setCalendarDate,setShowCalendar);
+    }
+
+    const onChangeDate=(newDate)=>{
         setCalendarDate(newDate);
+        var today = getClickedDate(newDate);
         setBirthday(today);
         setShowCalendar(false);
     }
+
+    const handleCalendarClick = (e) => {
+        e.stopPropagation();
+        setShowCalendar(true);
+    };
+
+    const isDisabled = useCallback((date) => {
+        return date > today;
+      }, [today]);
+    
     function getUserDetails(){
-        setUserDetails(previous=>[
-            ...previous,
-            {
-                fname: firstName,
-                lname: lastName,
-                emAdd: emailAddress,
-                gender: gender,
-                contactNum: contactNum,
-                username: username,
-                password: password
-            },
-        ]);
-        navigate("/home");
-    }
+        if(isValidDateError == true){
+            setIsFilledError(true);
+            setIsFilled(false);
+        } else if(firstName !== '' && lastName !== '' && emailAddress !== '' && birthday !== '' &&
+        gender !== '' && contactNum !== '' && username !== '' && password !== ''){
+            setIsFilled(true);
+            setUserDetails(previous=>[
+                ...previous,
+                {
+                    fname: firstName,
+                    lname: lastName,
+                    emAdd: emailAddress,
+                    birthday: birthday,
+                    gender: gender,
+                    contactNum: contactNum,
+                    username: username,
+                    password: password
+                },
+            ]);
+            navigate("/home");
+            
+        }
+        else{
+            setIsFilledError(true);
+            setIsFilled(false);
+        }
+    };
+
+    var inputLabelClassName="flex flex-row mt-3"
     return(
         <>
             <div className='h-full w-full'>
                 <div className="flex flex-col justify-center h-dvh bg-white/20">
-                    <div className="flex flex-row justify-center">
-                        <div className="w-1/2 h-fit text-white rounded-md flex flex-col pt-4 pb-8 px-8 bg-white/10">
+                    <div className="relative flex flex-row justify-center">
+                        <ul className="flex flex-col">
+                            <li>
+                                <ErrorToast id="RegisterFillError" isError={isFilledError} setIsError={setIsFilledError}>
+                                    <div class="ms-3 text-sm font-normal">
+                                        Please fill out all required fields.
+                                    </div>
+                                </ErrorToast>
+                            </li>
+                            <li>
+                                <ErrorToast id="RegisterDateError" isError={isValidDateError} setIsError={setIsValidDateError}>
+                                    <div class="ms-3 text-sm font-normal">
+                                        Please fill out the correct date.
+                                    </div>
+                                </ErrorToast>
+                            </li>
+                        </ul>
+                        <div className="w-1/2 h-fit text-white rounded-md flex flex-col pt-4 pb-8 px-8 bg-white/10"> 
                             <div className="text-4xl xl:text-5xl font-Iceland">
                                 Signup
                             </div>
@@ -60,35 +122,35 @@ const Register = () => {
                             <form>
                                 <div className="flex flex-row justify-between">
                                     <div className="w-1/3 mr-1">
-                                        <div className="mt-3 xl:mt-3" >
+                                        <InputLabel id="RegisterFirstNameLabel" isFilled={isFilled} classname={inputLabelClassName}>
                                             <p className="font-Montserrat text-base">First Name</p>
-                                        </div>
+                                        </InputLabel>
                                         <input 
                                             id="fname" 
                                             name="fname"
                                             type="text"
                                             placeholder="Ex. John" 
                                             onChange={e=>setFirstName(e.target.value)}
-                                            className="p-2 font-Montserrat rounded-lg bg-opacity-10 bg-white w-full text-base block focus:outline-[0.5px] focus:outline-white/10 focus:text-white dark:text-white"
+                                            className="p-2 placeholder-white/30 font-Montserrat border-0 rounded-lg bg-opacity-10 bg-white w-full text-base block focus:outline-none focus:ring-0 focus:text-white dark:text-white"
                                         />
                                     </div>
                                     <div className="w-1/3 ml-1 mr-1">
-                                        <div className="mt-3 xl:mt-3" >
+                                        <InputLabel id="RegisterLastNameLabel" isFilled={isFilled} classname={inputLabelClassName}>
                                             <p className="font-Montserrat text-base">Last Name</p>
-                                        </div>
+                                        </InputLabel>
                                         <input 
                                             id="lname" 
                                             name="lname"
                                             type="text"
                                             placeholder="Ex. Cena" 
                                             onChange={e=>setLastName(e.target.value)}
-                                            className="p-2 font-Montserrat rounded-lg bg-opacity-10 bg-white text-white/25 w-full text-base block focus:outline-[0.5px] focus:outline-white/10 focus:text-white dark:text-white"
+                                            className="p-2 placeholder-white/30 font-Montserrat border-0 rounded-lg bg-opacity-10 bg-white w-full text-base block focus:outline-none focus:ring-0 focus:text-white dark:text-white"
                                         />
                                     </div>
                                     <div className="w-1/3 ml-1">
-                                        <div className="mt-3 xl:mt-3" >
+                                        <InputLabel id="RegisterGenderLabel" isFilled={isFilled} classname={inputLabelClassName}>
                                             <p className="font-Montserrat text-base">Gender</p>
-                                        </div>
+                                        </InputLabel>
                                         <ul className="items-center w-full text-sm font-medium bg-white bg-opacity-10 rounded-lg md:flex">
                                             <li className="w-full border-b border-gray-200 md:border-b-0 md:border-r md:w-1/2 dark:border-gray-600">
                                                 <div className="flex items-center pl-2 py-2">
@@ -99,7 +161,7 @@ const Register = () => {
                                                         checked={gender === 'female'}
                                                         onChange={e=>setGender(e.target.value)} 
                                                         name="list-radio" 
-                                                        className=" text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-none"
+                                                        className=" text-blue-600 bg-gray-100 border-gray-300 focus:ring-0 dark:focus:ring-0"
                                                     />
                                                     <label className="w-full ml-2 text-base font-light font-mono text-gray-200">Female</label>
                                                 </div>
@@ -113,7 +175,7 @@ const Register = () => {
                                                         checked={gender === 'male'}
                                                         onChange={e=>setGender(e.target.value)} 
                                                         name="list-radio" 
-                                                        className=" text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-none"
+                                                        className="  text-blue-600 bg-gray-100 border-gray-300 focus:ring-0 dark:focus:ring-0"
                                                     />
                                                     <label className="w-full ml-2 text-base font-light font-mono text-gray-200">Male</label>
                                                 </div>
@@ -123,26 +185,28 @@ const Register = () => {
                                 </div>
                                 <div className="flex flex-row justify-between">
                                     <div className="w-1/2">
-                                        <div className="mt-3" >
+                                        <InputLabel id="RegisterBirthdayLabel" isFilled={isFilled} classname={inputLabelClassName}>
                                             <p className="font-Montserrat text-base">Birthday</p>
-                                        </div>
-                                        <div className="relative">
-                                            <input 
-                                                id="birthday" 
+                                        </InputLabel>
+                                        <div ref={calendarDivRef} className="relative">
+                                            <InputMask
+                                                id="birthday"
                                                 name="birthday"
                                                 type="text"
+                                                mask="99/99/9999"
                                                 value={birthday}
-                                                onClick={()=>setShowCalendar(true)}
-                                                placeholder="Ex. mm/dd/yyyy" 
-                                                onChange={e=>setBirthday(e.target.value)}
-                                                className="p-2 font-Montserrat rounded-lg bg-opacity-10 bg-white w-full text-base block focus:outline-[0.5px] focus:outline-white/10 focus:text-white dark:text-white"
+                                                onClick={handleCalendarClick}
+                                                onChange={getBirthday}
+                                                placeholder="Ex. mm/dd/yyyy"
+                                                className="p-2 placeholder-white/30 font-Montserrat border-0 rounded-lg bg-opacity-10 bg-white w-full text-base block focus:outline-none focus:ring-0 focus:text-white dark:text-white"
                                             />
                                             { showCalendar===true &&
                                                 <div className="absolute">
                                                     <Calendar
                                                         useDarkMode
+                                                        isDisabled={isDisabled}
                                                         value={calendarDate} 
-                                                        onChange={getClickedDate} 
+                                                        onChange={onChangeDate} 
                                                         onClick={()=>setShowCalendar()}
                                                         className="border-[1px] bg-[#1B333A]"
                                                     />
@@ -151,23 +215,24 @@ const Register = () => {
                                         </div>
                                     </div>
                                     <div className="w-1/2 ml-2">
-                                        <div className="mt-3 xl:mt-3" >
+                                        <InputLabel id="RegisterContactNumLabel" isFilled={isFilled} classname={inputLabelClassName}>
                                             <p className="font-Montserrat text-base">Contact Number</p>
-                                        </div>
-                                        <input 
-                                            id="contactNum" 
+                                        </InputLabel>
+                                        <InputMask 
+                                            id="contactNum"
+                                            mask="+9999999999"
                                             name="contactNum"
                                             type="text"
                                             placeholder="Ex. +9123456789" 
                                             onChange={e=>setContactNum(e.target.value)}
-                                            className="p-2 font-Montserrat rounded-lg bg-opacity-10 bg-white w-full text-base block focus:outline-[0.5px] focus:outline-white/10 focus:text-white dark:text-white"
+                                            className="p-2 placeholder-white/30 font-Montserrat border-0 rounded-lg bg-opacity-10 bg-white w-full text-base block focus:outline-none focus:ring-0 focus:text-white dark:text-white"
                                         />
                                     </div>
                                 </div>
                                 <div>
-                                    <div className="mt-3 xl:mt-3" >
+                                    <InputLabel id="RegisterEmailAddressLabel" isFilled={isFilled} classname={inputLabelClassName}>
                                         <p className="font-Montserrat text-base">Email Address</p>
-                                    </div>
+                                    </InputLabel>
                                     <input 
                                         id="emailAddress" 
                                         name="emailAddress"
@@ -175,35 +240,35 @@ const Register = () => {
                                         placeholder="Ex. @johncena@email.com" 
                                         onChange={e=>setEmailAddress(e.target.value)}
                                         required
-                                        className="p-2 font-Montserrat rounded-lg bg-opacity-10 bg-white text-white/25 w-full text-base block focus:outline-[0.5px] focus:outline-white/10 focus:text-white dark:text-white"
+                                        className="p-2 placeholder-white/30 font-Montserrat border-0 rounded-lg bg-opacity-10 bg-white w-full text-base block focus:outline-none focus:ring-0 focus:text-white dark:text-white"
                                     />
                                 </div>
                                 <div className="flex flex-row justify-between">
                                     <div className="w-1/2 mr-2">
-                                        <div className="mt-3 xl:mt-3" >
+                                        <InputLabel id="RegisterUsernameLabel" isFilled={isFilled} classname={inputLabelClassName}>
                                             <p className="font-Montserrat text-base">Username</p>
-                                        </div>
+                                        </InputLabel>
                                         <input 
                                             id="fname" 
                                             name="fname"
                                             type="text"
                                             placeholder="Ex. johncena" 
                                             onChange={e=>setUsername(e.target.value)}
-                                            className="p-2 font-Montserrat rounded-lg bg-opacity-10 bg-white w-full text-base block focus:outline-[0.5px] focus:outline-white/10 focus:text-white dark:text-white"
+                                            className="p-2 placeholder-white/30 font-Montserrat border-0 rounded-lg bg-opacity-10 bg-white w-full text-base block focus:outline-none focus:ring-0 focus:text-white dark:text-white"
                                         />
                                     </div>
                                     <div className="w-1/2 ml-2">
-                                            <div className="mt-4 xl:mt-3" >
-                                                <p className="text-base font-montserrat">Password</p>
-                                            </div>
-                                            <input 
-                                                id="password" 
-                                                name="password"
-                                                type="password"
-                                                placeholder="Enter your password" 
-                                                onChange={e=>setPassword(e.target.value)}
-                                                className="p-2 font-Montserrat rounded-lg bg-opacity-10 bg-white w-full text-base block focus:outline-[0.5px] focus:outline-white/10 focus:text-white dark:text-white"
-                                            />
+                                        <InputLabel id="RegisterPasswordLabel" isFilled={isFilled} classname={inputLabelClassName}>
+                                            <p className="text-base font-montserrat">Password</p>
+                                        </InputLabel>
+                                        <input 
+                                            id="password" 
+                                            name="password"
+                                            type="password"
+                                            placeholder="Enter your password" 
+                                            onChange={e=>setPassword(e.target.value)}
+                                            className="p-2 placeholder-white/30 font-Montserrat border-0 rounded-lg bg-opacity-10 bg-white w-full text-base block focus:outline-none focus:ring-0 focus:text-white dark:text-white"
+                                        />
                                     </div>
                                 </div>
                             </form>

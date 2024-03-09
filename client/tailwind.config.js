@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ["./src/**/*.{html,js,jsx}","./node_modules/react-tailwindcss-datepicker/dist/index.esm.js"],
+  content: ["./src/**/*.{html,js,jsx}","./node_modules/react-tailwindcss-datepicker/dist/index.esm.js","./node_modules/flowbite/**/*.js"],
   theme: {
     extend: {
       fontFamily:{
@@ -10,6 +10,8 @@ module.exports = {
       }
     },
   },
-  plugins: [],
+  plugins: [
+    require('flowbite/plugin')
+  ],
 }
 
