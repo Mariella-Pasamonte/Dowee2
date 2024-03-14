@@ -37,31 +37,45 @@ const Register = () => {
   };
 
   const axiosRegister = async (processing) => {
-    const registerData = {
-      fname: firstName,
-      lname: lastName,
-      email: emailAddress,
-      gender: gender,
-      birthday: birthday,
-      contactNum: contactNum,
-      username: username,
-      password: password,
-    };
-    await axios
-      .post("http://localhost:5000/register", registerData)
-      .then((res) => {
-        const data = res.data;
-        if (data === true) {
-          setExistingUser(true);
-          console.log("Account Exists");
-        } else {
-          console.log("Success: ", data);
-          navigate("/home");
-        }
-      })
-      .catch((error) => {
-        console.log("Error: ", error);
-      });
+    if (
+      firstName === "" ||
+      lastName === "" ||
+      emailAddress === "" ||
+      gender === "" ||
+      birthday === "" ||
+      contactNum === "" ||
+      username === "" ||
+      password === ""
+    ) {
+      console.log("Please fill in all fields");
+      return;
+    } else {
+      const registerData = {
+        fname: firstName,
+        lname: lastName,
+        email: emailAddress,
+        gender: gender,
+        birthday: birthday,
+        contactNum: contactNum,
+        username: username,
+        password: password,
+      };
+      await axios
+        .post("http://localhost:5000/register", registerData)
+        .then((res) => {
+          const data = res.data;
+          if (data === true) {
+            setExistingUser(true);
+            console.log("Account Exists");
+          } else {
+            console.log("Success: ", data);
+            navigate("/home");
+          }
+        })
+        .catch((error) => {
+          console.log("Error: ", error);
+        });
+    }
   };
   /*
   function getUserDetails() {
