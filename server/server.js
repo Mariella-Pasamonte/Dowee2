@@ -24,8 +24,12 @@ const db = new pg.Client({
   password: "doifywebapp",
   port: 5432,
 });
-db.connect();
-
+try {
+  db.connect();
+  console.log("Connected to Database");
+} catch {
+  console.log("error connecting to Database");
+}
 app.use("/", router);
 
 app.listen(port, () => {
