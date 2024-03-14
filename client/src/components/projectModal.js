@@ -1,20 +1,31 @@
 import React, {useState} from 'react';
+import InputMask from 'react-input-mask';
+import { convertToDate, getClickedDate } from '../utilities/date';
 
-let nextId = 0;
-
-function ProjectModal({ closeModal, projects }){
-    const [projTitle, setProjTitle] = useState('');
+function ProjectModal({ closeModal, projects, length}){
+    const [projTitle, setProjTitle] = useState('Project '+String(length).padStart(2,'0'));
     const [clientName, setClientName]= useState('');
     const [emailAddress, setEmailAddress] = useState('');
     const [contactNum, setContactNum] = useState('');
     const [projDescription, setProjDescription] = useState("");
+    const [showIssueCalendar, setShowIssueCalendar] = useState("");
+    const [issuedDate, setIssuedDate] = useState("");
+    const [issuedDateCalendar, setIssuedDateCalendar] = useState("");
+    var idnum = length;
     
+    const getIssuedDate = (e) =>{
+        setIssuedDate(e.target.value)
+        convertToDate(e.target.value);
+    }
 
+    const onChangeDate = (e) =>{
+
+    }
     function addProject(){
         closeModal(false);
         projects(
             {
-                id: ++nextId,
+                id: idnum,
                 name: projTitle,
                 clientName: clientName,
                 clientemAdd: emailAddress,
@@ -26,7 +37,7 @@ function ProjectModal({ closeModal, projects }){
 
     return(
         <>
-            <div className='absolute w-full h-full flex flex-row justify-center inset-x-0 inset-y-0'>
+            <div className='absolute w-full h-[90%] flex flex-row justify-center inset-x-0 top-[8%]'>
                 <div data-modal-backdrop='static' className='h-fit w-1/4 bg-[#5C6E75]/50 p-3 border-[1px] border-white/50 rounded-xl backdrop-blur-sm'>
                     <div className='flex flex-col font-Inter text-white text-sm w-full'>
                         <div className='flex flex-row justify-end'>
@@ -44,6 +55,7 @@ function ProjectModal({ closeModal, projects }){
                                 id="projTitle"
                                 name="projTitle"
                                 type="text"
+                                value={projTitle}
                                 onChange={e=>setProjTitle(e.target.value)}
                                 defaultValue="Project 01" 
                                 className="mt-1 rounded border-[1px] border-[#B2F6FF]/50 bg-inherit pt-1 pl-1"
@@ -82,9 +94,13 @@ function ProjectModal({ closeModal, projects }){
                         <div className='flex flex-row mb-2 w-full'>
                             <div className='flex flex-col w-1/2 pr-1'>
                                 <label>Issued on</label>
-                                <input 
-                                    id="projTitle"
-                                    name="projTitle"
+                                <InputMask
+                                    id="issuedDate"
+                                    name="issuedDate"
+                                    value={issuedDate}
+                                    onClick={()=>setShowIssueCalendar(true)}
+                                    placeholder="mm/dd/yyyy" 
+                                    onChange={e=>getIssuedDate(e)}
                                     type="text"
                                     className="mt-1 rounded border-[1px] border-[#B2F6FF]/50 bg-inherit pt-1 pl-1"
                                 />
@@ -92,8 +108,8 @@ function ProjectModal({ closeModal, projects }){
                             <div className='flex flex-col w-1/2 pl-1'>
                                 <label>Due date</label>
                                 <input 
-                                    id="projTitle"
-                                    name="projTitle"
+                                    id="dueDate"
+                                    name="dueDate"
                                     type="text"
                                     className="mt-1 rounded border-[1px] border-[#B2F6FF]/50 bg-inherit pt-1 pl-1"
                                 />
@@ -101,7 +117,7 @@ function ProjectModal({ closeModal, projects }){
                         </div>
                         <div className='flex flex-col mb-2'>
                             <label>Project description</label>
-                            <input 
+                            <textarea
                                 id="projDescription"
                                 name="projDescription"
                                 onChange={e=>setProjDescription(e.target.value)}

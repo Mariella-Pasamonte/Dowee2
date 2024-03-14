@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 //import {Link} from "react-router-dom";
 import defaultProfile from "../images/doifyLogoWhite.png"
 import ProjectModal from "../components/projectModal";
+import Popover from "../components/popover";
 
 const list = [
     {
@@ -14,11 +15,21 @@ const list = [
     },
 ];
 
-function Sidebar(){
-    const [openModal, setOpenModal] = useState(false)
-    const [projList, setProjList] = useState(list)
-    var newProject = []
 
+function Sidebar(){
+    const [openModal, setOpenModal] = useState(false);
+    const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+    const [projList, setProjList] = useState(list)
+    var length = projList.length
+
+    const togglePopoverEnter = () => {
+        setIsPopoverOpen(true);
+        console.log("Mouse entered");
+    }
+    const togglePopoverLeave = () => {
+        setIsPopoverOpen(false);
+        console.log("Mouse left");
+    }
     function addNewProject(newProject){
         setProjList(previous=>[
                 ...previous,
@@ -40,20 +51,33 @@ function Sidebar(){
                             <div className='font-Inter text-xl my-1'>
                                 My Projects
                             </div>
-                            <div className='w-1/5 h-full flex flex-col justify-center'>
+                            <div 
+                                className='w-1/5 flex flex-col justify-center'
+                            >
                                 <button 
+                                    onMouseEnter={togglePopoverEnter}
+                                    onMouseLeave={togglePopoverLeave}
+                                    data-popover-target="popover-default"
                                     onClick={()=>setOpenModal(true)}
-                                    className="w-3/4 h-3/4 p-1 bg-[#23353C] flex flex-row justify-center rounded text-center hover:bg-[#3A6576]"
+                                    className="w-3/4 h-fit p-1 bg-[#23353C] flex flex-row justify-center rounded text-center hover:bg-[#3A6576]"
                                 >
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+                                    <svg 
+                                        xmlns="http://www.w3.org/2000/svg" 
+                                        viewBox="0 0 24 24" 
+                                        fill="currentColor" 
+                                        className="w-5 h-5"
+                                    >
                                         <path fillRule="evenodd" d="M5.625 1.5H9a3.75 3.75 0 0 1 3.75 3.75v1.875c0 1.036.84 1.875 1.875 1.875H16.5a3.75 3.75 0 0 1 3.75 3.75v7.875c0 1.035-.84 1.875-1.875 1.875H5.625a1.875 1.875 0 0 1-1.875-1.875V3.375c0-1.036.84-1.875 1.875-1.875ZM12.75 12a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25V18a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V12Z" clipRule="evenodd" />
                                         <path d="M14.25 5.25a5.23 5.23 0 0 0-1.279-3.434 9.768 9.768 0 0 1 6.963 6.963A5.23 5.23 0 0 0 16.5 7.5h-1.875a.375.375 0 0 1-.375-.375V5.25Z" />
                                     </svg>
                                 </button>
-                                <div className='w-1/4 flex flex-col justify-center'>
-                                    {openModal && <ProjectModal closeModal={setOpenModal} projects={addNewProject} />}
-                                </div>
+                                <Popover isOpen={isPopoverOpen}>
+                                    <p>Add Project</p>
+                                </Popover>
                             </div>
+                        </div>
+                        <div className='w-1/4'>
+                            {openModal && <ProjectModal closeModal={setOpenModal} projects={addNewProject} length={length}/>}
                         </div>
                         <div className='mt-2'>
                             <hr className="w-full border-[#A4C9C5]"></hr>
@@ -83,22 +107,3 @@ function Sidebar(){
 }
 
 export default Sidebar;
-/*
-<div className='w-1/3 mr-3'>
-                            <img className="w-full rounded-full" src={defaultProfile} alt="Rounded avatar"/>
-                        </div>
-                         <div className='w-2/3 ml-3 py-1 flex flex-col justify-between pr-3'>
-                            <div>
-                                <div className='font-Inter text-base font-thin'>
-                                    Christian Barte
-                                </div>
-                                <div className='font-Inter text-xs font-thin'>
-                                    Profile
-                                </div>
-                            </div>
-                            <button className='bg-[#23353C] text-xs rounded py-1 hover:bg-[#3A6576]'>
-                                Edit Profile
-                            </button>
-                        </div>                       
-                        
-*/
