@@ -1,6 +1,5 @@
-import React, {useState, useCallback, useEffect, useRef} from "react";
-import {Link, useNavigate} from "react-router-dom";
-import InputMask from 'react-input-mask';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Calendar } from "@natscale/react-calendar";
 import { convertToBirthDate, onChangeDate } from "../utilities/date";
 import {InputLabel, ErrorToast} from '../components';
@@ -28,77 +27,71 @@ const Register = () => {
     const today = new Date();
     const calendarDivRef = useRef(null);
 
-    useEffect(() => {
-        const handleClickOutside = (e) => {
-          if (calendarDivRef.current && !calendarDivRef.current.contains(e.target)) {
-            setShowCalendar(false);
-          }
-        };
+  const getClickedDate = (newDate) => {
+    var today = new Date();
+    var day = String(newDate.getDate()).padStart(2, "0");
+    var year = newDate.getFullYear();
+    var month = String(newDate.getMonth() + 1).padStart(2, "0");
 
-        document.addEventListener('click', handleClickOutside);
+    today = `${month}/${day}/${year}`;
 
-        return () => {
-          document.removeEventListener('click', handleClickOutside);
-        };
-    }, []);
+    setCalendarDate(newDate);
+    setBirthday(today);
+    setShowCalendar(false);
+  };
 
-    const getBirthday = (e) =>{
-        setBirthday(e.target.value);
-        convertToBirthDate(e.target.value,setIsValidDateError,setCalendarDate,setShowCalendar);
-    }
+  const handleCalendarClick = (e) => {
+      e.stopPropagation();
+      setShowCalendar(true);
+  };
 
-    const handleCalendarClick = (e) => {
-        e.stopPropagation();
-        setShowCalendar(true);
-    };
+  const isDisabled = useCallback((date) => {
+      return date > today;
+    }, [today]);
+  
+  const getUserDetails = async(e) => {
+      await axiosRegister();
+  };  
 
-    const isDisabled = useCallback((date) => {
-        return date > today;
-      }, [today]);
-    
-    const getUserDetails = async(e) => {
-        await axiosRegister();
-    };
-
-    const axiosRegister = async (processing) => {
-        if(isValidDateError == true){
-            setIsFilledError(true);
-            setIsFilled(false);
-            return;
-        } else if(firstName !== '' && lastName !== '' && emailAddress !== '' && birthday !== '' &&
-        gender !== '' && contactNum !== '' && username !== '' && password !== ''){
-            setIsFilled(true);
-            const registerData = {
-                fname: firstName,
-                lname: lastName,
-                email: emailAddress,
-                gender: gender,
-                birthday: birthday,
-                contactNum: contactNum,
-                username: username,
-                password: password,
-            };
-            await axios
-                .post("http://localhost:5000/register", registerData)
-                .then((res) => {
-                const data = res.data;
-                if (data === true) {
-                    setExistingUser(true);
-                    setExistingUserError(true);
-                    console.log("Account Exists");
-                } else {
-                    console.log("Success: ", data);
-                    navigate("/home");
-                }
-                })
-                .catch((error) => {
-                console.log("Error: ", error);
-            }); 
-        }
-        else{
-            setIsFilledError(true);
-            setIsFilled(false);
-        }
+  const axiosRegister = async (processing) => {
+      if(isValidDateError == true){
+          setIsFilledError(true);
+          setIsFilled(false);
+          return;
+      } else if(firstName !== '' && lastName !== '' && emailAddress !== '' && birthday !== '' &&
+      gender !== '' && contactNum !== '' && username !== '' && password !== ''){
+          setIsFilled(true);
+          const registerData = {
+              fname: firstName,
+              lname: lastName,
+              email: emailAddress,
+              gender: gender,
+              birthday: birthday,
+              contactNum: contactNum,
+              username: username,
+              password: password,
+          };
+          await axios
+              .post("http://localhost:5000/register", registerData)
+              .then((res) => {
+              const data = res.data;
+              if (data === true) {
+                  setExistingUser(true);
+                  setExistingUserError(true);
+                  console.log("Account Exists");
+              } else {
+                  console.log("Success: ", data);
+                  navigate("/home");
+              }
+              })
+              .catch((error) => {
+              console.log("Error: ", error);
+          }); 
+      }
+      else{
+          setIsFilledError(true);
+          setIsFilled(false);
+      }
     }
     var inputLabelClassName="flex flex-row mt-3"
     return(
@@ -294,10 +287,192 @@ const Register = () => {
                             </div>
                         </div>
                     </div>
+                    <input
+                      id="fname"
+                      name="fname"
+                      type="text"
+                      placeholder="Ex. John"
+                      onChange={(e) => setFirstName(e.target.value)}
+                      className="p-2 font-Montserrat rounded-lg bg-opacity-10 bg-white w-full text-base block focus:outline-[0.5px] focus:outline-white/10 focus:text-white dark:text-white"
+                    />
+                  </div>
+                  <div className="w-1/3 ml-1 mr-1">
+                    <div className="mt-3 xl:mt-3">
+                      <p className="font-Montserrat text-base">Last Name</p>
+                    </div>
+                    <input
+                      id="lname"
+                      name="lname"
+                      type="text"
+                      placeholder="Ex. Cena"
+                      onChange={(e) => setLastName(e.target.value)}
+                      className="p-2 font-Montserrat rounded-lg bg-opacity-10 bg-white text-white/25 w-full text-base block focus:outline-[0.5px] focus:outline-white/10 focus:text-white dark:text-white"
+                    />
+                  </div>
+                  <div className="w-1/3 ml-1">
+                    <div className="mt-3 xl:mt-3">
+                      <p className="font-Montserrat text-base">Gender</p>
+                    </div>
+                    <ul className="items-center w-full text-sm font-medium bg-white bg-opacity-10 rounded-lg md:flex">
+                      <li className="w-full border-b border-gray-200 md:border-b-0 md:border-r md:w-1/2 dark:border-gray-600">
+                        <div className="flex items-center pl-2 py-2">
+                          <input
+                            id="horizontal-list-radio-license"
+                            type="radio"
+                            value="female"
+                            checked={gender === "female"}
+                            onChange={(e) => setGender(e.target.value)}
+                            name="list-radio"
+                            className=" text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-none"
+                          />
+                          <label className="w-full ml-2 text-base font-light font-mono text-gray-200">
+                            Female
+                          </label>
+                        </div>
+                      </li>
+                      <li className="w-1/2 border-gray-200 ">
+                        <div className="flex items-center pl-2 py-1">
+                          <input
+                            id="horizontal-list-radio-license"
+                            type="radio"
+                            value="male"
+                            checked={gender === "male"}
+                            onChange={(e) => setGender(e.target.value)}
+                            name="list-radio"
+                            className=" text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-none"
+                          />
+                          <label className="w-full ml-2 text-base font-light font-mono text-gray-200">
+                            Male
+                          </label>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
                 </div>
+                <div className="flex flex-row justify-between">
+                  <div className="w-1/2">
+                    <div className="mt-3">
+                      <p className="font-Montserrat text-base">Birthday</p>
+                    </div>
+                    <div className="relative">
+                      <input
+                        id="birthday"
+                        name="birthday"
+                        type="text"
+                        value={birthday}
+                        onClick={() => setShowCalendar(true)}
+                        placeholder="Ex. mm/dd/yyyy"
+                        onChange={(e) => setBirthday(e.target.value)}
+                        className="p-2 font-Montserrat rounded-lg bg-opacity-10 bg-white w-full text-base block focus:outline-[0.5px] focus:outline-white/10 focus:text-white dark:text-white"
+                      />
+                      {showCalendar === true && (
+                        <div className="absolute">
+                          <Calendar
+                            useDarkMode
+                            value={calendarDate}
+                            onChange={getClickedDate}
+                            onClick={() => setShowCalendar()}
+                            className="border-[1px] bg-[#1B333A]"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="w-1/2 ml-2">
+                    <div className="mt-3 xl:mt-3">
+                      <p className="font-Montserrat text-base">
+                        Contact Number
+                      </p>
+                    </div>
+                    <input
+                      id="contactNum"
+                      name="contactNum"
+                      type="text"
+                      placeholder="Ex. +9123456789"
+                      onChange={(e) => setContactNum(e.target.value)}
+                      className="p-2 font-Montserrat rounded-lg bg-opacity-10 bg-white w-full text-base block focus:outline-[0.5px] focus:outline-white/10 focus:text-white dark:text-white"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <div className="mt-3 xl:mt-3">
+                    <p className="font-Montserrat text-base">Email Address</p>
+                  </div>
+                  <input
+                    id="emailAddress"
+                    name="emailAddress"
+                    type="text"
+                    placeholder="Ex. @johncena@email.com"
+                    onChange={(e) => setEmailAddress(e.target.value)}
+                    required
+                    className="p-2 font-Montserrat rounded-lg bg-opacity-10 bg-white text-white/25 w-full text-base block focus:outline-[0.5px] focus:outline-white/10 focus:text-white dark:text-white"
+                  />
+                </div>
+                <div className="flex flex-row justify-between">
+                  <div className="w-1/2 mr-2">
+                    <div className="mt-3 xl:mt-3">
+                      <p className="font-Montserrat text-base">Username</p>
+                    </div>
+                    <input
+                      id="fname"
+                      name="fname"
+                      type="text"
+                      placeholder="Ex. johncena"
+                      onChange={(e) => setUsername(e.target.value)}
+                      className="p-2 font-Montserrat rounded-lg bg-opacity-10 bg-white w-full text-base block focus:outline-[0.5px] focus:outline-white/10 focus:text-white dark:text-white"
+                    />
+                  </div>
+                  <div className="w-1/2 ml-2">
+                    <div className="mt-4 xl:mt-3">
+                      <p className="text-base font-montserrat">Password</p>
+                    </div>
+                    <input
+                      id="password"
+                      name="password"
+                      type="password"
+                      placeholder="Enter your password"
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="p-2 font-Montserrat rounded-lg bg-opacity-10 bg-white w-full text-base block focus:outline-[0.5px] focus:outline-white/10 focus:text-white dark:text-white"
+                    />
+                  </div>
+                </div>
+              </form>
+              <div className="mt-3 mb-2">
+                <button
+                  onClick={() => getUserDetails()}
+                  className="bg-[#A5D9D0] font-Montserrat font-extrabold text-black w-full text-base hover:bg-teal-400 py-2 rounded"
+                >
+                  SIGNUP
+                </button>
+              </div>
+              {existingUser ? (
+                <>
+                  <div
+                    id="invalidRegister"
+                    className="p-3 mb-4 text-sm text-center text-red-600 rounded-lg bg-red-300"
+                    role="alert"
+                  >
+                    Account already exists
+                  </div>
+                  <div className="flex flex-row justify-center mt-2 text-sm font-Montserrat">
+                    <Link to="/">
+                      Already have an account? <b>Sign in</b> here
+                    </Link>
+                  </div>
+                </>
+              ) : (
+                <div className="flex flex-row justify-center mt-2 text-sm font-Montserrat">
+                  <Link to="/">
+                    Already have an account? <b>Sign in</b> here
+                  </Link>
+                </div>
+              )}
             </div>
-        </>
-    );
-}
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
 
 export default Register;

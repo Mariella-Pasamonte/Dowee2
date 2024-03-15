@@ -1,16 +1,10 @@
-import {BrowserRouter, Routes, Route, Navigate} from "react-router-dom";
-import React, {useState, useEffect} from "react";
-import {
-  Test, 
-  Login, 
-  Home,
-  Register
-} from "./pages";
-import './App.css';
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Test, Login, Home, Register } from "./pages";
+import "./App.css";
 
-
-function App(){
-  const [loggedInUser, setLoggedInUser] = useState (false);
+function App() {
+  const [loggedInUser, setLoggedInUser] = useState(false);
   const [backendData, setBackendData] = useState([{}]);
 
   fetch("/")
@@ -22,23 +16,17 @@ function App(){
   return (
     <BrowserRouter>
       <Routes>
-          <Route
-            index
-            path="/"
-            element={<Login loggedInUser={setLoggedInUser}/>}
-          />
-          <Route
-            path="/home"
-            element={loggedInUser ? <Home /> : <Navigate to="/" />}
-          />
-          <Route
-            path="/register"
-            element={<Register />}
-          />
-          <Route
-            path="/test"
-            element={<Test />}
-          />
+        <Route
+          index
+          path="/"
+          element={<Login loggedInUser={setLoggedInUser} />}
+        />
+        <Route
+          path="/home"
+          element={loggedInUser ? <Home /> : <Navigate to="/" />}
+        />
+        <Route path="/register" element={<Register />} />
+        <Route path="/test" element={<Test />} />
       </Routes>
     </BrowserRouter>
   );
