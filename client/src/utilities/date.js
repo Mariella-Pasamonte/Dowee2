@@ -1,3 +1,10 @@
+export function onChangeDate(newDate,setCalendarDate,setDate,setShowCalendar){
+    setCalendarDate(newDate);
+    var today = getClickedDate(newDate);
+    setDate(today);
+    setShowCalendar(false);
+}
+
 export function getClickedDate(newDate){
     var day = String(newDate.getDate()).padStart(2,'0');
     var year = newDate.getFullYear();

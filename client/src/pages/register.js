@@ -2,9 +2,10 @@ import React, {useState, useCallback, useEffect, useRef} from "react";
 import {Link, useNavigate} from "react-router-dom";
 import InputMask from 'react-input-mask';
 import { Calendar } from "@natscale/react-calendar";
-import { getClickedDate, convertToBirthDate } from "../utilities/date";
+import { convertToBirthDate, onChangeDate } from "../utilities/date";
 import {InputLabel, ErrorToast} from '../components';
 import '@natscale/react-calendar/dist/main.css';
+import axios from "axios";
 
 const Register = () => {
     const [firstName, setFirstName] = useState('');
@@ -21,6 +22,8 @@ const Register = () => {
     const [isFilled, setIsFilled] = useState(true);
     const [isFilledError, setIsFilledError] = useState(false);
     const [isValidDateError, setIsValidDateError] = useState(false);
+    const [existingUser, setExistingUser] = useState(false);
+    const [existingUserError, setExistingUserError] = useState(false);
     const navigate = useNavigate();
     const today = new Date();
     const calendarDivRef = useRef(null);
@@ -44,13 +47,6 @@ const Register = () => {
         convertToBirthDate(e.target.value,setIsValidDateError,setCalendarDate,setShowCalendar);
     }
 
-    const onChangeDate=(newDate)=>{
-        setCalendarDate(newDate);
-        var today = getClickedDate(newDate);
-        setBirthday(today);
-        setShowCalendar(false);
-    }
-
     const handleCalendarClick = (e) => {
         e.stopPropagation();
         setShowCalendar(true);
@@ -60,57 +56,71 @@ const Register = () => {
         return date > today;
       }, [today]);
     
-    function getUserDetails(){
+    const getUserDetails = async(e) => {
+        await axiosRegister();
+    };
+
+    const axiosRegister = async (processing) => {
         if(isValidDateError == true){
             setIsFilledError(true);
             setIsFilled(false);
+            return;
         } else if(firstName !== '' && lastName !== '' && emailAddress !== '' && birthday !== '' &&
         gender !== '' && contactNum !== '' && username !== '' && password !== ''){
             setIsFilled(true);
-            setUserDetails(previous=>[
-                ...previous,
-                {
-                    fname: firstName,
-                    lname: lastName,
-                    emAdd: emailAddress,
-                    birthday: birthday,
-                    gender: gender,
-                    contactNum: contactNum,
-                    username: username,
-                    password: password
-                },
-            ]);
-            navigate("/home");
-            
+            const registerData = {
+                fname: firstName,
+                lname: lastName,
+                email: emailAddress,
+                gender: gender,
+                birthday: birthday,
+                contactNum: contactNum,
+                username: username,
+                password: password,
+            };
+            await axios
+                .post("http://localhost:5000/register", registerData)
+                .then((res) => {
+                const data = res.data;
+                if (data === true) {
+                    setExistingUser(true);
+                    setExistingUserError(true);
+                    console.log("Account Exists");
+                } else {
+                    console.log("Success: ", data);
+                    navigate("/home");
+                }
+                })
+                .catch((error) => {
+                console.log("Error: ", error);
+            }); 
         }
         else{
             setIsFilledError(true);
             setIsFilled(false);
         }
-    };
-
+    }
     var inputLabelClassName="flex flex-row mt-3"
     return(
         <>
             <div className='h-full w-full'>
                 <div className="flex flex-col justify-center h-dvh bg-white/20">
                     <div className="relative flex flex-row justify-center">
-                        <ul className="flex flex-col">
-                            <li>
-                                <ErrorToast id="RegisterFillError" isError={isFilledError} setIsError={setIsFilledError}>
-                                    <div class="ms-3 text-sm font-normal">
-                                        Please fill out all required fields.
-                                    </div>
-                                </ErrorToast>
-                            </li>
-                            <li>
-                                <ErrorToast id="RegisterDateError" isError={isValidDateError} setIsError={setIsValidDateError}>
-                                    <div class="ms-3 text-sm font-normal">
-                                        Please fill out the correct date.
-                                    </div>
-                                </ErrorToast>
-                            </li>
-                        </ul>
+                        <ErrorToast id="RegisterFillError" isError={isFilledError} setIsError={setIsFilledError}>
+                            <div className="ms-3 text-sm font-normal">
+                                Please fill out all required fields.
+                            </div>
+                        </ErrorToast>
+                        <ErrorToast id="RegisterDateError" isError={isValidDateError} setIsError={setIsValidDateError}>
+                            <div className="ms-3 text-sm font-normal">
+                                Please fill out the correct date.
+                            </div>
+                        </ErrorToast>
+                        <ErrorToast isError={existingUserError} setIsError={setExistingUserError}>
+                            <div  className="ms-3 text-sm font-normal">
+                                Account already exists
+                            </div>
+                        </ErrorToast>
                         <div className="w-1/2 h-fit text-white rounded-md flex flex-col pt-4 pb-8 px-8 bg-white/10"> 
                             <div className="text-4xl xl:text-5xl font-Iceland">
                                 Signup
@@ -206,7 +216,7 @@ const Register = () => {
                                                         useDarkMode
                                                         isDisabled={isDisabled}
                                                         value={calendarDate} 
-                                                        onChange={onChangeDate} 
+                                                        onChange={e=>onChangeDate(e,setCalendarDate,setBirthday,setShowCalendar)} 
                                                         onClick={()=>setShowCalendar()}
                                                         className="border-[1px] bg-[#1B333A]"
                                                     />
@@ -278,7 +288,9 @@ const Register = () => {
                                 </button>
                             </div>
                             <div className="flex flex-row justify-center mt-2 text-sm font-Montserrat">
-                                <Link to="/">Already have an account? <b>Sign in</b> here</Link>
+                                <Link to="/">
+                                    Already have an account? <b>Sign in</b> here
+                                </Link>
                             </div>
                         </div>
                     </div>

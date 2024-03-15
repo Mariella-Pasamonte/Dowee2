@@ -23,13 +23,11 @@ const Login = ({loggedInUser}) => {
     
     const checkCredentials = async (e) => {
         if(username !== '' || password !== ''){
-            console.log("username and password is not empty")
             setUsername(username)
             setPassword(password)
             setIsFilled(true)
             await axiosLogin();
         } else {
-            console.log("username and password is empty")
             setIsFilled(false)
             setIsFilledError(true)
         }
@@ -50,7 +48,6 @@ const Login = ({loggedInUser}) => {
             } else {
                 setValidUserError(true); 
             }
-            console.log(response.data);
         })
         .catch((error) => {
             console.log(error);

@@ -13,14 +13,11 @@ function App(){
   const [loggedInUser, setLoggedInUser] = useState (false);
   const [backendData, setBackendData] = useState([{}]);
 
-  useEffect(() => {
-    fetch("/api")
-      .then((res) => res.json())
-      .then((data) => {
-        setBackendData(data);
-      });
-    console.log('data:',backendData);
-  }, []);
+  fetch("/")
+    .then((res) => res.json())
+    .then((data) => {
+      setBackendData(data);
+    });
 
   return (
     <BrowserRouter>
