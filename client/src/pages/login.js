@@ -22,51 +22,38 @@ const Login = ({ loggedInUser }) => {
   };
 
   const checkCredentials = async (e) => {
-    if (username !== "" || password !== "") {
-      console.log("username and password is not empty");
-      setUsername(username);
-      setPassword(password);
-      setIsFilled(true);
+    if(username !== '' || password !== ''){
+      setUsername(username)
+      setPassword(password)
+      setIsFilled(true)
       await axiosLogin();
     } else {
-      console.log("username and password is empty");
-      setIsFilled(false);
-      setIsFilledError(true);
+      setIsFilled(false)
+      setIsFilledError(true)
     }
+  };
     
-    const checkCredentials = async (e) => {
-        if(username !== '' || password !== ''){
-            setUsername(username)
-            setPassword(password)
-            setIsFilled(true)
-            await axiosLogin();
-        } else {
-            setIsFilled(false)
-            setIsFilledError(true)
-        }
+  const axiosLogin = async (processing) => {
+    const loginData = {
+        username: username,
+        password: password,
     };
+  
+    await axios
+    .post("http://localhost:5000/login", loginData)
+    .then((response) => {
+      if (response.data === true) {
+      loggedInUser(true);
+      navigate("/home");
+      } else {
+        setValidUserError(true); 
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  };
     
-    const axiosLogin = async (processing) => {
-        const loginData = {
-            username: username,
-            password: password,
-        };
-    
-        await axios
-        .post("http://localhost:5000/login", loginData)
-        .then((response) => {
-            if (response.data === true) {
-            loggedInUser(true);
-            navigate("/home");
-            } else {
-                setValidUserError(true); 
-            }
-        })
-        .catch((error) => {
-            console.log(error);
-        });
-    };
-
   var inputLabelClassName = "flex flex-row mt-4 xl:mt-7";
   return (
     <>
@@ -278,4 +265,5 @@ const Login = ({ loggedInUser }) => {
     </>
   );
 };
+
 export default Login;

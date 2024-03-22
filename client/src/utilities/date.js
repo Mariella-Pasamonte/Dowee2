@@ -29,7 +29,6 @@ export function convertToBirthDate(newDate, isValidDateError, calendarDate, show
     var date = new Date();
     var today = new Date();
     var parts = newDate.split('/');
-    var nowYear = date.getFullYear();
     if (parts.length === 3){
         const [month, day, year] = parts;
         date = new Date(`${month}/${day}/${year}`);
