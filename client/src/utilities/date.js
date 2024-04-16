@@ -29,21 +29,25 @@ export function convertToBirthDate(newDate, isValidDateError, calendarDate, show
     var date = new Date();
     var today = new Date();
     var parts = newDate.split('/');
-    if (parts.length === 3){
+    var emptyParts = ['__','__','____'];
+    // console.log("check:",parts.length===3&&parts[0]!==emptyParts[0] && parts[1]!== emptyParts[1] && parts[2]!== emptyParts[2])
+    // console.log("length check:",parts.length===3);
+    // console.log("is [0] empty:", parts[0]!==emptyParts[0]);
+    // console.log("is [1] empty:", parts[1]!== emptyParts[1]);
+    // console.log("is [2] empty:", parts[2]!== emptyParts[2]);
+    // &&parts[0]!==emptyParts[0] && parts[1]!== emptyParts[1] && parts[2]!== emptyParts[2]
+    if (parts.length===3){
         const [month, day, year] = parts;
         date = new Date(`${month}/${day}/${year}`);
-        console.log(date);
-        if (!isNaN(date))
-        {
-            if(date<today)
-            {
-                calendarDate(date);
-                showCalendar(false);
-                isValidDateError(false);
-            }
-            else{
-                isValidDateError(true);
-            }
+        console.log('date:',date);
+        if(date<today)
+        { 
+            calendarDate(date);
+            showCalendar(true);
+            isValidDateError(false);
+        }
+        else{
+            isValidDateError(true);
         }
     }
 }

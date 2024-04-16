@@ -4,14 +4,12 @@ import Task from "./task";
 import Invoice from "./invoice";
 import {TaskModal} from "../components";
 
-
-function Project({project}){
+function Project(props){
     const [openTaskModal, setOpenTaskModal] = useState(false);
     const [projectButtonsFocus, setProjectButtonsFocus] = useState(0);
     const [taskOrInvoiceFocus, setTaskOrInvoiceFocus] = useState(0);
     const [tasks, setTasks] = useState(null);
     const [invoices, setInvoices] = useState(null);
-    var length = tasks ? tasks.length : 0;
 
     function addNewTask(newTask){
         (tasks !== null ? 
@@ -48,9 +46,12 @@ function Project({project}){
         setTaskOrInvoiceFocus(0);
         setOpenTaskModal(true);
     }
+
     const onClickInvoice = () =>{
         setTaskOrInvoiceFocus(1);
     }
+
+    console.log("Project page:", props.project);
     return(
         <>
             <div className="h-full w-full px-5 py-3" >
@@ -59,13 +60,18 @@ function Project({project}){
                         <div className='flex flex-col justify-between pt-2'>
                             <div className='flex flex-row'>
                                 <div className='text-2xl mb-2 mr-2 w-fit text-white'>
-                                    {project.name}
+                                    {props.project.name}
                                 </div>
-                                <button className='flex flex-col mx-2 text-[#B8B8E7] justify-center'>
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
-                                    </svg>
-                                </button>
+                                <div className='relative flex flex-row just'>
+                                    <button
+                                        onClick={(e)=>props.setOpenProjectModal((prev)=>!prev)}
+                                        className='flex flex-col mx-2 text-[#B8B8E7] justify-center'
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
+                                        </svg>
+                                    </button>
+                                </div>
                             </div>
                             <hr className="w-full h-1 bg-[#8381BB] border-0 rounded dark:bg-gray-700"/>
                         </div>
@@ -126,10 +132,10 @@ function Project({project}){
                         </div>
                     </div>
                     <div className='w-1/3'>
-                        {openTaskModal && <TaskModal closeModal={setOpenTaskModal} tasks={addNewTask} length={length} projectId={project.id}/>}
+                        <TaskModal isOpen={openTaskModal} closeModal={setOpenTaskModal} addNewTasks={addNewTask} tasks={tasks} projectId={props.project.id}/>
                     </div>
                     <div>
-                        {taskOrInvoiceFocus === 0 ? <Task tasks={tasks} projectId={project.id} />:<Invoice invoices={invoices} projectId={project.id} />}
+                        {taskOrInvoiceFocus === 0 ? <Task tasks={tasks} projectId={props.project.id} />:<Invoice invoices={invoices} projectId={props.project.id} />}
                     </div>
                 </div>
             </div>

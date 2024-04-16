@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import React, { useState, useEffect } from "react";
-import { Test, Login, Home, Register } from "./pages";
+import React, { useState } from "react";
+import { Login, Home, Register } from "./pages";
+import { AddProjectModal } from "./components";
 import "./App.css";
 
 function App() {
@@ -12,7 +13,7 @@ function App() {
     .then((data) => {
       setBackendData(data);
     });
-
+  console.log(backendData);
   return (
     <BrowserRouter>
       <Routes>
@@ -26,7 +27,6 @@ function App() {
           element={loggedInUser ? <Home /> : <Navigate to="/" />}
         />
         <Route path="/register" element={<Register />} />
-        <Route path="/test" element={<Test />} />
       </Routes>
     </BrowserRouter>
   );

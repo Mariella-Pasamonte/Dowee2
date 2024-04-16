@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ErrorToast, InputLabel } from "../components";
 import loginImg from "../images/Login.png";
 import loginImg2 from "../images/Login2.png";
 import axios from "axios";
 
-const Login = ({ loggedInUser }) => {
+const Login = (props) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [validUserError, setValidUserError] = useState(false);
@@ -42,9 +42,12 @@ const Login = ({ loggedInUser }) => {
     await axios
     .post("http://localhost:5000/login", loginData)
     .then((response) => {
-      if (response.data === true) {
-      loggedInUser(true);
-      navigate("/home");
+      if (response.data.status === true) {
+        props.loggedInUser(true);
+        localStorage.setItem("userId", response.data.data);
+        navigate("/home");
+        setIsFilled(true);
+        setValidUserError(false);
       } else {
         setValidUserError(true); 
       }
@@ -53,7 +56,25 @@ const Login = ({ loggedInUser }) => {
       console.log(error);
     });
   };
-    
+
+  useEffect(()=>{
+    const userId = localStorage.getItem('userId');
+    axios.get('http://localhost:5000/login', {
+      headers:{ 
+        userId: userId
+      }
+    })
+    .then((response)=>{
+      console.log('response client:', response.data.status);
+      if (response.data.status === true) {
+        props.loggedInUser(true);
+        navigate("/home");
+      }
+    }).catch((error) =>{
+      console.log(error);
+    });
+  },[])
+
   var inputLabelClassName = "flex flex-row mt-4 xl:mt-7";
   return (
     <>
@@ -115,8 +136,8 @@ const Login = ({ loggedInUser }) => {
                         name="LoginUsername"
                         type="text"
                         placeholder="Enter your username"
-                        onChange={handleUsernameChange}
-                        className="py-2 pr-2 ps-10 font-Montserrat rounded-lg bg-opacity-10 bg-white placeholder-white/30 text-white w-full text-sm focus:outline-[0.5px] focus:outline-white/10 focus:text-white dark:text-white xl:text-base xl:p-3"
+                        onChange={(e) => handleUsernameChange(e)}
+                        className="p-2 font-Montserrat rounded-lg bg-opacity-10 bg-white placeholder-white/30 text-white w-full text-sm focus:outline-[0.5px] focus:outline-white/10 focus:text-white dark:text-white xl:text-base xl:p-3"
                       />
                       <InputLabel
                         id="LoginPasswordLabel"
@@ -130,7 +151,7 @@ const Login = ({ loggedInUser }) => {
                         name="password"
                         type="password"
                         placeholder="Enter your password"
-                        onChange={handlePasswordChange}
+                        onChange={(e) => handlePasswordChange(e)}
                         className="p-2 font-Montserrat rounded-lg bg-opacity-10 bg-white placeholder-white/30 text-white w-full text-sm focus:outline-[0.5px] focus:outline-white/10 focus:text-white dark:text-white xl:text-base xl:p-3"
                       />
                     </form>
@@ -145,7 +166,7 @@ const Login = ({ loggedInUser }) => {
                     <div className="mt-2 mb-2">
                       <button
                         id="LoginButton"
-                        onClick={() => checkCredentials()}
+                        onClick={(e) => checkCredentials(e)}
                         className="bg-[#A5D9D0] font-Montserrat font-extrabold text-black w-full text-base hover:bg-teal-400 py-2 rounded"
                       >
                         LOGIN
@@ -214,7 +235,7 @@ const Login = ({ loggedInUser }) => {
                     name="LoginUsername"
                     type="text"
                     placeholder="Enter your username"
-                    onChange={handleUsernameChange}
+                    onChange={(e) => handleUsernameChange(e)}
                     className="p-2 font-Montserrat rounded-lg bg-opacity-10 bg-white placeholder-white/30 text-white w-full text-sm focus:outline-[0.5px] focus:outline-white/10 focus:text-white dark:text-white xl:text-base xl:p-3"
                   />
                   <InputLabel
@@ -228,7 +249,7 @@ const Login = ({ loggedInUser }) => {
                     name="password"
                     type="password"
                     placeholder="Enter your password"
-                    onChange={handlePasswordChange}
+                    onChange={(e) => handlePasswordChange(e)}
                     className="p-2 font-Montserrat rounded-lg bg-opacity-10 bg-white placeholder-white/30 text-white w-full text-sm focus:outline-[0.5px] focus:outline-white/10 focus:text-white dark:text-white xl:text-base xl:p-3"
                   />
                 </form>
@@ -243,7 +264,7 @@ const Login = ({ loggedInUser }) => {
                 <div className="mt-2 mb-2">
                   <button
                     id="LoginButton"
-                    onClick={() => checkCredentials()}
+                    onClick={(e) => checkCredentials(e)}
                     className="bg-[#A5D9D0] font-Montserrat font-extrabold text-black w-full text-base hover:bg-teal-400 py-2 rounded"
                   >
                     LOGIN
