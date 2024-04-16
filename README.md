@@ -6,6 +6,22 @@ Doify is a comprehensive solution designed to tackle the challenges of time trac
 |DW.010.000           |v1.0.0 |2024-02-06 20:35|
 |DW.010.001           |v1.0.1 |2024-02-06 16:01|
 |DW.010.002           |v1.0.2 |2024-02-06 10:38|
+|DW.021.001           |v1.0.2 |2024-04-16 12:07|
+
+## DW.021.002 Release Notes (reverse chronological order)
+* Add 'Edit Project Setup' feature.
+* Add 'Add Employees Setup' feature for 'New Project Setup' to add employees.
+* Can set Issued Date and Due Date in 'New Project Setup'.
+* Can interchange between projects in Project Module.
+* Have setup 'projects' database to store projects of the user.
+* Can add new projects to the database.
+* Can edit projects to the database.
+* Can get rows of data from users and projects database based on the userId of the logged-in user.
+* Known Issues:
+  * 'Edit Project Setup' can only edit Project Title, Client Name, Email Address, Contact Number, Issued Date, Due Date and Project Description.
+  * 'Edit Project Setup' cannot edit employees.
+* Fixed Issues:
+  * In Task Module, toggled timers are working accordingly.
 
 ## DW.010.002 Release Notes (reverse chronological order)
 * Add 'New Project Setup' feature.
