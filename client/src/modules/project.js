@@ -8,7 +8,7 @@ function Project(props){
     const [openTaskModal, setOpenTaskModal] = useState(false);
     const [projectButtonsFocus, setProjectButtonsFocus] = useState(0);
     const [taskOrInvoiceFocus, setTaskOrInvoiceFocus] = useState(0);
-    const [tasks, setTasks] = useState(null);
+    const [tasks, setTasks] = useState([]);
     const [invoices, setInvoices] = useState(null);
 
     function addNewTask(newTask){

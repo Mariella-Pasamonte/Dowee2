@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from "react";
 
 function TaskModal(props){
-    const [taskTitle, setTaskTitle] = useState('Task '+String(props.tasks===null?0:props.tasks.length).padStart(2,'0'));
+    const [taskTitle, setTaskTitle] = useState('Task '+String(props.tasks.length).padStart(2,'0'));
     const [paymentType, setPaymentType]= useState(1)
     const [paymentMethod, setPaymentMethod] = useState(null);
     const [employeeList, setEmployeeList] = useState('');
@@ -101,7 +101,7 @@ function TaskModal(props){
                             }
                         </div>
                         <div className='flex flex-col mb-2'>
-                            <label>Project description</label>
+                            <label>Task description</label>
                             <textarea
                                 id="projDescription"
                                 name="projDescription"

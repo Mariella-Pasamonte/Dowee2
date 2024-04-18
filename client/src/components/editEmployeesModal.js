@@ -1,21 +1,21 @@
 import React, {useState, useEffect, useCallback} from 'react';
-import {InputLabel} from '../components';
+import {InputLabel} from '.';
 
 function EditEmployeesModal(props){
     const [employeeName, setEmployeeName] = useState('');
     const [openDropdown, setOpenDropdown] =useState(false);
     const [showAllList, setShowAllList] =useState(false);
     const [isFilled, setIsFilled] = useState(true);
-    const [emps, setEmps] = useState(props.employees);
-    const getName = (userId) => {
+    const [displayedEmployees, setDisplayedEmployees] = useState([]);
+    const getFName = (userId) => {
         const user = props.users&&props.users.find(user => user.id === userId);
-        const emp = {id: user.id, fname: user.fname, lname: user.lname}
-        return user ? emp: 'Unknown';
+        return user ? user.fname : 'Unknown';
     };
-    const displayedEmployees = emps.map(emp => getName(emp));
-
-    console.log('emps:',emps)
-
+    const getLName = (userId) => {
+        const user = props.users&&props.users.find(user => user.id === userId);
+        return user ? user.lname : 'Unknown';
+    };
+    
     const addEmployee=(user)=>{
         setOpenDropdown(false);
         setIsFilled(true);
@@ -32,8 +32,8 @@ function EditEmployeesModal(props){
         return displayedEmployees&&displayedEmployees.map((employee, index) => {    
         if (showAllList?index===props.employees.length-1:index===3&&props.employees.length>4) {
             return <div key={index} className="flex flex-row">
-                {employee.fname} {employee.lname},
-                <button onClick={()=>deleteEmployee(employee.id)} className='flex flex-col px-1 ml-1 w-5 justify-center rounded-full hover:bg-white/20'>
+                {getFName(employee)} {getLName(employee)},
+                <button onClick={()=>deleteEmployee(employee)} className='flex flex-col px-1 ml-1 w-5 justify-center rounded-full hover:bg-white/20'>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-3 h-3">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
                     </svg>
@@ -42,8 +42,8 @@ function EditEmployeesModal(props){
             </div>;
         } else if (index === 0) {
             return <div key={index} className="flex flex-row"> 
-                {employee.fname} {employee.lname}
-                <button onClick={()=>deleteEmployee(employee.id)} className='flex flex-col px-1 ml-1 w-5 justify-center rounded-full hover:bg-white/20'>
+                {getFName(employee)} {getLName(employee)}
+                <button onClick={()=>deleteEmployee(employee)} className='flex flex-col px-1 ml-1 w-5 justify-center rounded-full hover:bg-white/20'>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-3 h-3">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
                     </svg>
@@ -52,8 +52,8 @@ function EditEmployeesModal(props){
             </div>;
         } else {
             return <div key={index} className="flex flex-row"> 
-                {employee.fname} {employee.lname},
-                <button onClick={()=>deleteEmployee(employee.id)} className='flex flex-col px-1 ml-1 w-5 justify-center rounded-full hover:bg-white/20'>
+                {getFName(employee)} {getLName(employee)},
+                <button onClick={()=>deleteEmployee(employee)} className='flex flex-col px-1 ml-1 w-5 justify-center rounded-full hover:bg-white/20'>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-3 h-3">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
                     </svg>
@@ -82,7 +82,7 @@ function EditEmployeesModal(props){
         }
     }
     useEffect(() => {
-        setEmps(props.employees)
+        setDisplayedEmployees(props.employees&&props.employees.slice(showAllList===true?0:props.employees&&props.employees.length<=4?0:props.employees&&props.employees.length-4, props.employees&&props.employees.length).reverse());
         setIsFilled(props.employees===null?true:props.employees.length>0?true:false);
         setShowAllList(showAllList);
         renderEmployeeNames();
@@ -109,7 +109,7 @@ function EditEmployeesModal(props){
                             isFilled={isFilled}
                             classname={inputLabelClassName}
                         >
-                            Edit Employee
+                            Add Employee
                         </InputLabel>
                         <div className='relative flex flex-col mb-1'>
                             <input

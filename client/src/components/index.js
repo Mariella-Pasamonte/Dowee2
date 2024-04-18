@@ -1,5 +1,4 @@
 // Modals
-export {default as AddEmployeesModal} from './addEmployeesModal';
 export {default as AddProjectModal} from './addProjectModal';
 export {default as EditEmployeesModal} from './editEmployeesModal';
 export {default as EditProjectModal} from './editProjectModal';

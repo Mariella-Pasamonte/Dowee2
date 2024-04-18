@@ -62,7 +62,6 @@ router.get("/login", async (req,res) =>{
     if(result.rows.length>0){
       success = true;
       res.send({status: success});
-      console.log("Automatically logs in");
     }
     else{
       res.send({status: success});
@@ -171,13 +170,11 @@ router.get("/home", async (req, res) => {
     ]);
     const users = await db.query("SELECT * FROM users");
 
-    const projects = result.rows;
-
-    if (projects.length > 0) {
-      res.send({projects: projects, users:users.rows});
-    } else {
-      console.log("Projects don't exist");
-    }
+    let projects = result.rows;
+    let projLength = result.rows.length;
+  
+    res.send({projects: projLength?projects:null, users:users.rows});
+    
   } catch(error) {
     console.error("Error: ", error);
     res.status(500).send("Shit hit the fan Error in get data home");

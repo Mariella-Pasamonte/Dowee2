@@ -42,7 +42,7 @@ function Task( {tasks, projectId}){
                     <table className='w-fit'>
                         <thead>
                             <tr className='bg-[#4785C1]/60 font-Inter text-white text-sm'>
-                                <th scope="col" className=' rounded-l-md py-2 font-light w-28'>
+                                <th scope="col" className=' rounded-l-md py-2 font-light w-24'>
                                     Task Name
                                 </th>
                                 <th scope="col" className=' w-44 font-light py-2 px-5'>
@@ -73,7 +73,7 @@ function Task( {tasks, projectId}){
                                 {tasks.map((task)=>
                                     task.projId === projectId &&
                                     <tr key={task.id} className=' bg-[#6C93B9]/40 font-Inter h-full w-fit text-white text-sm'>
-                                        <th scope="row" className='text-center rounded-l-md py-2 font-light w-28'>
+                                        <th scope="row" className='text-center rounded-l-md py-2 font-light w-24'>
                                             {task.name}
                                         </th>
                                         <td className=' text-center w-44 font-light py-2 px-5'>
@@ -94,7 +94,7 @@ function Task( {tasks, projectId}){
                                         <td className=' text-center w-32 font-light py-2 px-5'>
                                             On Status
                                         </td>
-                                        <td className=' flex flex-row justify-center rounded-r-md font-light py-3 w-40'>
+                                        <td className=' rounded-r-md border-1 border-black font-light py-3 w-fit'>
                                             <Stopwatch id={task.id} task={task}/>
                                         </td>
                                     </tr>

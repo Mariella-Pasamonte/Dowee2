@@ -18,6 +18,7 @@ export function getClickedDate(newDate){
 export function convertToDate(newDate){
     var date = new Date();
     var parts = newDate.split('/');
+    console.log(newDate);
     if (parts.length === 3){
         var [month, day, year] = parts;
         date = new Date(`${month}/${day}/${year}`);
@@ -25,29 +26,32 @@ export function convertToDate(newDate){
     return date;
 }
 
-export function convertToBirthDate(newDate, isValidDateError, calendarDate, showCalendar){
+export function convertToBirthDate(newDate, isValidDateError, calendarDate, birthday, showCalendar){
     var date = new Date();
     var today = new Date();
     var parts = newDate.split('/');
     var emptyParts = ['__','__','____'];
-    // console.log("check:",parts.length===3&&parts[0]!==emptyParts[0] && parts[1]!== emptyParts[1] && parts[2]!== emptyParts[2])
-    // console.log("length check:",parts.length===3);
-    // console.log("is [0] empty:", parts[0]!==emptyParts[0]);
-    // console.log("is [1] empty:", parts[1]!== emptyParts[1]);
-    // console.log("is [2] empty:", parts[2]!== emptyParts[2]);
-    // &&parts[0]!==emptyParts[0] && parts[1]!== emptyParts[1] && parts[2]!== emptyParts[2]
+    console.log("newDate:", newDate);
     if (parts.length===3){
+        parts = newDate;
         const [month, day, year] = parts;
-        date = new Date(`${month}/${day}/${year}`);
-        console.log('date:',date);
-        if(date<today)
-        { 
-            calendarDate(date);
-            showCalendar(true);
-            isValidDateError(false);
+        if(month!==emptyParts[0]&&day!==emptyParts[1]&&year!==emptyParts[2])
+        {
+            date = new Date(`${month}/${day}/${year}`);
+            console.log('date:',date);
+            if(date<today)
+            {
+                birthday(newDate);
+                calendarDate(date);
+                isValidDateError(false);
+                showCalendar(false);
+            }
+            else{
+                isValidDateError(true);
+            }
         }
         else{
-            isValidDateError(true);
+            console.log(parts);
         }
     }
 }

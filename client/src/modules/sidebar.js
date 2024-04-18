@@ -1,8 +1,7 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect} from 'react';
 import { 
-    AddEmployeesModal,
-    AddProjectModal, 
-    EditEmployeesModal,
+    AddProjectModal,
+    EditEmployeesModal, 
     EditProjectModal,
     Tooltips
 } from '../components';
@@ -16,9 +15,8 @@ function Sidebar(props){
     const [projectFocus, setProjectFocus] = useState(null);
     const [openDropdown, setOpenDropdown] = useState(false);
     const [dropdownId, setDropdownId] = useState(null);
-    const [employees, setEmployees] = useState(null);
+    const [employees, setEmployees] = useState([]);
     const [openAddEmployeesModal, setOpenAddEmployeesModal] = useState(false);
-    const [openEditEmployeesModal, setOpenEditEmployeesModal] = useState(false);
     var projLength = (props.projList ? props.projList.length : 0)
 
     const toggleTooltipEnter = () => {
@@ -29,24 +27,21 @@ function Sidebar(props){
     }
 
     const getEmployees = (newEmployee) =>{
-        const isEmp = employees!==null&&employees.find((emp) => !emp.id?emp===newEmployee:emp.id === newEmployee.id);
-        (employees !== null ? 
-            (
-                !isEmp &&
-                setEmployees(previous=>[
-                ...previous,
-                newEmployee
-                ])
-            )
-            :   
-            (
-                setEmployees([newEmployee])
-            )
-        )
+        
+        if(employees.length>0) {
+            const isEmp = employees.find((emp) => emp === newEmployee);
+            !isEmp &&
+            setEmployees(previous=>[
+            ...previous,
+            newEmployee
+            ])
+        }else{   
+            setEmployees([newEmployee])
+        }
     }
 
     const removeEmployee = (employeeId) => {
-        const editedEmployees = employees.filter(employee => employee.id !== employeeId);
+        const editedEmployees = employees.filter(employee => employee !== employeeId);
         setEmployees(editedEmployees);
     }
 
@@ -97,6 +92,7 @@ function Sidebar(props){
     };
 
     function clickEdit(project){
+        console.log('editProject:',project);
         setOpenDropdown(false);
         setOpenEditProjectModal(true);
         setEditProject(project)
@@ -147,10 +143,9 @@ function Sidebar(props){
                                 </div>
                             </div>
                         </div>
-                        <AddProjectModal isOpen={openAddProjectModal} closeModal={setOpenAddProjectModal} setOpenEmpModal={setOpenAddEmployeesModal} addNewProject={addNewProject} projLength={projLength} employees={employees} setEmployees={setEmployees}/>                        
-                        <AddEmployeesModal isOpen={openAddEmployeesModal} closeModal={setOpenAddEmployeesModal} employees={employees} getEmployees={getEmployees} removeEmployee={removeEmployee} users={props.users}/>
-                        {editProject&&<EditProjectModal isOpen={openEditProjectModal} closeModal={setOpenEditProjectModal} setOpenEmpModal={setOpenEditEmployeesModal} editedProject={editedProject} project={editProject} employees={employees} setEmployees={setEmployees} users={props.users}/>}
-                        {employees&&<EditEmployeesModal isOpen={openEditEmployeesModal} closeModal={setOpenEditEmployeesModal} employees={employees} getEmployees={getEmployees} removeEmployee={removeEmployee} users={props.users}/>}                   
+                        <AddProjectModal isOpen={openAddProjectModal} closeModal={setOpenAddProjectModal} setOpenEmpModal={setOpenAddEmployeesModal} addNewProject={addNewProject} projLength={projLength} employees={employees} setEmployees={setEmployees} users={props.users}/>                        
+                        <EditEmployeesModal isOpen={openAddEmployeesModal} closeModal={setOpenAddEmployeesModal} employees={employees} getEmployees={getEmployees} removeEmployee={removeEmployee} users={props.users}/>
+                        {editProject&&<EditProjectModal isOpen={openEditProjectModal} closeModal={setOpenEditProjectModal} setOpenEmpModal={setOpenAddEmployeesModal} editedProject={editedProject} project={editProject} setProject={setEditProject} employees={employees} setEmployees={setEmployees} users={props.users}/>}
                         
                         <div className='mt-2'>
                             <hr className="w-full border-[#A4C9C5]"></hr>
@@ -196,7 +191,10 @@ function Sidebar(props){
                                                 <div 
                                                     data-tooltip-target={project.id} 
                                                     data-tooltip-placement="bottom"
-                                                    onClick={()=>handleOpenDropdown(project.id)} 
+                                                    onClick={()=>{
+                                                        handleOpenDropdown(project.id)
+                                                        setEditProject(null)
+                                                    }} 
                                                 >
                                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
                                                         <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
@@ -204,8 +202,11 @@ function Sidebar(props){
                                                 </div>
                                                 <Tooltips id={project.id} isOpen={dropdownId===project.id ? openDropdown : false} tooltipArrowClassName='tooltip-arrow -top-1'>
                                                     <div 
-                                                        onClick={()=>clickEdit(project)} 
-                                                        className="z-20 w-full px-4 mt-1 py-2 text-sm hover:bg-slate-500"
+                                                        onClick={()=>{
+                                                            clickEdit(project);
+                                                            setEmployees(project.employees);
+                                                        }} 
+                                                        className="z-20 w-28 px-4 mt-1 py-2 text-sm hover:bg-slate-500"
                                                     >
                                                         Edit Project
                                                     </div> 

@@ -1,7 +1,7 @@
 import React, { useState, useRef, useCallback, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Calendar } from "@natscale/react-calendar";
-import { convertToBirthDate} from "../utilities/date";
+import { convertToBirthDate, getClickedDate, convertToDate} from "../utilities/date";
 import {InputLabel, ErrorToast} from '../components';
 import InputMask from 'react-input-mask';
 import '@natscale/react-calendar/dist/main.css';
@@ -27,6 +27,8 @@ const Register = () => {
   const navigate = useNavigate();
   const today = new Date();
   const calendarDivRef = useRef(null);
+  var temp = '';
+  var emptyParts = ['__','__','____']
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -40,13 +42,21 @@ const Register = () => {
     };
   }, []);
 
-  const getBirthday = (e) => {
-    setBirthday(e.target.value);
-    convertToBirthDate(e.target.value,setIsValidDateError,setCalendarDate,setShowCalendar);
+  const getBirthday = (date) =>{
+    setBirthday(date);
+    setShowCalendar(false);
+  }
+
+  const clickedCalendarDate = (e) =>{
+    temp = e;
+    
+    convertToBirthDate(getClickedDate(e), setIsValidDateError, setCalendarDate, setBirthday, setShowCalendar);
+    if (temp!==''){ 
+      setShowCalendar(false);
+    }
   }
 
   const handleCalendarClick = (e) => {
-    e.stopPropagation();
     setShowCalendar(true);
   };
 
@@ -197,15 +207,15 @@ const Register = () => {
                     <InputLabel id="RegisterBirthdayLabel" isFilled={isFilled?true:birthday!==''?true:false} classname={inputLabelClassName}>
                       <p className="font-Montserrat text-base">Birthday</p>
                     </InputLabel>
-                    <div ref={calendarDivRef} className="relative">
+                    <div className="relative">
                       <InputMask
                         id="birthday"
                         name="birthday"
                         type="text"
                         mask="99/99/9999"
                         value={birthday}
-                        onClick={handleCalendarClick}
-                        onChange={getBirthday}
+                        onClick={()=>setShowCalendar(true)}
+                        onChange={(e)=>getBirthday(e.target.value)}
                         placeholder="Ex. mm/dd/yyyy"
                         className="p-2 placeholder-white/30 font-Montserrat border-0 rounded-lg bg-opacity-10 bg-white w-full text-base block focus:outline-none focus:ring-0 focus:text-white dark:text-white"
                       />
@@ -214,8 +224,8 @@ const Register = () => {
                           <Calendar
                             useDarkMode
                             isDisabled={isDisabled}
-                            value={calendarDate} 
-                            onChange={e=>convertToBirthDate(e,setIsValidDateError,setCalendarDate,setShowCalendar)} 
+                            value={calendarDate}
+                            onChange={(e)=>clickedCalendarDate(e)}
                             className="border-[1px] bg-[#1B333A]"
                           />
                         </div>
@@ -233,7 +243,7 @@ const Register = () => {
                       type="text"
                       value={contactNum}
                       placeholder="Ex. +9123456789" 
-                      onChange={e=>setContactNum(e.target.value)}
+                      onChange={(e)=>setContactNum(e.target.value)}
                       className="p-2 placeholder-white/30 font-Montserrat border-0 rounded-lg bg-opacity-10 bg-white w-full text-base block focus:outline-none focus:ring-0 focus:text-white dark:text-white"
                     />
                   </div>
@@ -248,7 +258,7 @@ const Register = () => {
                     type="text"
                     value={emailAddress}
                     placeholder="Ex. johncena@email.com" 
-                    onChange={e=>setEmailAddress(e.target.value)}
+                    onChange={(e)=>setEmailAddress(e.target.value)}
                     required
                     className="p-2 placeholder-white/30 font-Montserrat border-0 rounded-lg bg-opacity-10 bg-white w-full text-base block focus:outline-none focus:ring-0 focus:text-white dark:text-white"
                   />
@@ -264,7 +274,7 @@ const Register = () => {
                       type="text"
                       value={username}
                       placeholder="Ex. johncena" 
-                      onChange={e=>setUsername(e.target.value)}
+                      onChange={(e)=>setUsername(e.target.value)}
                       className="p-2 placeholder-white/30 font-Montserrat border-0 rounded-lg bg-opacity-10 bg-white w-full text-base block focus:outline-none focus:ring-0 focus:text-white dark:text-white"
                     />
                   </div>
@@ -278,14 +288,14 @@ const Register = () => {
                       type="password"
                       value={password}
                       placeholder="Enter your password" 
-                      onChange={e=>setPassword(e.target.value)}
+                      onChange={(e)=>setPassword(e.target.value)}
                       className="p-2 placeholder-white/30 font-Montserrat border-0 rounded-lg bg-opacity-10 bg-white w-full text-base block focus:outline-none focus:ring-0 focus:text-white dark:text-white"
                     />
                   </div>
                 </div>
               </form>
               <div className="mt-3 mb-2">
-                <button onClick={() => getUserDetails()} className="bg-[#A5D9D0] font-Montserrat font-extrabold text-black w-full text-base hover:bg-teal-400 py-2 rounded">
+                <button onClick={(e) => getUserDetails()} className="bg-[#A5D9D0] font-Montserrat font-extrabold text-black w-full text-base hover:bg-teal-400 py-2 rounded">
                   SIGNUP
                 </button>
               </div>

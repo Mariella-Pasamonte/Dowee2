@@ -33,7 +33,7 @@ const Home = () => {
             console.log(error);
         });
     },[project])
-
+    console.log('home users:',users);
     return(
         <div className='static flex flex-col h-dvh'>
             <div className='relative my-3 ml-3 flex flex-col h-full justify-center'>

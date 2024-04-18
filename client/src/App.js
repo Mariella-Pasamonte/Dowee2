@@ -6,14 +6,7 @@ import "./App.css";
 
 function App() {
   const [loggedInUser, setLoggedInUser] = useState(false);
-  const [backendData, setBackendData] = useState([{}]);
-
-  fetch("/")
-    .then((res) => res.json())
-    .then((data) => {
-      setBackendData(data);
-    });
-  console.log(backendData);
+  
   return (
     <BrowserRouter>
       <Routes>

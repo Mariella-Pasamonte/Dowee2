@@ -1,27 +1,30 @@
-import React, {useState, useEffect, useRef} from "react";
+import React, {useState, useEffect, useRef, useCallback} from "react";
 import { Calendar } from "@natscale/react-calendar";
 import InputMask from 'react-input-mask';
 import { convertToDate, onChangeDate} from '../utilities/date';
 import {InputLabel} from '../components';
 
 function AddProjectModal(props){
-    const [projTitle, setProjTitle] = useState('Project '+String(props.projLength).padStart(2,'0'));
+    const [projTitle, setProjTitle] = useState('Project '+String(props.projLength+1).padStart(2,'0'));
     const [clientName, setClientName]= useState('');
     const [emailAddress, setEmailAddress] = useState('');
     const [contactNum, setContactNum] = useState('');
     const [projDescription, setProjDescription] = useState('');
     const [showIssueCalendar, setShowIssueCalendar] = useState(false);
     const [issuedDate, setIssuedDate] = useState('');
-    const [issuedDateCalendar, setIssuedDateCalendar] = useState(new Date());
+    const [issuedDateCalendar, setIssuedDateCalendar] = useState(null);
     const [showDueCalendar, setShowDueCalendar] = useState(false);
     const [dueDate, setDueDate] = useState('');
-    const [dueDateCalendar, setDueDateCalendar] = useState(new Date());
+    const [dueDateCalendar, setDueDateCalendar] = useState(null);
     const [isFilled, setIsFilled] = useState(true);
     const issueCalendarDivRef = useRef(null);
     const dueCalendarDivRef = useRef(null);
-    const employeesId = props.employees&&props.employees.map(employee=>employee.id);
-    const emps = props.employees;
-    const empUsernames = props.employees&&props.employees.map(employee => employee.username);
+    const emps = props.employees&&props.employees;
+    const getUsername = (userId) => {
+        const user = props.users&&props.users.find(user => user.id === userId);
+        return user ? user.username : 'Unknown';
+    };
+    const empUsernames = props.employees&&props.employees.map(employee =>getUsername(employee));
     const joinEmpUsernames = props.employees!==null?empUsernames.join(', '):'';
     const truncatedText =()=>{
         if (joinEmpUsernames.length === 0) return '';
@@ -42,7 +45,7 @@ function AddProjectModal(props){
         document.addEventListener('click', handleClickOutside);
 
         if (!props.isOpen) {
-            setProjTitle('Project ' + String(props.projLength).padStart(2, '0'));
+            setProjTitle('Project ' + String(props.projLength+1).padStart(2, '0'));
             setClientName('');
             setEmailAddress('');
             setContactNum('');
@@ -57,8 +60,12 @@ function AddProjectModal(props){
         return () => {
           document.removeEventListener('click', handleClickOutside);
         };
-    }, [props.isOpen, props.projLength, issueCalendarDivRef, dueCalendarDivRef, setShowIssueCalendar, setShowDueCalendar]);
-    
+    }, [props, issueCalendarDivRef, dueCalendarDivRef, setShowIssueCalendar, setShowDueCalendar]);
+
+    const disableDueDate = useCallback((date) => {
+        return date < issuedDateCalendar;
+    }, [issuedDateCalendar]);
+
     const getIssuedDate = (e) =>{
         setIssuedDate(e.target.value);
         convertToDate(e.target.value);
@@ -76,11 +83,11 @@ function AddProjectModal(props){
     }
 
     function addProject(){
-        if(projTitle !== '' && clientName !== '' && emailAddress !== '' && contactNum !== ''){
+        if(projTitle !== '' && clientName !== '' && emailAddress !== '' && contactNum !== '' && props.employees.length !== 0){
             setIsFilled(true);
             props.closeModal(false);
             props.setOpenEmpModal(false);
-            props.setEmployees(null);
+            props.setEmployees([]);
             props.addNewProject(
                 {
                     userId: localStorage.getItem('userId'),
@@ -91,14 +98,14 @@ function AddProjectModal(props){
                     issueddate: issuedDate,
                     duedate: dueDate,
                     description: projDescription,
-                    employees: employeesId,
+                    employees: props.employees,
                 }
             )
         } else{
             setIsFilled(false);
         }
     };
-
+    
     var inputLabelClassName="flex flex-row text-sm";
     return props.isOpen &&(
         <>
@@ -202,7 +209,7 @@ function AddProjectModal(props){
                                         mask="99/99/9999"
                                         value={issuedDate}
                                         onClick={()=>setShowIssueCalendar(true)}
-                                        onChange={e=>getIssuedDate(e)}
+                                        onChange={(e)=>getIssuedDate(e)}
                                         placeholder="mm/dd/yyyy" 
                                         className="h-7 text-sm rounded w-full border-[1px] border-[#B2F6FF]/50 bg-inherit pt-1 pl-1"
                                     />
@@ -210,9 +217,9 @@ function AddProjectModal(props){
                                         <div className="z-20 absolute inline -top-5">
                                             <Calendar
                                                 useDarkMode
-                                                value={issuedDateCalendar} 
-                                                onChange={e=>onChangeDate(e,setIssuedDateCalendar,setIssuedDate,setShowIssueCalendar)} 
-                                                onClick={()=>setShowIssueCalendar(false)}
+                                                value={issuedDateCalendar}
+                                                onChange={(e)=>onChangeDate(e,setIssuedDateCalendar,setIssuedDate,setShowIssueCalendar)} 
+                                                onClick={(e)=>setShowIssueCalendar(false)}
                                                 className="border-[1px] bg-[#1B333A]"
                                             />
                                         </div>
@@ -232,20 +239,23 @@ function AddProjectModal(props){
                                         id="dueDate"
                                         name="dueDate"
                                         value={dueDate}
-                                        onClick={()=>setShowDueCalendar(true)}
+                                        onClick={(e)=>setShowDueCalendar(true)}
                                         placeholder="mm/dd/yyyy" 
-                                        onChange={e=>getDueDate(e)}
+                                        onChange={(e)=>getDueDate(e)}
                                         type="text"
                                         className="h-7 text-sm rounded w-full border-[1px] border-[#B2F6FF]/50 bg-inherit pt-1 pl-1"
-                                    />
+                                        disabled={!issuedDate}
+                                    >
+                                    </InputMask>
                                     { showDueCalendar===true &&
                                         <div className="z-20 absolute inline -top-5">
                                             <Calendar
                                                 useDarkMode
                                                 value={dueDateCalendar} 
-                                                onChange={e=>onChangeDate(e,setDueDateCalendar,setDueDate,setShowDueCalendar)} 
+                                                onChange={(e)=>onChangeDate(e,setDueDateCalendar,setDueDate,setShowDueCalendar)} 
                                                 onClick={()=>setShowDueCalendar(false)}
                                                 className="border-[1px] bg-[#1B333A]"
+                                                isDisabled={disableDueDate}
                                             />
                                         </div>
                                     }
@@ -259,17 +269,17 @@ function AddProjectModal(props){
                                 name="projDescription"
                                 rows="3"
                                 value={projDescription}
-                                onChange={e=>setProjDescription(e.target.value)}
+                                onChange={(e)=>setProjDescription(e.target.value)}
                                 type="text"
                                 placeholder="Add Description..."
-                                className="resize-none block text-sm rounded border-[1px] border-[#B2F6FF]/50 bg-inherit pt-1 pl-1 h-20"
+                                className="resize-none block text-sm rounded border-[1px] border-[#B2F6FF]/50 bg-inherit pt-1 pl-1 h-20" 
                             />
                         </div>
                         <div className={`flex flex-row ${props.employees&&props.employees.length > 0 &&'justify-between'} mx-1 my-2`}>
                             <div className='flex flex-row mr-1'>
                                 <InputLabel 
                                     id="projEmployeesTitle"
-                                    isFilled={isFilled?true:props.employees!==null?true:false}
+                                    isFilled={isFilled?true:props.employees.length===0?false:true}
                                     classname={inputLabelClassName+" mr-1"}
                                 >
                                     Employees:
