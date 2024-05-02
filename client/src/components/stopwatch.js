@@ -52,7 +52,7 @@ function Stopwatch({taskId, task}) {
     };
     
     return (
-      <div key={taskId} className='flex flex-row'>
+      <div key={taskId} className='flex flex-row justify-center'>
         <div className='flex flex-row px-2'>
             <span className='flex flex-col justify-center'>{time.hours.toString().padStart(2, '0')}:</span>
             <span className='flex flex-col justify-center'>{time.minutes.toString().padStart(2, '0')}:</span>

@@ -132,10 +132,10 @@ function Project(props){
                         </div>
                     </div>
                     <div className='w-1/3'>
-                        <TaskModal isOpen={openTaskModal} closeModal={setOpenTaskModal} addNewTasks={addNewTask} tasks={tasks} projectId={props.project.id}/>
+                        <TaskModal isOpen={openTaskModal} closeModal={setOpenTaskModal} addNewTasks={addNewTask} tasks={props.tasks} projectId={props.project.id} employees={props.project.employees}/>
                     </div>
                     <div>
-                        {taskOrInvoiceFocus === 0 ? <Task tasks={tasks} projectId={props.project.id} />:<Invoice invoices={invoices} projectId={props.project.id} />}
+                        {taskOrInvoiceFocus === 0 ? <Task tasks={props.tasks} projectId={props.project.id} users={props.users} />:<Invoice invoices={invoices} projectId={props.project.id} />}
                     </div>
                 </div>
             </div>

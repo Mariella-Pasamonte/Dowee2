@@ -20,5 +20,22 @@ CREATE TABLE projects (
     issuedDate VARCHAR(100) NOT NULL,
     dueDate VARCHAR(100) NOT NULL,
     description VARCHAR(100),
-    employees INT[]
+    employees INT[] NOT NULL
+);
+
+CREATE TABLE tasks(
+    id SERIAL PRIMARY KEY,
+    projectId INT REFERENCES "projects"(id),
+    name VARCHAR(100) NOT NULL,
+    paymentType BOOLEAN NOT NULL,
+    paymentMethod VARCHAR(100) NOT NULL,
+	isComplete BOOLEAN,
+    employeeAssigned INT NOT NULL,
+    description VARCHAR(100),
+    status VARCHAR(100), 
+    seconds INT,
+    minutes INT,
+    hours INT,
+    startTimer BOOLEAN,
+    pendingAmount NUMERIC(10,2)
 );

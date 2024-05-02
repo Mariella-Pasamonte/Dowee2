@@ -56,10 +56,6 @@ const Register = () => {
     }
   }
 
-  const handleCalendarClick = (e) => {
-    setShowCalendar(true);
-  };
-
   const isDisabled = useCallback((date) => {
     return date > today;
   }, [today]);

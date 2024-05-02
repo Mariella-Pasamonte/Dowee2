@@ -2,8 +2,14 @@ import React, {useState, useEffect} from 'react';
 import Stopwatch from '../components/stopwatch';
 
 
-function Task( {tasks, projectId}){
+function Task(props){
     const [taskFocus, setTaskFocus] = useState(null);
+
+    const getUsername = (userId) => {
+        const user = props.users&&props.users.find(user => user.id === userId);
+        return user ? user.username : 'Unknown';
+    };
+
     const truncatedText =(desc)=>{
         if(desc.length == 0) return 'N/A';
         else return desc.length > 15 ? desc.slice(0, 15) + '...' : desc;
@@ -68,34 +74,34 @@ function Task( {tasks, projectId}){
                                 </th>
                             </tr>
                         </thead>
-                        {tasks &&
+                        {props.tasks &&
                             <tbody>
-                                {tasks.map((task)=>
-                                    task.projId === projectId &&
+                                {props.tasks.map((task)=>
+                                    task.projectid === props.projectId &&
                                     <tr key={task.id} className=' bg-[#6C93B9]/40 font-Inter h-full w-fit text-white text-sm'>
                                         <th scope="row" className='text-center rounded-l-md py-2 font-light w-24'>
                                             {task.name}
                                         </th>
                                         <td className=' text-center w-44 font-light py-2 px-5'>
-                                            {truncatedText(task.desc)}
+                                            {truncatedText(task.description)}
                                         </td>
                                         <td className=' text-center w-24 font-light '>
-                                            {task.paymentMethod?"Online Pymt":"Credit Card"}
+                                            {task.paymentmethod=="Online Payment"?"Online Pymt":"Credit Card"}
                                         </td>
                                         <td className=' text-center w-24 font-light py-2 px-1'>
-
+                                            {task.iscomplete?"Finished":"Unfinished"}
                                         </td>
                                         <td className=' text-center w-32 font-light py-2 px-5'>
-
+                                            {getUsername(task.employeeassigned)}
                                         </td>
                                         <td className=' text-center w-32 font-light py-2 px-2'>
-
+                                            {task.pendingamount}
                                         </td>
                                         <td className=' text-center w-32 font-light py-2 px-5'>
-                                            On Status
+                                            {task.status}
                                         </td>
                                         <td className=' rounded-r-md border-1 border-black font-light py-3 w-fit'>
-                                            <Stopwatch id={task.id} task={task}/>
+                                            {task.paymenttype?<Stopwatch id={task.id} task={task}/>:null}
                                         </td>
                                     </tr>
                                 )}
