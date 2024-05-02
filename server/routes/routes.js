@@ -139,7 +139,7 @@ router.post("/home", async (req, res) =>{
         [userid, name, clientname, clientemadd, clientconnum, issueddate, duedate, description,employees]
       );
     } else if (func === 'editProject'){
-      const id = req.body.editedProject.id
+      const id = req.body.editedProject.id;
       const userid = req.body.editedProject.userid;
       const name = req.body.editedProject.name;
       const clientname = req.body.editedProject.clientname;
@@ -151,8 +151,17 @@ router.post("/home", async (req, res) =>{
       const employees = req.body.editedProject.employees;
 
       const result = await db.query(
-        "UPDATE projects SET userid = $1, name = $2, clientname = $3, clientemadd = $4, clientconnum = $5, issueddate = $6, duedate = $7, description = $8, employees = $9 WHERE id = $10",
+        "UPDATE projects SET id = $10, userid = $1, name = $2, clientname = $3, clientemadd = $4, clientconnum = $5, issueddate = $6, duedate = $7, description = $8, employees = $9 WHERE id = $10",
         [userid, name, clientname, clientemadd, clientconnum, issueddate, duedate, description,employees, id]
+      );
+    } else if (func === 'deleteProject'){
+      const id = req.body.deleteProject.id;
+
+      console.log(id);
+
+      const result = await db.query(
+        "DELETE FROM projects WHERE id = $1",
+        [id]
       );
     }
   } catch(error) {
@@ -168,12 +177,17 @@ router.get("/home", async (req, res) => {
     const result = await db.query("SELECT * FROM projects WHERE userid = $1", [
       userId,
     ]);
+    const tasks = await db.query("SELECT t.* FROM tasks t JOIN projects p ON t.projectid = p.id WHERE p.userid = $1 OR EXISTS (SELECT 1 FROM unnest(p.employees) AS emp WHERE emp = $1)",[
+      userId,
+    ]);
+
     const users = await db.query("SELECT * FROM users");
 
     let projects = result.rows;
     let projLength = result.rows.length;
-  
-    res.send({projects: projLength?projects:null, users:users.rows});
+    let taskLength = tasks.rows.length;
+
+    res.send({projects: projLength?projects:null, users:users.rows, tasks:taskLength?tasks.rows:null});
     
   } catch(error) {
     console.error("Error: ", error);
