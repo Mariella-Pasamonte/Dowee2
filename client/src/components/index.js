@@ -2,6 +2,7 @@
 export {default as AddProjectModal} from './addProjectModal';
 export {default as EditEmployeesModal} from './editEmployeesModal';
 export {default as EditProjectModal} from './editProjectModal';
+export {default as ErrorModal} from './errorModal';
 export {default as ProjectModal} from './projectModal';
 export {default as TaskModal} from './taskModal';
 
