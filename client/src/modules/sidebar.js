@@ -3,6 +3,7 @@ import {
     AddProjectModal,
     EditEmployeesModal, 
     EditProjectModal,
+    ErrorModal,
     Tooltips
 } from '../components';
 import axios from 'axios';
@@ -10,7 +11,9 @@ import axios from 'axios';
 function Sidebar(props){
     const [openAddProjectModal, setOpenAddProjectModal] = useState(false);
     const [openEditProjectModal, setOpenEditProjectModal] = useState(false);
+    const [openDeleteErrorModal, setOpenDeleteErrorModal] = useState(false);
     const [editProject, setEditProject] = useState(null);
+    const [deleteProject, setDeleteProject] = useState(null);
     const [isTooltipOpen, setIsTooltipOpen] = useState(false);
     const [projectFocus, setProjectFocus] = useState(null);
     const [openDropdown, setOpenDropdown] = useState(false);
@@ -80,6 +83,22 @@ function Sidebar(props){
         setProjectFocus(editedProject.id)
     }
 
+    function deletingProject(){
+        console.log("delete project:",deleteProject);
+        axios
+        .post("http://localhost:5000/home", {
+            headers:{
+                function: 'deleteProject'
+            },deleteProject
+        })
+        .then((res) => {
+            console.log(deleteProject);
+        })
+        .catch((error) => {
+            console.log("Error: ", error);
+        }); 
+    }
+
     const handleButtonClick = (projectId) => {
         setProjectFocus(projectId);
         const proj = props.projList.find((proj) => proj.id === projectId);
@@ -107,7 +126,13 @@ function Sidebar(props){
                 <div className='h-full flex flex-col border-[1px] border-white/20 text-[#D5D8DF] p-3 bg-gradient-to-r from-[#6E797D]/50 via-[#556469]/50 to-[#3B4E54]/50 rounded-lg'>
                     <div>
                         <div className='h-fit flex flex-row justify-between'>
-                            <div className='font-Inter text-xl my-1'>
+                            <div className='flex flex-row font-Inter text-xl my-1'>
+                                <div className='flex flex-col justify-center mr-2'>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+                                        <path fill-rule="evenodd" d="M9.315 7.584C12.195 3.883 16.695 1.5 21.75 1.5a.75.75 0 0 1 .75.75c0 5.056-2.383 9.555-6.084 12.436A6.75 6.75 0 0 1 9.75 22.5a.75.75 0 0 1-.75-.75v-4.131A15.838 15.838 0 0 1 6.382 15H2.25a.75.75 0 0 1-.75-.75 6.75 6.75 0 0 1 7.815-6.666ZM15 6.75a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5Z" clip-rule="evenodd" />
+                                        <path d="M5.26 17.242a.75.75 0 1 0-.897-1.203 5.243 5.243 0 0 0-2.05 5.022.75.75 0 0 0 .625.627 5.243 5.243 0 0 0 5.022-2.051.75.75 0 1 0-1.202-.897 3.744 3.744 0 0 1-3.008 1.51c0-1.23.592-2.323 1.51-3.008Z" />
+                                    </svg>
+                                </div>
                                 My Projects
                             </div>
                             <div className='relative w-1/5 flex flex-col justify-center'>
@@ -146,7 +171,16 @@ function Sidebar(props){
                         <AddProjectModal isOpen={openAddProjectModal} closeModal={setOpenAddProjectModal} setOpenEmpModal={setOpenAddEmployeesModal} addNewProject={addNewProject} projLength={projLength} employees={employees} setEmployees={setEmployees} users={props.users}/>                        
                         <EditEmployeesModal isOpen={openAddEmployeesModal} closeModal={setOpenAddEmployeesModal} employees={employees} getEmployees={getEmployees} removeEmployee={removeEmployee} users={props.users}/>
                         {editProject&&<EditProjectModal isOpen={openEditProjectModal} closeModal={setOpenEditProjectModal} setOpenEmpModal={setOpenAddEmployeesModal} editedProject={editedProject} project={editProject} setProject={setEditProject} employees={employees} setEmployees={setEmployees} users={props.users}/>}
-                        
+                        <ErrorModal isOpen={openDeleteErrorModal} closeModal={setOpenDeleteErrorModal} delete={deletingProject}>
+                            <div className='text-center'>
+                                <div className='text-xl font-bold'>
+                                    Are you sure?
+                                </div>
+                                <div className='text-sm'>
+                                    You will not be able to recover this project!
+                                </div>
+                            </div>
+                        </ErrorModal>
                         <div className='mt-2'>
                             <hr className="w-full border-[#A4C9C5]"></hr>
                         </div>
@@ -200,16 +234,33 @@ function Sidebar(props){
                                                         <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
                                                     </svg>
                                                 </div>
-                                                <Tooltips id={project.id} isOpen={dropdownId===project.id ? openDropdown : false} tooltipArrowClassName='tooltip-arrow -top-1'>
-                                                    <div 
+                                                <Tooltips id={project.id} isOpen={dropdownId===project.id ? openDropdown : false}>
+                                                    <button 
                                                         onClick={()=>{
                                                             clickEdit(project);
                                                             setEmployees(project.employees);
+                                                            setOpenDropdown(false);
                                                         }} 
-                                                        className="z-20 w-28 px-4 mt-1 py-2 text-sm hover:bg-slate-500"
+                                                        className="flex flex-row z-20 w-24 px-4 border-b-[1px] border-[#A4C9C5] font-thin py-2 text-sm hover:bg-slate-500"
                                                     >
-                                                        Edit Project
-                                                    </div> 
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#ffffff" viewBox="0 0 256 256" className='mr-1'>
+                                                            <path d="M225.9,74.78,181.21,30.09a14,14,0,0,0-19.8,0L38.1,153.41a13.94,13.94,0,0,0-4.1,9.9V208a14,14,0,0,0,14,14H92.69a13.94,13.94,0,0,0,9.9-4.1L225.9,94.58a14,14,0,0,0,0-19.8ZM94.1,209.41a2,2,0,0,1-1.41.59H48a2,2,0,0,1-2-2V163.31a2,2,0,0,1,.59-1.41L136,72.48,183.51,120ZM217.41,86.1,192,111.51,144.49,64,169.9,38.58a2,2,0,0,1,2.83,0l44.68,44.69a2,2,0,0,1,0,2.83Z"></path>
+                                                        </svg>
+                                                        Edit
+                                                    </button> 
+                                                    <button 
+                                                        onClick={()=>{
+                                                            setOpenDeleteErrorModal(true);
+                                                            setDeleteProject(project);
+                                                            setOpenDropdown(false);
+                                                        }} 
+                                                        className="flex flex-row z-20 w-24 px-4 py-2 text-sm  hover:bg-slate-500"
+                                                    >
+                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-1">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                                        </svg>
+                                                        Delete
+                                                    </button> 
                                                 </Tooltips> 
                                             </div>
                                         </button>
