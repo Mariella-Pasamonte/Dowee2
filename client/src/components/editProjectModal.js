@@ -293,7 +293,7 @@ function EditProjectModal(props){
                             <button
                                 type="button" 
                                 onClick={(e)=>{
-                                    props.setEmployees(null);
+                                    props.setEmployees([]);
                                     props.closeModal(false);
                                     props.setProject(null);
                                 }}
