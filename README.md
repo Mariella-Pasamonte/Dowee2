@@ -6,7 +6,7 @@ Doify is a comprehensive solution designed to tackle the challenges of time trac
 |DW.010.000           |v1.0.0 |2024-02-06 20:35|
 |DW.010.001           |v1.0.1 |2024-02-06 16:01|
 |DW.010.002           |v1.0.2 |2024-02-06 10:38|
-|DW.021.001           |v1.0.2 |2024-04-16 12:07|
+|DW.021.001           |v2.1.1 |2024-04-16 12:07|
 
 ## DW.021.002 Release Notes (reverse chronological order)
 * Add 'Edit Project Setup' feature.
