@@ -160,7 +160,7 @@ router.post("/home", async (req, res) =>{
       console.log(id);
 
       const result = await db.query(
-        "DELETE FROM projects WHERE id = $1",
+        "ALTER TABLE tasks DROP CONSTRAINT IF EXISTS tasks_projectId_fkey, ADD CONSTRAINT tasks_projectId_fkey FOREIGN KEY (projectId) REFERENCES projects (id) ON DELETE CASCADE; ALTER TABLE hourlog DROP CONSTRAINT IF EXISTS hourlog_taskId_fkey, ADD CONSTRAINT hourlog_taskId_fkey FOREIGN KEY (taskId) REFERENCES tasks (id) ON DELETE CASCADE; DELETE FROM projects WHERE id = $1;",
         [id]
       );
     }
@@ -174,10 +174,13 @@ router.get("/home", async (req, res) => {
   const userId = req.headers['userid']||req.query.userId;
 
   try {
-    const result = await db.query("SELECT * FROM projects WHERE userid = $1", [
+    const result = await db.query("SELECT * FROM projects P WHERE userid = $1 OR EXISTS (SELECT 1 FROM unnest(p.employees) AS emp WHERE emp = $1)", [
       userId,
     ]);
-    const tasks = await db.query("SELECT t.* FROM tasks t JOIN projects p ON t.projectid = p.id WHERE p.userid = $1 OR EXISTS (SELECT 1 FROM unnest(p.employees) AS emp WHERE emp = $1)",[
+    const tasks = await db.query("SELECT t.* FROM tasks t JOIN projects p ON t.projectid = p.id WHERE p.userid = $1 OR EXISTS (SELECT 1 FROM unnest(t.employeelist) AS emp WHERE emp = $1)",[
+      userId,
+    ]); 
+    const hourlog = await db.query("SELECT h.* FROM hourlog h INNER JOIN tasks t ON h.taskid = t.id INNER JOIN projects p ON t.projectId = p.id WHERE (p.userid = $1) OR (h.employeeassigned = $1)",[
       userId,
     ]);
 
@@ -186,8 +189,9 @@ router.get("/home", async (req, res) => {
     let projects = result.rows;
     let projLength = result.rows.length;
     let taskLength = tasks.rows.length;
+    let hlLength = hourlog.rows.length;
 
-    res.send({projects: projLength?projects:null, users:users.rows, tasks:taskLength?tasks.rows:null});
+    res.send({projects: projLength?projects:null, users:users.rows, tasks:taskLength?tasks.rows:null, hourlog:hlLength?hourlog.rows:null});
     
   } catch(error) {
     console.error("Error: ", error);
