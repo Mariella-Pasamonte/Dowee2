@@ -3,23 +3,17 @@ import React, {useState, useEffect} from "react";
 function TaskModal(props){
     const [taskTitle, setTaskTitle] = useState('Task '+String(props.tasks.length).padStart(2,'0'));
     const [paymentType, setPaymentType]= useState(1)
-    const [paymentMethod, setPaymentMethod] = useState(null);
-    const [employeeList, setEmployeeList] = useState('');
+    const [amount, setAmount] = useState(0.00);
+    const [employeeList, setEmployeeList] = useState([]);
     const [taskDescription, setTaskDescription] = useState("");
     const [openDropdown, setOpenDropdown] = useState(false);
     var idnum = props.tasks===null?0:props.tasks.length;
-    
-    const getPaymentMethod = (payment) =>{
-        setPaymentMethod(payment);
-        setOpenDropdown(false);
-    }
 
     useEffect(() => {
 
         if (!props.isOpen) {
             setTaskTitle('Task ' + String(props.tasks&&props.tasks.length).padStart(2, '0'));
             setPaymentType(1);
-            setPaymentMethod(null);
             setEmployeeList('');
             setTaskDescription('');
         }
@@ -30,20 +24,21 @@ function TaskModal(props){
         props.closeModal(false);
         props.addNewTasks(
             {
-                projId: props.projectId,
                 id: idnum,
+                projectid: props.projectId,
                 name: taskTitle,
-                paymentType: paymentType,
-                paymentMethod: paymentMethod,
-                employeeList: employeeList,
+                paymenttype: paymentType,
+                amount: amount, 
+                employeeassigned: employeeList,
                 desc: taskDescription,
+                status: 'Not started', 
                 seconds: 0,
-                minutes: 0,
+                minutes: 0, 
                 hours: 0,
-                isTimerStart: false,
+                istimerstart: false,
+                pendingamount: 0.00,
             }
         )
-        setPaymentMethod(null);
     };
 
     return props.isOpen&&(
@@ -77,28 +72,11 @@ function TaskModal(props){
                         </div>
                         <div className='relative flex flex-col mb-2'>
                             <input 
-                                type="text"
-                                value={paymentMethod!==null?paymentMethod?'Online Payment':'Credit Card':null}
-                                onClick={() => setOpenDropdown((prev)=>!prev)}
+                                type="number"
+                                value={amount}
+                                onChange={(e)=>{setAmount(e.target.value)}}s
                                 className="mt-1 rounded border-[1px] border-[#B2F6FF]/50 bg-inherit py-1 pl-2" 
                             />
-                            <button onClick={() => setOpenDropdown((prev)=>!prev)} className="absolute py-4 end-2 h-full">
-                                <svg className="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 4 4 4-4"/>
-                                </svg>
-                            </button>
-                            { openDropdown===true &&
-                                <div className="absolute top-10 z-20 divide-y rounded-lg shadow w-full bg-gray-600">
-                                    <ul className="py-2 text-sm text-white ">
-                                        <li>
-                                            <button onClick={() => getPaymentMethod(0)} className="block w-full px-4 py-2 hover:bg-gray-400">Credit Card</button>
-                                        </li>
-                                        <li>
-                                            <button onClick={() => getPaymentMethod(1)} className="block w-full px-4 py-2 hover:bg-gray-400">Online Payment</button>
-                                        </li>
-                                    </ul>
-                                </div>
-                            }
                         </div>
                         <div className='flex flex-col mb-2'>
                             <label>Task description</label>
