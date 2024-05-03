@@ -30,12 +30,18 @@ CREATE TABLE tasks(
     paymentType BOOLEAN NOT NULL,
     amount NUMERIC(10,2) NOT NULL,
     employeeList INT[] NOT NULL,
-    employeeAssigned INT NOT NULL,
     description VARCHAR(100),
     status VARCHAR(100) NOT NULL, 
-    seconds INT,
-    minutes INT,
-    hours INT,
-    startTimer BOOLEAN,
     pendingAmount NUMERIC(10,2)
+);
+
+CREATE TABLE hourLog(
+    id SERIAL PRIMARY KEY,
+    taskId INT REFERENCES "tasks"(id),
+    employeeAssigned INT REFERENCES "users"(id),
+    seconds INT NOT NULL,
+    minutes INT NOT NULL,
+    hours INT NOT NULL,
+    startTimer BOOLEAN,
+    isRunning BOOLEAN
 );
