@@ -2,29 +2,85 @@ import React, {useState, useEffect, useRef} from 'react';
 //import {Link} from "react-router-dom";
 import Task from "./task";
 import Invoice from "./invoice";
-import {TaskModal} from "../components";
+import {
+    TaskModal,
+    EditEmployeesModal
+} from "../components";
+import axios from 'axios';
 
 function Project(props){
     const [openTaskModal, setOpenTaskModal] = useState(false);
     const [projectButtonsFocus, setProjectButtonsFocus] = useState(0);
     const [taskOrInvoiceFocus, setTaskOrInvoiceFocus] = useState(0);
-    const [tasks, setTasks] = useState([]);
+    const [employeeList, setEmployeeList] = useState([]);
+    const [openEmployeesModal, setOpenEmployeesModal] = useState(false);
     const [invoices, setInvoices] = useState(null);
+    const users = props.project.employees.map((emp)=>props.users.find(user=>user.id===emp));
+
+    const getEmployees = (newEmployee) =>{
+        if(employeeList.length>0) {
+            const isEmp = employeeList.find((emp) => emp === newEmployee);
+            !isEmp &&
+            setEmployeeList(previous=>[
+            ...previous,
+            newEmployee
+            ])
+        }else{   
+            setEmployeeList([newEmployee])
+        }
+    }
+
+    const removeEmployee = (employeeId) => {
+        const editedEmployees = employeeList.filter(employee => employee !== employeeId);
+        setEmployeeList(editedEmployees);
+    }
 
     function addNewTask(newTask){
-        (tasks !== null ? 
-            (
-                setTasks(previous=>[
-                ...previous,
-                newTask
-                ])
-            )
-            :
-            (
-                setTasks([newTask])
-            )   
-        )
+        console.log("Project newTask:", newTask);
+        axios
+        .post("http://localhost:5000/home", {
+            headers:{
+                function: 'addNewTask'
+            },newTask
+        })
+        .then((res) => {
+            console.log(newTask);
+        })
+        .catch((error) => {
+            console.log("Error: ", error);
+        }); 
         addNewInvoice(newTask);
+        console.log(props.tasks);
+        addNewHourlog(newTask);
+    }
+
+    function addNewHourlog(newTask){
+        newTask.employeelist.map((emp)=>{
+            let newHourlog ={
+                projectid: newTask.projectid,
+                taskname: newTask.name,
+                employeeassigned: emp,
+                seconds:0,
+                minutes:0,
+                hours:0,
+                starttimer: false,
+                isRunning:false,
+                pendingamount: 0.00
+            }
+
+            axios
+            .post("http://localhost:5000/home", {
+                headers:{
+                    function: 'addNewHourlog'
+                },newHourlog
+            })
+            .then((res) => {
+                console.log(newHourlog);
+            })
+            .catch((error) => {
+                console.log("Error: ", error);
+            }); 
+        })
     }
 
     function addNewInvoice(newInvoice){
@@ -51,10 +107,10 @@ function Project(props){
         setTaskOrInvoiceFocus(1);
     }
 
-    console.log("Project page:", props.project);
     return(
         <>
             <div className="h-full w-full px-5 py-3" >
+                <EditEmployeesModal isOpen={openEmployeesModal} closeModal={setOpenEmployeesModal} employees={employeeList} getEmployees={getEmployees} removeEmployee={removeEmployee} users={users}/>
                 <div className='relative flex flex-col '>
                     <div className='flex flex-row w-full justify-between'>
                         <div className='flex flex-col justify-between pt-2'>
@@ -131,11 +187,11 @@ function Project(props){
                             </button>
                         </div>
                     </div>
-                    <div className='w-1/3'>
-                        <TaskModal isOpen={openTaskModal} closeModal={setOpenTaskModal} addNewTasks={addNewTask} tasks={props.tasks} projectId={props.project.id} employees={props.project.employees}/>
+                    <div className='w-72'>
+                        <TaskModal isOpen={openTaskModal} openEmployeesModal={setOpenEmployeesModal} closeModal={setOpenTaskModal} addNewTasks={addNewTask} tasks={props.tasks} projectId={props.project.id} employees={employeeList} setEmployees={setEmployeeList} users={props.users}/>
                     </div>
                     <div>
-                        {taskOrInvoiceFocus === 0 ? <Task tasks={props.tasks} projectId={props.project.id} users={props.users} />:<Invoice invoices={invoices} projectId={props.project.id} />}
+                        {taskOrInvoiceFocus === 0 ? <Task tasks={props.tasks} projectId={props.project.id} users={props.users} hourlog={props.hourlog} />:<Invoice invoices={invoices} projectId={props.project.id} />}
                     </div>
                 </div>
             </div>

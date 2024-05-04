@@ -1,10 +1,8 @@
 import React, {useState, useEffect} from 'react';
 import Stopwatch from '../components/stopwatch';
 
-
 function Task(props){
     const [taskFocus, setTaskFocus] = useState(null);
-
     const getUsername = (userId) => {
         const user = props.users&&props.users.find(user => user.id === userId);
         return user ? user.username : 'Unknown';
@@ -14,7 +12,6 @@ function Task(props){
         if(desc.length == 0) return 'N/A';
         else return desc.length > 15 ? desc.slice(0, 15) + '...' : desc;
     }
-    
     return(
         <>
             <div>
@@ -55,10 +52,7 @@ function Task(props){
                                     Task Description
                                 </th>
                                 <th scope="col" className=' w-24 font-light '>
-                                    Payment
-                                </th>
-                                <th scope="col" className=' w-24 font-light py-2 px-1'>
-                                    Completed
+                                    Amount
                                 </th>
                                 <th scope="col" className=' w-32 font-light py-2 px-5'>
                                     Assigned
@@ -86,22 +80,22 @@ function Task(props){
                                             {truncatedText(task.description)}
                                         </td>
                                         <td className=' text-center w-24 font-light '>
-                                            {task.paymentmethod=="Online Payment"?"Online Pymt":"Credit Card"}
-                                        </td>
-                                        <td className=' text-center w-24 font-light py-2 px-1'>
-                                            {task.iscomplete?"Finished":"Unfinished"}
+                                            {task.amount}
                                         </td>
                                         <td className=' text-center w-32 font-light py-2 px-5'>
-                                            {getUsername(task.employeeassigned)}
+                                            {props.hourlog.map((hl)=>hl.taskname === task.name&&<div className='py-1'>{getUsername(hl.employeeassigned)}</div>)}
                                         </td>
                                         <td className=' text-center w-32 font-light py-2 px-2'>
-                                            {task.pendingamount}
+                                            {props.hourlog.map((hl)=>hl.taskname === task.name&&<div className='py-1'>{hl.pendingamount}</div>)}
                                         </td>
                                         <td className=' text-center w-32 font-light py-2 px-5'>
                                             {task.status}
                                         </td>
                                         <td className=' rounded-r-md border-1 border-black font-light py-3 w-fit'>
-                                            {task.paymenttype?<Stopwatch id={task.id} task={task}/>:null}
+                                            {props.hourlog&&props.hourlog.map((hl)=>
+                                                hl.taskname === task.name && 
+                                                <Stopwatch isOpen={task.paymenttype} id={task.id} hourlog={hl}/>
+                                            )}
                                         </td>
                                     </tr>
                                 )}

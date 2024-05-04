@@ -12,6 +12,7 @@ const Home = () => {
     const [projList, setProjList] = useState(null);
     const [users, setUsers] = useState(null);
     const [tasks, setTasks] = useState(null);
+    const [hourlog, setHourlog] = useState(null);
     const [openProjectModal, setOpenProjectModal] = useState(false);
     
     const getProject=(proj)=>{
@@ -22,6 +23,7 @@ const Home = () => {
         const userId = localStorage.getItem('userId');
         setProjList(projList);
         setProject(project);
+        setTasks(tasks);
         axios.get('http://localhost:5000/home', {
           headers:{ 
             userId: userId,
@@ -31,6 +33,7 @@ const Home = () => {
             setProjList(response.data.projects);
             setUsers(response.data.users);
             setTasks(response.data.tasks);
+            setHourlog(response.data.hourlog);
         })
         .catch((error) =>{
             console.log(error);
@@ -44,12 +47,12 @@ const Home = () => {
                 </div>
                 <div className="h-full flex flex-row">
                     <div className="h-full w-1/6 mr-2">
-                        <Sidebar setProject={getProject} project={project} projList={projList} setProjList={setProjList} users={users}/>
+                        <Sidebar setProject={getProject} project={project} projList={projList} setProjList={setProjList} users={users} hourlog={hourlog}/>
                     </div>
                     <div className="relative h-full w-5/6 pl-2">
                     {project&&<ProjectModal isOpen={openProjectModal} closeModal={setOpenProjectModal} project={project} users={users}/>}
                         <div className="h-full border-y-[1px] border-l-[1px] border-white/20 bg-gradient-to-r from-[#6F6483]/60 to-[#4F2E5D]/60 rounded-l-3xl">
-                            {project && <Project project={project} setOpenProjectModal={setOpenProjectModal} users={users} tasks={tasks}/>}
+                            {project && <Project project={project} setOpenProjectModal={setOpenProjectModal} users={users} tasks={tasks} hourlog={hourlog}/>}
                         </div>
                     </div>
                 </div>
