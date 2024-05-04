@@ -102,7 +102,6 @@ function EditProjectModal(props){
             setIsFilled(false);
         }
     };
-    console.log(props.employees);
     var inputLabelClassName="flex flex-row text-sm";
     return props.isOpen&&(
         <>
@@ -294,6 +293,7 @@ function EditProjectModal(props){
                                 type="button" 
                                 onClick={(e)=>{
                                     props.setEmployees([]);
+                                    props.setOpenEmpModal(false);
                                     props.closeModal(false);
                                     props.setProject(null);
                                 }}

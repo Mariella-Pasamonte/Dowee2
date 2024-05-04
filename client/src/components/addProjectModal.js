@@ -79,7 +79,7 @@ function AddProjectModal(props){
     function closeMainModal(){
         props.closeModal(false);
         props.setOpenEmpModal(false);
-        props.setEmployees(null);
+        props.setEmployees([]);
     }
 
     function addProject(){
