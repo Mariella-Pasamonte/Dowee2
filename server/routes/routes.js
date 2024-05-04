@@ -158,11 +158,59 @@ router.post("/home", async (req, res) =>{
       const id = req.body.deleteProject.id;
 
       console.log(id);
-
+      const hourlog = await db.query(
+        "DELETE FROM hourlog WHERE projectid = $1",
+        [id]
+      )
+      const task = await db.query(
+        "DELETE FROM tasks WHERE projectid = $1",
+        [id]
+      )
       const result = await db.query(
-        "ALTER TABLE tasks DROP CONSTRAINT IF EXISTS tasks_projectId_fkey, ADD CONSTRAINT tasks_projectId_fkey FOREIGN KEY (projectId) REFERENCES projects (id) ON DELETE CASCADE; ALTER TABLE hourlog DROP CONSTRAINT IF EXISTS hourlog_taskId_fkey, ADD CONSTRAINT hourlog_taskId_fkey FOREIGN KEY (taskId) REFERENCES tasks (id) ON DELETE CASCADE; DELETE FROM projects WHERE id = $1;",
+        "DELETE FROM projects WHERE id = $1",
         [id]
       );
+
+    } else if (func === 'addNewTask'){
+      const projectid = req.body.newTask.projectid;
+      const name = req.body.newTask.name;
+      const paymenttype = req.body.newTask.paymenttype;
+      const amount = req.body.newTask.amount;
+      const employeelist = req.body.newTask.employeelist;
+      const description = req.body.newTask.desc;
+      const status = req.body.newTask.status;
+
+      const result = await db.query(
+        "INSERT INTO tasks (projectid, name, paymenttype, amount, employeelist, description, status) VALUES ($1, $2, $3, $4, $5, $6, $7)",
+        [projectid, name, paymenttype, amount, employeelist, description, status]
+      );
+
+    } else if (func === 'addNewHourlog'){
+      const projectid = req.body.newHourlog.projectid;
+      const taskname = req.body.newHourlog.taskname;
+      const employeeassigned = req.body.newHourlog.employeeassigned;
+      const seconds = req.body.newHourlog.seconds;
+      const minutes = req.body.newHourlog.minutes;
+      const hours = req.body.newHourlog.hours;
+      const starttimer = req.body.newHourlog.starttimer;
+      const isrunning = req.body.newHourlog.isRunning;
+      const pendingamount = req.body.newHourlog.pendingamount;
+
+      const result = await db.query(
+        "INSERT INTO hourlog (projectid, taskname, employeeassigned, seconds, minutes, hours, starttimer, isrunning, pendingamount) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)",
+        [projectid, taskname, employeeassigned, seconds, minutes, hours, starttimer, isrunning, pendingamount]
+      );
+    } else if (func === 'runTimer'){
+      const id = req.body.time.id;
+      const starttimer = req.body.time.starttimer;
+      const hours = req.body.time.hours;
+      const minutes = req.body.time.minutes;
+      const seconds = req.body.time.seconds;
+      const result = await db.query(
+        "UPDATE hourlog SET id = $1, starttimer = $2, hours = $3, minutes = $4, seconds = $5 WHERE id = $1",
+        [id, starttimer, hours, minutes, seconds]
+      )
+      console.log("result:", result);
     }
   } catch(error) {
     console.error("Error: ", error);
@@ -180,7 +228,7 @@ router.get("/home", async (req, res) => {
     const tasks = await db.query("SELECT t.* FROM tasks t JOIN projects p ON t.projectid = p.id WHERE p.userid = $1 OR EXISTS (SELECT 1 FROM unnest(t.employeelist) AS emp WHERE emp = $1)",[
       userId,
     ]); 
-    const hourlog = await db.query("SELECT h.* FROM hourlog h INNER JOIN tasks t ON h.taskid = t.id INNER JOIN projects p ON t.projectId = p.id WHERE (p.userid = $1) OR (h.employeeassigned = $1)",[
+    const hourlog = await db.query("SELECT h.* FROM hourlog h INNER JOIN tasks t ON h.taskname = t.name INNER JOIN projects p ON t.projectid = p.id WHERE (p.userid = $1) OR (h.employeeassigned = $1)",[
       userId,
     ]);
 
