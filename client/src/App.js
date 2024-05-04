@@ -7,6 +7,9 @@ import "./App.css";
 function App() {
   const [loggedInUser, setLoggedInUser] = useState(false);
   
+  window.onload = function() {
+    document.getElementById("loading-animation").style.display = "none";
+  };
   return (
     <BrowserRouter>
       <Routes>
