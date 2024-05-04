@@ -18,6 +18,7 @@ function ErrorModal(props){
                         onClick={(e)=>{
                             props.closeModal(false);
                             props.delete()
+                            window.location.reload(true);
                         }}
                         className='px-3 py-2 mr-4 text-sm rounded-3xl bg-red-500'
                     > 
