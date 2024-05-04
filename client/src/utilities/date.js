@@ -31,14 +31,12 @@ export function convertToBirthDate(newDate, isValidDateError, calendarDate, birt
     var today = new Date();
     var parts = newDate.split('/');
     var emptyParts = ['__','__','____'];
-    console.log("newDate:", newDate);
+
     if (parts.length===3){
-        parts = newDate;
         const [month, day, year] = parts;
         if(month!==emptyParts[0]&&day!==emptyParts[1]&&year!==emptyParts[2])
         {
             date = new Date(`${month}/${day}/${year}`);
-            console.log('date:',date);
             if(date<today)
             {
                 birthday(newDate);

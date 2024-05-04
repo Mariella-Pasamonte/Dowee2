@@ -13,11 +13,11 @@ const Register = () => {
   const [emailAddress, setEmailAddress] = useState('');
   const [gender, setGender] = useState('');
   const [birthday, setBirthday] = useState('');
-  const [calendarDate, setCalendarDate] = useState(new Date());
+  const today = new Date();
+  const [calendarDate, setCalendarDate] = useState(today);
   const [contactNum, setContactNum] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [userDetails, setUserDetails] = useState([]);
   const [showCalendar, setShowCalendar]= useState(false);
   const [isFilled, setIsFilled] = useState(true);
   const [isFilledError, setIsFilledError] = useState(false);
@@ -25,14 +25,18 @@ const Register = () => {
   const [existingUser, setExistingUser] = useState(false);
   const [existingUserError, setExistingUserError] = useState(false);
   const navigate = useNavigate();
-  const today = new Date();
   const calendarDivRef = useRef(null);
-  var temp = '';
-  var emptyParts = ['__','__','____']
+  const inputCalendarDivRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (calendarDivRef.current && !calendarDivRef.current.contains(e.target)) {
+      const calendarDivRect = calendarDivRef.current.getBoundingClientRect();
+      if (inputCalendarDivRef.current && (!inputCalendarDivRef.current.contains(e.target)
+      &&(e.clientX < calendarDivRect.left ||
+      e.clientX > calendarDivRect.right ||
+      e.clientY < calendarDivRect.top ||
+      e.clientY > calendarDivRect.bottom)
+      )) {
         setShowCalendar(false);
       }
     };
@@ -40,20 +44,10 @@ const Register = () => {
     return () => {
       document.removeEventListener('click', handleClickOutside);
     };
-  }, []);
+  }, [calendarDivRef,setShowCalendar]);
 
   const getBirthday = (date) =>{
     setBirthday(date);
-    setShowCalendar(false);
-  }
-
-  const clickedCalendarDate = (e) =>{
-    temp = e;
-    
-    convertToBirthDate(getClickedDate(e), setIsValidDateError, setCalendarDate, setBirthday, setShowCalendar);
-    if (temp!==''){ 
-      setShowCalendar(false);
-    }
   }
 
   const isDisabled = useCallback((date) => {
@@ -108,7 +102,7 @@ const Register = () => {
     <>
       <div className='h-full w-full'>
         <div className="flex flex-col justify-center h-dvh bg-white/20">
-          <div className="relative flex flex-row justify-center">
+          <div className="z-10 relative flex flex-row justify-center">
             <ErrorToast id="RegisterFillError" isError={isFilledError} setIsError={setIsFilledError}>
               <div className="ms-3 text-sm font-normal">
                 Please fill out all required fields.
@@ -199,33 +193,38 @@ const Register = () => {
                   </div>
                 </div>
                 <div className="flex flex-row justify-between">
-                  <div className="w-1/2">
-                    <InputLabel id="RegisterBirthdayLabel" isFilled={isFilled?true:birthday!==''?true:false} classname={inputLabelClassName}>
+                  <div className="flex flex-col w-1/2">
+                    <InputLabel 
+                      id="RegisterBirthdayLabel" 
+                      isFilled={isFilled?true:birthday!==''?true:false} 
+                      classname={inputLabelClassName}
+                    >
                       <p className="font-Montserrat text-base">Birthday</p>
                     </InputLabel>
-                    <div className="relative">
+                    <div ref={inputCalendarDivRef} className=" relative">
                       <InputMask
                         id="birthday"
                         name="birthday"
                         type="text"
                         mask="99/99/9999"
                         value={birthday}
-                        onClick={()=>setShowCalendar(true)}
+                        onClick={(e)=>{
+                          setShowCalendar(true);
+                        }}
                         onChange={(e)=>getBirthday(e.target.value)}
                         placeholder="Ex. mm/dd/yyyy"
                         className="p-2 placeholder-white/30 font-Montserrat border-0 rounded-lg bg-opacity-10 bg-white w-full text-base block focus:outline-none focus:ring-0 focus:text-white dark:text-white"
                       />
-                      { showCalendar===true &&
-                        <div className="absolute">
-                          <Calendar
-                            useDarkMode
-                            isDisabled={isDisabled}
-                            value={calendarDate}
-                            onChange={(e)=>clickedCalendarDate(e)}
-                            className="border-[1px] bg-[#1B333A]"
-                          />
-                        </div>
-                      } 
+                      <div ref={calendarDivRef} className={`z-20 h-fit absolute ${showCalendar?'inline':'hidden'}`}>
+                        <Calendar
+                          useDarkMode
+                          value={calendarDate}
+                          onChange={(e)=>convertToBirthDate(getClickedDate(e), setIsValidDateError, setCalendarDate, setBirthday, setShowCalendar)}
+                          onClick={(e)=>console.log("calendar:", calendarDivRef.current && !calendarDivRef.current.contains(e.target))}
+                          className='border-[1px] h-fit bg-[#1B333A]'
+                          isDisabled={isDisabled}
+                        />
+                      </div>
                     </div>
                   </div>
                   <div className="w-1/2 ml-2">
