@@ -4,7 +4,7 @@ import {
     ErrorToast
 } from "../components";
 
-function TaskModal(props){
+function EditTaskModal(props){
     const [taskTitle, setTaskTitle] = useState(props.task.name);
     const [paymentType, setPaymentType] = useState(props.task.paymenttype)
     const [taskDescription, setTaskDescription] = useState(props.task.description);
@@ -22,6 +22,7 @@ function TaskModal(props){
     const amountCheck = checkEmptyAmount(amount);
 
     useEffect(() => {
+        console.log(props.task);
         if (!props.isOpen) {
             setTaskTitle(props.task.name);
             setPaymentType(props.task.paymenttype);
@@ -258,4 +259,4 @@ function TaskModal(props){
     )
 }
 
-export default TaskModal;
+export default EditTaskModal;
