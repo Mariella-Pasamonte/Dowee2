@@ -5,6 +5,7 @@ import Invoice from "./invoice";
 import {
     AddTaskModal,
     EditTaskModal,
+    TaskModal,
     EditEmployeesModal
 } from "../components";
 import axios from 'axios';
@@ -12,6 +13,7 @@ import axios from 'axios';
 function Project(props){
     const [openAddTaskModal, setOpenAddTaskModal] = useState(false);
     const [openEditTaskModal, setOpenEditTaskModal] = useState(false);
+    const [openTaskModal, setOpenTaskModal] = useState(false);
     const [projectButtonsFocus, setProjectButtonsFocus] = useState(0);
     const [taskOrInvoiceFocus, setTaskOrInvoiceFocus] = useState(0);
     const [employeeList, setEmployeeList] = useState([]);
@@ -19,6 +21,7 @@ function Project(props){
     const [invoices, setInvoices] = useState(null);
     const [edit, setEdit] = useState(false);
     const [editedTask, setEditedTask] = useState(null);
+    const [task, setTask] = useState(null);
     const users = props.project.employees.map((emp)=>props.users.find(user=>user.id===emp));
     let userId =  parseInt(localStorage.getItem('userId'));
 
@@ -211,9 +214,10 @@ function Project(props){
                     <div className='w-72'>
                         <AddTaskModal isOpen={openAddTaskModal} openEmployeesModal={setOpenEmployeesModal} closeModal={setOpenAddTaskModal} addNewTasks={addNewTask} tasks={props.tasks} projectId={props.project.id} employees={employeeList} setEmployees={setEmployeeList} users={props.users}/>
                         {editedTask&&<EditTaskModal isOpen={openEditTaskModal} openEmployeesModal={setOpenEmployeesModal} closeModal={setOpenEditTaskModal} editTask={editTask} task={editedTask} setTask={setEditedTask} projectId={props.project.id} employees={employeeList} setEmployees={setEmployeeList} users={props.users}/>}
+                        {task&&<TaskModal isOpen={openTaskModal} closeModal={setOpenTaskModal} task={task} setTask={setTask} users={props.users}/>}
                     </div>
                     <div>
-                        {taskOrInvoiceFocus === 0 ? <Task tasks={props.tasks} projectId={props.project.id} userId={props.project.userid} users={props.users} hourlog={props.hourlog} edit={edit} setEdit={setEdit} setEditedTask={setEditedTask} setOpenEditTaskModal={setOpenEditTaskModal} setEmployees={setEmployeeList}/>:<Invoice invoices={invoices} projectId={props.project.id} />}
+                        {taskOrInvoiceFocus === 0 ? <Task tasks={props.tasks} projectId={props.project.id} userId={props.project.userid} users={props.users} hourlog={props.hourlog} edit={edit} setEdit={setEdit} setEditedTask={setEditedTask} setOpenEditTaskModal={setOpenEditTaskModal} setEmployees={setEmployeeList} setOpenTaskModal={setOpenTaskModal} setTask={setTask}/>:<Invoice invoices={invoices} projectId={props.project.id} />}
                     </div>
                 </div>
             </div>
