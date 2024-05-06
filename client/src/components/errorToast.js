@@ -1,6 +1,6 @@
 function ErrorToast({id, isError, setIsError, children }) {
-    return isError? (
-        <div id={id} className="absolute inset-y-0 flex items-center w-fit h-fit max-w-xs p-2 text-gray-500 bg-red-300 rounded-lg shadow dark:text-gray-400 dark:bg-gray-800" role="alert">
+    return isError&&(
+        <div id={id} className="z-20 absolute inset-y-0 flex items-center w-fit h-fit max-w-xs p-2 text-gray-500 bg-red-300 rounded-lg shadow dark:text-gray-400 dark:bg-gray-800" role="alert">
             <div className="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-red-500 rounded-lg dark:bg-blue-800 dark:text-blue-200">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-6 h-6">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
@@ -14,8 +14,6 @@ function ErrorToast({id, isError, setIsError, children }) {
                 </svg>
             </button>
         </div>
-    ):(
-        null   
     )
 };
 

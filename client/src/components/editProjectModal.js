@@ -256,7 +256,6 @@ function EditProjectModal(props){
                                 value={projDescription}
                                 onChange={(e)=>{
                                     setProjDescription(e.target.value);
-                                    console.log(projDescription);
                                 }}
                                 type="text"
                                 placeholder="Add Description..."

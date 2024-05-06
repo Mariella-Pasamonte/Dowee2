@@ -65,7 +65,6 @@ const Login = (props) => {
       }
     })
     .then((response)=>{
-      console.log('response client:', response.data.status);
       if (response.data.status === true) {
         props.loggedInUser(true);
         navigate("/home");
@@ -73,7 +72,7 @@ const Login = (props) => {
     }).catch((error) =>{
       console.log(error);
     });
-  },[])
+  },[navigate,props])
 
   var inputLabelClassName = "flex flex-row mt-4 xl:mt-7";
   return (

@@ -8,8 +8,8 @@ import axios from "axios";
 
 
 const Home = () => {
-    const [project, setProject] = useState(null);
     const [projList, setProjList] = useState(null);
+    const [project, setProject] = useState(null);
     const [users, setUsers] = useState(null);
     const [tasks, setTasks] = useState(null);
     const [hourlog, setHourlog] = useState(null);
@@ -21,16 +21,15 @@ const Home = () => {
 
     useEffect(() => {
         const userId = localStorage.getItem('userId');
-        setProjList(projList);
-        setProject(project);
-        setTasks(tasks);
-        axios.get('http://localhost:5000/home', {
+        axios
+        .get('http://localhost:5000/home', {
           headers:{ 
-            userId: userId,
+            userId: userId
           }
         })
         .then((response)=>{
             setProjList(response.data.projects);
+            setProject(response.data.projects.find((proj)=>proj.id===parseInt(localStorage.getItem('projectId'))));
             setUsers(response.data.users);
             setTasks(response.data.tasks);
             setHourlog(response.data.hourlog);
@@ -38,7 +37,8 @@ const Home = () => {
         .catch((error) =>{
             console.log(error);
         });
-    },[project])
+    },[project, setProjList, setUsers, setTasks, setHourlog, setProject])
+
     return(
         <div className='static flex flex-col h-dvh'>
             <div className='relative my-3 ml-3 flex flex-col h-full justify-center'>

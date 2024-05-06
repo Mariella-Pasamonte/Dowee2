@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import React, { useState } from "react";
 import { Login, Home, Register } from "./pages";
-import { AddProjectModal } from "./components";
 import "./App.css";
 
 function App() {
