@@ -3,7 +3,7 @@ import {
     AddProjectModal,
     EditEmployeesModal, 
     EditProjectModal,
-    ErrorModal,
+    WarningModal,
     Tooltips
 } from '../components';
 import axios from 'axios';
@@ -66,7 +66,6 @@ function Sidebar(props){
     }
 
     function editedProject(editedProject){
-        console.log("the finalize edited project:",editedProject);
         axios
         .post("http://localhost:5000/home", {
             headers:{
@@ -84,7 +83,6 @@ function Sidebar(props){
     }
 
     function deletingProject(){
-        console.log("delete project:",deleteProject);
         axios
         .post("http://localhost:5000/home", {
             headers:{
@@ -103,6 +101,7 @@ function Sidebar(props){
         setProjectFocus(projectId);
         const proj = props.projList.find((proj) => proj.id === projectId);
         props.setProject(proj);
+        localStorage.setItem("projectId", projectId);
     };
 
     const handleOpenDropdown = (projectId) => {
@@ -111,15 +110,15 @@ function Sidebar(props){
     };
 
     function clickEdit(project){
-        console.log('editProject:',project);
         setOpenDropdown(false);
         setOpenEditProjectModal(true);
         setEditProject(project)
     }
     
     useEffect(() => {
-        setEditProject(editProject);
-    },[])
+        let projId = parseInt(localStorage.getItem('projectId'));
+        setProjectFocus(projId);
+    },[setProjectFocus])
     return(
         <>
             <div className="h-full w-full">
@@ -171,7 +170,7 @@ function Sidebar(props){
                         <AddProjectModal isOpen={openAddProjectModal} closeModal={setOpenAddProjectModal} setOpenEmpModal={setOpenAddEmployeesModal} addNewProject={addNewProject} projLength={projLength} employees={employees} setEmployees={setEmployees} users={props.users}/>                        
                         <EditEmployeesModal isOpen={openAddEmployeesModal} closeModal={setOpenAddEmployeesModal} employees={employees} getEmployees={getEmployees} removeEmployee={removeEmployee} users={props.users}/>
                         {editProject&&<EditProjectModal isOpen={openEditProjectModal} closeModal={setOpenEditProjectModal} setOpenEmpModal={setOpenAddEmployeesModal} editedProject={editedProject} project={editProject} setProject={setEditProject} employees={employees} setEmployees={setEmployees} users={props.users}/>}
-                        <ErrorModal isOpen={openDeleteErrorModal} closeModal={setOpenDeleteErrorModal} delete={deletingProject}>
+                        <WarningModal isOpen={openDeleteErrorModal} closeModal={setOpenDeleteErrorModal} delete={deletingProject}>
                             <div className='text-center'>
                                 <div className='text-xl font-bold'>
                                     Are you sure?
@@ -180,7 +179,7 @@ function Sidebar(props){
                                     You will not be able to recover this project!
                                 </div>
                             </div>
-                        </ErrorModal>
+                        </WarningModal>
                         <div className='mt-2'>
                             <hr className="w-full border-[#A4C9C5]"></hr>
                         </div>

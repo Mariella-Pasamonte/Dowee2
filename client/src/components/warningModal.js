@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useRef, useCallback} from "react";
 
-function ErrorModal(props){
+function WarningModal(props){
     return props.isOpen&&(
         <div data-modal-backdrop='static' className='z-10 absolute w-[99%] h-fit flex flex-row justify-center'>
             <div className='h-fit w-80 bg-[#5C6E75]/50 px-3 py-4 border-[1px] border-white/50 rounded-xl backdrop-blur-md'>
@@ -39,4 +39,4 @@ function ErrorModal(props){
     )
 }
 
-export default ErrorModal;
+export default WarningModal;
