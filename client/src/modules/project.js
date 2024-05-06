@@ -1,21 +1,26 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState} from 'react';
 //import {Link} from "react-router-dom";
 import Task from "./task";
 import Invoice from "./invoice";
 import {
-    TaskModal,
+    AddTaskModal,
+    EditTaskModal,
     EditEmployeesModal
 } from "../components";
 import axios from 'axios';
 
 function Project(props){
-    const [openTaskModal, setOpenTaskModal] = useState(false);
+    const [openAddTaskModal, setOpenAddTaskModal] = useState(false);
+    const [openEditTaskModal, setOpenEditTaskModal] = useState(false);
     const [projectButtonsFocus, setProjectButtonsFocus] = useState(0);
     const [taskOrInvoiceFocus, setTaskOrInvoiceFocus] = useState(0);
     const [employeeList, setEmployeeList] = useState([]);
     const [openEmployeesModal, setOpenEmployeesModal] = useState(false);
     const [invoices, setInvoices] = useState(null);
+    const [edit, setEdit] = useState(false);
+    const [editedTask, setEditedTask] = useState(null);
     const users = props.project.employees.map((emp)=>props.users.find(user=>user.id===emp));
+    let userId =  parseInt(localStorage.getItem('userId'));
 
     const getEmployees = (newEmployee) =>{
         if(employeeList.length>0) {
@@ -36,9 +41,7 @@ function Project(props){
     }
 
     function addNewTask(newTask){
-        console.log("Project newTask:", newTask);
-        axios
-        .post("http://localhost:5000/home", {
+        axios.post("http://localhost:5000/home", {
             headers:{
                 function: 'addNewTask'
             },newTask
@@ -50,37 +53,20 @@ function Project(props){
             console.log("Error: ", error);
         }); 
         addNewInvoice(newTask);
-        console.log(props.tasks);
-        addNewHourlog(newTask);
     }
 
-    function addNewHourlog(newTask){
-        newTask.employeelist.map((emp)=>{
-            let newHourlog ={
-                projectid: newTask.projectid,
-                taskname: newTask.name,
-                employeeassigned: emp,
-                seconds:0,
-                minutes:0,
-                hours:0,
-                starttimer: false,
-                isRunning:false,
-                pendingamount: 0.00
-            }
-
-            axios
-            .post("http://localhost:5000/home", {
-                headers:{
-                    function: 'addNewHourlog'
-                },newHourlog
-            })
-            .then((res) => {
-                console.log(newHourlog);
-            })
-            .catch((error) => {
-                console.log("Error: ", error);
-            }); 
+    function editTask(editedTask){
+        axios.post("http://localhost:5000/home", {
+            headers:{
+                function: 'editTask'
+            },editedTask
         })
+        .then((res) => {
+            console.log(editedTask);
+        })
+        .catch((error) => {
+            console.log("Error: ", error);
+        }); 
     }
 
     function addNewInvoice(newInvoice){
@@ -100,13 +86,12 @@ function Project(props){
 
     const onClickCreateTask = () =>{
         setTaskOrInvoiceFocus(0);
-        setOpenTaskModal(true);
+        setOpenAddTaskModal(true);
     }
 
     const onClickInvoice = () =>{
         setTaskOrInvoiceFocus(1);
     }
-
     return(
         <>
             <div className="h-full w-full px-5 py-3" >
@@ -131,19 +116,48 @@ function Project(props){
                             </div>
                             <hr className="w-full h-1 bg-[#8381BB] border-0 rounded dark:bg-gray-700"/>
                         </div>
-                        <div className='flex flex-row text-[#AEAEE3] font-thin w-64 mb-3 pr-2 justify-between'>
-                            <div className="relative flex flex-col justify-center h-full">
-                                <button key={2} onClick={() => setProjectButtonsFocus(2)} className={`p-1 pr-3 pl-8 rounded-md ${projectButtonsFocus === 2 ? 'bg-[#4A4999] text-[#D5D5FF]' : 'bg-[#292944]'} `}>
-                                    <div className="absolute -inset-x-0 -inset-y-0 top-1/4 left-[12%] flex pointer-events-none">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-5 h-5">
-                                            <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
-                                        </svg>
-                                    </div>
-                                    Edit
-                                </button>
-                            </div>
-                            <div className="relative flex flex-col justify-center h-full">
-                                <button key={1} onClick={() => setProjectButtonsFocus(1)} className={`p-1 pr-3 pl-8 rounded-md ${projectButtonsFocus === 1 ? 'bg-[#4A4999] text-[#D5D5FF]' : 'bg-[#292944]'} `}>
+                        <div className='flex flex-row text-[#AEAEE3] justify-end font-thin w-64 mb-3 pr-2'>
+                            {props.project.userid===userId&&
+                                <div className="relative flex flex-col justify-center h-full">
+                                    {edit?
+                                        <button 
+                                            key={2} 
+                                            onClick={() => {
+                                                setEdit(false);
+                                                setProjectButtonsFocus(2);
+                                            }} 
+                                            className={`p-1 px-3 rounded-md ${projectButtonsFocus === 2 ? 'bg-[#4A4999] text-[#D5D5FF]' : 'bg-[#292944]'} `}
+                                        >
+                                            Cancel
+                                        </button>
+                                    :
+                                        <button 
+                                            key={2} 
+                                            onClick={() => {
+                                                setEdit(true);
+                                                setProjectButtonsFocus(2);
+                                            }} 
+                                            className={`p-1 pr-3 pl-8 rounded-md ${projectButtonsFocus === 2 ? 'bg-[#4A4999] text-[#D5D5FF]' : 'bg-[#292944]'} `}
+                                        >
+                                            <div className="absolute -inset-x-0 -inset-y-0 top-1/4 left-[12%] flex pointer-events-none">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-5 h-5">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                                                </svg>
+                                            </div>
+                                            Edit
+                                        </button>
+                                    }
+                                </div>
+                            }
+                            <div className="relative ml-2 flex flex-col justify-center h-full">
+                                <button 
+                                    key={1} 
+                                    onClick={() => {
+                                        setEdit(false);
+                                        setProjectButtonsFocus(1);
+                                    }} 
+                                    className={`p-1 pr-3 pl-8 rounded-md ${projectButtonsFocus === 1 ? 'bg-[#4A4999] text-[#D5D5FF]' : 'bg-[#292944]'} `}
+                                >
                                     <div className="absolute -inset-x-0 -inset-y-0 top-1/4 left-[10%] flex pointer-events-none">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-5 h-5">
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" />
@@ -152,8 +166,15 @@ function Project(props){
                                     Star
                                 </button>
                             </div>
-                            <div className="relative flex flex-col justify-center h-full">
-                                <button key={0} onClick={() => setProjectButtonsFocus(0)} className={`p-1 pr-3 pl-8 rounded-md ${projectButtonsFocus === 0 ? 'bg-[#4A4999] text-[#D5D5FF]' : 'bg-[#292944]'} `}>
+                            <div className="relative ml-2 flex flex-col justify-center h-full">
+                                <button 
+                                    key={0} 
+                                    onClick={() => {
+                                        setEdit(false);
+                                        setProjectButtonsFocus(0);
+                                    }} 
+                                    className={`p-1 pr-3 pl-8 rounded-md ${projectButtonsFocus === 0 ? 'bg-[#4A4999] text-[#D5D5FF]' : 'bg-[#292944]'} `}
+                                >
                                     <div className="absolute -inset-x-0 -inset-y-0 top-1/4 left-[10%] flex pointer-events-none">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-5 h-5">
                                             <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
@@ -188,10 +209,11 @@ function Project(props){
                         </div>
                     </div>
                     <div className='w-72'>
-                        <TaskModal isOpen={openTaskModal} openEmployeesModal={setOpenEmployeesModal} closeModal={setOpenTaskModal} addNewTasks={addNewTask} tasks={props.tasks} projectId={props.project.id} employees={employeeList} setEmployees={setEmployeeList} users={props.users}/>
+                        <AddTaskModal isOpen={openAddTaskModal} openEmployeesModal={setOpenEmployeesModal} closeModal={setOpenAddTaskModal} addNewTasks={addNewTask} tasks={props.tasks} projectId={props.project.id} employees={employeeList} setEmployees={setEmployeeList} users={props.users}/>
+                        {editedTask&&<EditTaskModal isOpen={openEditTaskModal} openEmployeesModal={setOpenEmployeesModal} closeModal={setOpenEditTaskModal} editTask={editTask} task={editedTask} setTask={setEditedTask} projectId={props.project.id} employees={employeeList} setEmployees={setEmployeeList} users={props.users}/>}
                     </div>
                     <div>
-                        {taskOrInvoiceFocus === 0 ? <Task tasks={props.tasks} projectId={props.project.id} users={props.users} hourlog={props.hourlog} />:<Invoice invoices={invoices} projectId={props.project.id} />}
+                        {taskOrInvoiceFocus === 0 ? <Task tasks={props.tasks} projectId={props.project.id} userId={props.project.userid} users={props.users} hourlog={props.hourlog} edit={edit} setEdit={setEdit} setEditedTask={setEditedTask} setOpenEditTaskModal={setOpenEditTaskModal} setEmployees={setEmployeeList}/>:<Invoice invoices={invoices} projectId={props.project.id} />}
                     </div>
                 </div>
             </div>

@@ -21,6 +21,7 @@ function Sidebar(props){
     const [employees, setEmployees] = useState([]);
     const [openAddEmployeesModal, setOpenAddEmployeesModal] = useState(false);
     var projLength = (props.projList ? props.projList.length : 0)
+    let userId =  parseInt(localStorage.getItem('userId'));
 
     const toggleTooltipEnter = () => {
         setIsTooltipOpen(true);
@@ -220,48 +221,50 @@ function Sidebar(props){
                                                 </div>
                                                 <div className='ml-2 text-md font-Inter'> {project.name} </div>
                                             </div> 
-                                            <div className='relative'>
-                                                <div 
-                                                    data-tooltip-target={project.id} 
-                                                    data-tooltip-placement="bottom"
-                                                    onClick={()=>{
-                                                        handleOpenDropdown(project.id)
-                                                        setEditProject(null)
-                                                    }} 
-                                                >
-                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
-                                                    </svg>
+                                            {project.userid===userId&&
+                                                <div className='relative'>
+                                                    <div 
+                                                        data-tooltip-target={project.id} 
+                                                        data-tooltip-placement="bottom"
+                                                        onClick={()=>{
+                                                            handleOpenDropdown(project.id)
+                                                            setEditProject(null)
+                                                        }} 
+                                                    >
+                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                                                        </svg>
+                                                    </div>
+                                                    <Tooltips id={project.id} isOpen={dropdownId===project.id ? openDropdown : false}>
+                                                        <button 
+                                                            onClick={()=>{
+                                                                clickEdit(project);
+                                                                setEmployees(project.employees);
+                                                                setOpenDropdown(false);
+                                                            }} 
+                                                            className="flex flex-row z-20 w-24 px-4 border-b-[1px] border-[#A4C9C5] font-thin py-2 text-sm hover:bg-slate-500"
+                                                        >
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#ffffff" viewBox="0 0 256 256" className='mr-1'>
+                                                                <path d="M225.9,74.78,181.21,30.09a14,14,0,0,0-19.8,0L38.1,153.41a13.94,13.94,0,0,0-4.1,9.9V208a14,14,0,0,0,14,14H92.69a13.94,13.94,0,0,0,9.9-4.1L225.9,94.58a14,14,0,0,0,0-19.8ZM94.1,209.41a2,2,0,0,1-1.41.59H48a2,2,0,0,1-2-2V163.31a2,2,0,0,1,.59-1.41L136,72.48,183.51,120ZM217.41,86.1,192,111.51,144.49,64,169.9,38.58a2,2,0,0,1,2.83,0l44.68,44.69a2,2,0,0,1,0,2.83Z"></path>
+                                                            </svg>
+                                                            Edit
+                                                        </button> 
+                                                        <button 
+                                                            onClick={()=>{
+                                                                setOpenDeleteErrorModal(true);
+                                                                setDeleteProject(project);
+                                                                setOpenDropdown(false);
+                                                            }} 
+                                                            className="flex flex-row z-20 w-24 px-4 py-2 text-sm  hover:bg-slate-500"
+                                                        >
+                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-1">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                                            </svg>
+                                                            Delete
+                                                        </button> 
+                                                    </Tooltips> 
                                                 </div>
-                                                <Tooltips id={project.id} isOpen={dropdownId===project.id ? openDropdown : false}>
-                                                    <button 
-                                                        onClick={()=>{
-                                                            clickEdit(project);
-                                                            setEmployees(project.employees);
-                                                            setOpenDropdown(false);
-                                                        }} 
-                                                        className="flex flex-row z-20 w-24 px-4 border-b-[1px] border-[#A4C9C5] font-thin py-2 text-sm hover:bg-slate-500"
-                                                    >
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#ffffff" viewBox="0 0 256 256" className='mr-1'>
-                                                            <path d="M225.9,74.78,181.21,30.09a14,14,0,0,0-19.8,0L38.1,153.41a13.94,13.94,0,0,0-4.1,9.9V208a14,14,0,0,0,14,14H92.69a13.94,13.94,0,0,0,9.9-4.1L225.9,94.58a14,14,0,0,0,0-19.8ZM94.1,209.41a2,2,0,0,1-1.41.59H48a2,2,0,0,1-2-2V163.31a2,2,0,0,1,.59-1.41L136,72.48,183.51,120ZM217.41,86.1,192,111.51,144.49,64,169.9,38.58a2,2,0,0,1,2.83,0l44.68,44.69a2,2,0,0,1,0,2.83Z"></path>
-                                                        </svg>
-                                                        Edit
-                                                    </button> 
-                                                    <button 
-                                                        onClick={()=>{
-                                                            setOpenDeleteErrorModal(true);
-                                                            setDeleteProject(project);
-                                                            setOpenDropdown(false);
-                                                        }} 
-                                                        className="flex flex-row z-20 w-24 px-4 py-2 text-sm  hover:bg-slate-500"
-                                                    >
-                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-1">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                                                        </svg>
-                                                        Delete
-                                                    </button> 
-                                                </Tooltips> 
-                                            </div>
+                                            }
                                         </button>
                                     )}
                                 </div>
