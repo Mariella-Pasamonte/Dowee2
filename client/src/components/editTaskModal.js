@@ -34,9 +34,20 @@ function TaskModal(props){
     }, [props.isOpen, amount]);
 
     function getAmount(e, index){
+        console.log(amount);
         const updatedAmount = [...amount];
         updatedAmount[index] = e.target.value; 
         setAmount(updatedAmount);
+    }
+
+    function clearAmount( ){
+        const clearedAmount = [...amount];
+        if(amount.length>1){
+            for(let i=0; i<amount.length; i++){
+                clearedAmount[i] = '';
+                setAmount(clearedAmount);
+            }  
+        }
     }
 
     function adjustArrayLength(targetArray, employeeArray) {
@@ -58,7 +69,6 @@ function TaskModal(props){
     }
 
     function editTask(){
-
         if(taskTitle !== ''&& emps.length!==0 && !amountCheck && taskDescription!==''){
             props.closeModal(false);
             props.setEmployees([]);
@@ -73,6 +83,7 @@ function TaskModal(props){
                     status: status
                 }
             )
+            props.setTask(null);
         }else{
             setIsFilled(false);
         }
@@ -108,7 +119,10 @@ function TaskModal(props){
                                 <input 
                                     type="checkbox" 
                                     value={paymentType} 
-                                    onChange={()=>setPaymentType((prev) => !prev)} 
+                                    onChange={()=>{
+                                        setPaymentType((prev) => !prev);
+                                        setAmount([]);
+                                    }}
                                     className="sr-only peer"
                                 />
                                 <div className="relative w-11 h-6 bg-transparent border-[0.5px] p-3 border-blue-400 peer-focus:outline-none peer-focus:ring-none dark:peer-focus:ring-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 peer-checked:border-blue-600 peer-checked:pr-8"></div>
@@ -129,10 +143,11 @@ function TaskModal(props){
                                         onClick={()=>{
                                             props.openEmployeesModal(true);
                                             props.setEmployees(emps);
+                                            clearAmount();
                                         }}
                                         className={`bg-[#8AAEBC]/50 px-2 h-fit rounded-lg text-[10px] ml-1`}
                                     >
-                                        Add
+                                        {emps.length>0?'Edit':'Add'}
                                     </button>
                                 </div>
                                 <div className="flex flex-row w-1/2">
