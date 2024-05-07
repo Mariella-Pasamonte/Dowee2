@@ -78,10 +78,6 @@ function EditProjectModal(props){
 
     function newEditProject(){
         if(projTitle !== '' && clientName !== '' && emailAddress !== '' && contactNum !== '' && props.employees.length !== 0){
-            setIsFilled(true);
-            props.closeModal(false);
-            props.setEmployees(null);
-            props.setProject(null);
             props.editedProject(
                 {
                     id: props.project.id,
@@ -98,6 +94,10 @@ function EditProjectModal(props){
                     employees: props.employees,
                 }
             )
+            setIsFilled(true);
+            props.closeModal(false);
+            props.setEmployees([]);
+            props.setProject(null);
         } else {
             setIsFilled(false);
         }

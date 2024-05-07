@@ -85,9 +85,6 @@ function AddProjectModal(props){
     function addProject(){
         if(projTitle !== '' && clientName !== '' && emailAddress !== '' && contactNum !== '' && props.employees.length !== 0){
             setIsFilled(true);
-            props.closeModal(false);
-            props.setOpenEmpModal(false);
-            props.setEmployees([]);
             props.addNewProject(
                 {
                     userId: localStorage.getItem('userId'),
@@ -101,6 +98,9 @@ function AddProjectModal(props){
                     employees: props.employees,
                 }
             )
+            props.closeModal(false);
+            props.setOpenEmpModal(false);
+            props.setEmployees([]);
         } else{
             setIsFilled(false);
         }

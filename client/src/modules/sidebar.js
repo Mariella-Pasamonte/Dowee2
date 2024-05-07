@@ -11,15 +11,16 @@ import axios from 'axios';
 function Sidebar(props){
     const [openAddProjectModal, setOpenAddProjectModal] = useState(false);
     const [openEditProjectModal, setOpenEditProjectModal] = useState(false);
-    const [openDeleteErrorModal, setOpenDeleteErrorModal] = useState(false);
+    const [openDeleteWarningModal, setOpenDeleteWarningModal] = useState(false);
+    const [openAddEmployeesModal, setOpenAddEmployeesModal] = useState(false);
+    const [openDropdown, setOpenDropdown] = useState(false);
     const [editProject, setEditProject] = useState(null);
     const [deleteProject, setDeleteProject] = useState(null);
     const [isTooltipOpen, setIsTooltipOpen] = useState(false);
     const [projectFocus, setProjectFocus] = useState(null);
-    const [openDropdown, setOpenDropdown] = useState(false);
     const [dropdownId, setDropdownId] = useState(null);
     const [employees, setEmployees] = useState([]);
-    const [openAddEmployeesModal, setOpenAddEmployeesModal] = useState(false);
+    
     var projLength = (props.projList ? props.projList.length : 0)
     let userId =  parseInt(localStorage.getItem('userId'));
 
@@ -62,8 +63,9 @@ function Sidebar(props){
         .catch((error) => {
             console.log("Error: ", error);
         }); 
-        props.setProject(newProject) 
-        setProjectFocus(newProject.id)
+        props.setProject(newProject);
+        setProjectFocus(newProject.id);
+        props.fetchData();
     }
 
     function editedProject(editedProject){
@@ -79,11 +81,12 @@ function Sidebar(props){
         .catch((error) => {
             console.log("Error: ", error);
         }); 
-        props.setProject(editedProject) 
-        setProjectFocus(editedProject.id)
+        props.setProject(editedProject); 
+        setProjectFocus(editedProject.id);
+        props.fetchData();
     }
 
-    function deletingProject(){
+    function deletingProject(deleteProject){
         axios
         .post("http://localhost:5000/home", {
             headers:{
@@ -95,7 +98,10 @@ function Sidebar(props){
         })
         .catch((error) => {
             console.log("Error: ", error);
-        }); 
+        });
+        props.setProject(null); 
+        setProjectFocus(null);
+        props.fetchData();
     }
 
     const handleButtonClick = (projectId) => {
@@ -171,7 +177,7 @@ function Sidebar(props){
                         <AddProjectModal isOpen={openAddProjectModal} closeModal={setOpenAddProjectModal} setOpenEmpModal={setOpenAddEmployeesModal} addNewProject={addNewProject} projLength={projLength} employees={employees} setEmployees={setEmployees} users={props.users}/>                        
                         <EditEmployeesModal isOpen={openAddEmployeesModal} closeModal={setOpenAddEmployeesModal} employees={employees} getEmployees={getEmployees} removeEmployee={removeEmployee} users={props.users}/>
                         {editProject&&<EditProjectModal isOpen={openEditProjectModal} closeModal={setOpenEditProjectModal} setOpenEmpModal={setOpenAddEmployeesModal} editedProject={editedProject} project={editProject} setProject={setEditProject} employees={employees} setEmployees={setEmployees} users={props.users}/>}
-                        <WarningModal isOpen={openDeleteErrorModal} closeModal={setOpenDeleteErrorModal} delete={deletingProject}>
+                        <WarningModal isOpen={openDeleteWarningModal} closeModal={setOpenDeleteWarningModal} delete={deletingProject} deleteObject={deleteProject}>
                             <div className='text-center'>
                                 <div className='text-xl font-bold'>
                                     Are you sure?
@@ -251,7 +257,7 @@ function Sidebar(props){
                                                         </button> 
                                                         <button 
                                                             onClick={()=>{
-                                                                setOpenDeleteErrorModal(true);
+                                                                setOpenDeleteWarningModal(true);
                                                                 setDeleteProject(project);
                                                                 setOpenDropdown(false);
                                                             }} 
