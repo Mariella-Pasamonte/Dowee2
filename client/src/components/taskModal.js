@@ -3,6 +3,7 @@ import React, {useState, useEffect} from "react";
 function TaskModal(props){
     const [taskTitle, setTaskTitle] = useState(props.task.name);
     const [paymentType, setPaymentType] = useState(props.task.paymenttype)
+    const [priority, setPriority] = useState(props.task.priority);
     const [taskDescription, setTaskDescription] = useState(props.task.description);
     const [amount, setAmount] = useState(props.task.amount);
     const [status, setStatus] = useState(props.task.status);
@@ -17,6 +18,7 @@ function TaskModal(props){
         if (!props.isOpen) {
             setTaskTitle(props.task.name);
             setPaymentType(props.task.paymenttype);
+            setPriority(props.task.priority);
             setTaskDescription(props.task.description);
             setAmount(props.task.amount);
             setStatus(props.setStatus);
@@ -36,7 +38,7 @@ function TaskModal(props){
                                 type="button" 
                                 onClick={()=>{
                                     props.closeModal(false);
-                                    props.setTask({});
+                                    props.setTask(null);
                                 }}
                                 className='rounded-full p-1 hover:bg-white/20'
                             > 
@@ -46,12 +48,19 @@ function TaskModal(props){
                             </button>
                         </div>
                         <div className='flex flex-col text-sm mb-2'>
-                            <label
-                                id="taskTitleLabel"
-                                classname={inputLabelClassName}
-                            >
-                                Task name
-                            </label>
+                            <div className="flex flex-row">
+                                <label
+                                    id="taskTitleLabel"
+                                    classname={inputLabelClassName}
+                                >
+                                    Task name
+                                </label>
+                                <div className="flex ml-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill={`${priority===1?'#22E864':priority===2?'#F2FF62':'#FF6247'}`} viewBox="0 0 256 256">
+                                        <path d="M232,128A104,104,0,1,1,128,24,104.13,104.13,0,0,1,232,128Z"></path>
+                                    </svg>
+                                </div>
+                            </div>
                             <input 
                                 id="taskTitle"
                                 name="taskTitle"
@@ -146,7 +155,7 @@ function TaskModal(props){
                                 value={taskDescription}
                                 type="text"
                                 placeholder="Add Description..."
-                                className="resize-none block mt-1 rounded border-[1px] border-[#B2F6FF]/50 bg-inherit pt-1 pl-1 h-20"
+                                className="text-sm resize-none block mt-1 rounded border-[1px] border-[#B2F6FF]/50 bg-inherit pt-1 pl-1 h-20"
                                 disabled
                             />
                         </div>

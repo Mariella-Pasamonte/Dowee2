@@ -6,13 +6,15 @@ import {
     AddTaskModal,
     EditTaskModal,
     TaskModal,
-    EditEmployeesModal
+    EditEmployeesModal,
+    WarningModal
 } from "../components";
 import axios from 'axios';
 
 function Project(props){
     const [openAddTaskModal, setOpenAddTaskModal] = useState(false);
     const [openEditTaskModal, setOpenEditTaskModal] = useState(false);
+    const [openDeleteWarningModal, setOpenDeleteWarningModal] = useState(false);
     const [openTaskModal, setOpenTaskModal] = useState(false);
     const [projectButtonsFocus, setProjectButtonsFocus] = useState(0);
     const [taskOrInvoiceFocus, setTaskOrInvoiceFocus] = useState(0);
@@ -21,6 +23,8 @@ function Project(props){
     const [invoices, setInvoices] = useState(null);
     const [edit, setEdit] = useState(false);
     const [editedTask, setEditedTask] = useState(null);
+    
+    const [deletedTask, setDeletedTask] = useState(null);
     const [task, setTask] = useState(null);
     const users = props.project.employees.map((emp)=>props.users.find(user=>user.id===emp));
     let userId =  parseInt(localStorage.getItem('userId'));
@@ -56,6 +60,7 @@ function Project(props){
             console.log("Error: ", error);
         }); 
         addNewInvoice(newTask);
+        props.fetchData();
     }
 
     function editTask(editedTask){
@@ -70,6 +75,22 @@ function Project(props){
         .catch((error) => {
             console.log("Error: ", error);
         }); 
+        props.fetchData()
+    }
+
+    function deleteTask(deleteTask){
+        axios.post("http://localhost:5000/home",{
+            headers:{
+                function: 'deleteTask'
+            },deleteTask
+        })
+        .then((res) => {
+            console.log(deleteTask);
+        })
+        .catch((error) => {
+            console.log("Error: ", error);
+        });
+        props.fetchData();         
     }
 
     function addNewInvoice(newInvoice){
@@ -90,6 +111,7 @@ function Project(props){
     const onClickCreateTask = () =>{
         setTaskOrInvoiceFocus(0);
         setOpenAddTaskModal(true);
+        setEdit(false);
     }
 
     const onClickInvoice = () =>{
@@ -215,9 +237,19 @@ function Project(props){
                         <AddTaskModal isOpen={openAddTaskModal} openEmployeesModal={setOpenEmployeesModal} closeModal={setOpenAddTaskModal} addNewTasks={addNewTask} tasks={props.tasks} projectId={props.project.id} employees={employeeList} setEmployees={setEmployeeList} users={props.users}/>
                         {editedTask&&<EditTaskModal isOpen={openEditTaskModal} openEmployeesModal={setOpenEmployeesModal} closeModal={setOpenEditTaskModal} editTask={editTask} task={editedTask} setTask={setEditedTask} projectId={props.project.id} employees={employeeList} setEmployees={setEmployeeList} users={props.users}/>}
                         {task&&<TaskModal isOpen={openTaskModal} closeModal={setOpenTaskModal} task={task} setTask={setTask} users={props.users}/>}
+                        <WarningModal isOpen={openDeleteWarningModal} closeModal={setOpenDeleteWarningModal} delete={deleteTask} deleteObject={deletedTask}>
+                            <div className='text-center'>
+                                <div className='text-xl font-bold'>
+                                    Are you sure?
+                                </div>
+                                <div className='text-sm'>
+                                    You will not be able to recover this task.
+                                </div>
+                            </div>
+                        </WarningModal>
                     </div>
                     <div>
-                        {taskOrInvoiceFocus === 0 ? <Task tasks={props.tasks} projectId={props.project.id} userId={props.project.userid} users={props.users} hourlog={props.hourlog} edit={edit} setEdit={setEdit} setEditedTask={setEditedTask} setOpenEditTaskModal={setOpenEditTaskModal} setEmployees={setEmployeeList} setOpenTaskModal={setOpenTaskModal} setTask={setTask}/>:<Invoice invoices={invoices} projectId={props.project.id} />}
+                        {taskOrInvoiceFocus === 0 ? <Task tasks={props.tasks} projectId={props.project.id} userId={props.project.userid} users={props.users} hourlog={props.hourlog} edit={edit} setEdit={setEdit} setEditedTask={setEditedTask} setDeletedTask={setDeletedTask} setOpenEditTaskModal={setOpenEditTaskModal} setOpenDeleteWarningModal={setOpenDeleteWarningModal} setEmployees={setEmployeeList} setOpenTaskModal={setOpenTaskModal} setTask={setTask}/>:<Invoice invoices={invoices} projectId={props.project.id} />}
                     </div>
                 </div>
             </div>

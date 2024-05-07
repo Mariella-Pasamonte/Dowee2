@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef, useCallback} from "react";
+import React from "react";
 
 function WarningModal(props){
     return props.isOpen&&(
@@ -17,8 +17,7 @@ function WarningModal(props){
                         type="button" 
                         onClick={(e)=>{
                             props.closeModal(false);
-                            props.delete()
-                            window.location.reload(true);
+                            props.delete(props.deleteObject);
                         }}
                         className='px-3 py-2 mr-4 text-sm rounded-3xl bg-red-500'
                     > 

@@ -26,8 +26,9 @@ CREATE TABLE projects (
 CREATE TABLE tasks(
     id SERIAL PRIMARY KEY,
     projectId INT REFERENCES "projects"(id),
-    name VARCHAR(100) NOT NULL UNIQUE,
+    name VARCHAR(100) NOT NULL,
     paymentType BOOLEAN NOT NULL,
+    priority INT,
     amount NUMERIC(10,2)[] NOT NULL,
     employeeList INT[] NOT NULL,
     description VARCHAR(100),
@@ -36,13 +37,13 @@ CREATE TABLE tasks(
 
 CREATE TABLE hourLog(
     id SERIAL PRIMARY KEY,
-    projectId INT REFERENCES "projects"(id),
-    taskName VARCHAR(100) REFERENCES "tasks"(name),
+    taskId INT REFERENCES "tasks"(id),
     employeeAssigned INT REFERENCES "users"(id),
+    date VARCHAR(100),
     seconds INT NOT NULL,
     minutes INT NOT NULL,
     hours INT NOT NULL,
     startTimer BOOLEAN,
-    isRunning BOOLEAN,
+    amount NUMERIC(10,2) NOT NULL,
     pendingamount NUMERIC(10,2)
 );

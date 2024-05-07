@@ -5,15 +5,19 @@ import {
 } from ".";
 
 function AddTaskModal(props){
+    //Task Details
     const [taskTitle, setTaskTitle] = useState('Do This');
     const [paymentType, setPaymentType] = useState(1)
-    const [isFilled, setIsFilled] = useState(true);
-    const [amount, setAmount] = useState([])
+    const [priority, setPriority] = useState(1);
+    const [amount, setAmount] = useState([]);
     const emps = props.employees&&props.employees;
     const [taskDescription, setTaskDescription] = useState("");
+    const status ="In Progress";
+    
+    //checks
+    const [isFilled, setIsFilled] = useState(true);
     const [nameExist, setNameExist] = useState(false);
     const [nameExistError, setNameExistError]= useState(false);
-    const status ="In Progress";
     const getUsername = (userId) => {
         const user = props.users&&props.users.find(user => user.id === userId);
         return user ? user.username : 'Unknown';
@@ -24,12 +28,15 @@ function AddTaskModal(props){
         if (!props.isOpen) {
             setTaskTitle('Do This');
             setPaymentType(1);
-            setTaskDescription('');
+            setPriority(1);
             setAmount([]);
+            setTaskDescription('');
             setIsFilled(true);
+            setNameExist(false);
+            setNameExistError(false);
         }
 
-    }, [props.isOpen, amount]);
+    }, [props]);
 
     function getAmount(e, index){
         const updatedAmount = [...amount];
@@ -54,34 +61,36 @@ function AddTaskModal(props){
     }
     
     function checkEmptyAmount(array) {
-        if(array.length>emps.length){
-            adjustArrayLength(array,emps);
+        if(paymentType === 1){
+            if(array.length>emps.length){
+                adjustArrayLength(array,emps);
+            }
+    
+            if (!array || array.length === 0 || array.length<emps.length) {
+              return true;
+            }
+            return array.every(element => element === "");
         }
-
-        if (!array || array.length === 0 || array.length<emps.length) {
-          return true;
-        }
-      
-        return array.every(element => element === "");
     }
 
     function addTask(){
-        const taskExist = props.tasks.some((task)=>task.name===taskTitle);
+        const taskExist = props.tasks?props.tasks.some((task)=>task.name===taskTitle&&task.projectid===props.projectId):false;
 
         if(taskExist===false && taskTitle !== ''&& emps.length!==0 && !amountCheck && taskDescription!==''){
-            props.closeModal(false);
-            props.setEmployees([]);
             props.addNewTasks(
                 {
                     projectid: props.projectId,
                     name: taskTitle,
                     paymenttype: paymentType,
+                    priority:priority,
                     amount: amount, 
                     employeelist: emps,
                     desc: taskDescription,
                     status: status
                 }
             )
+            props.closeModal(false);
+            props.setEmployees([]);
         }else{
             if(taskExist===true){
                 setNameExist(true);
@@ -123,6 +132,49 @@ function AddTaskModal(props){
                                 onChange={e=>setTaskTitle(e.target.value)}
                                 className="mt-1 text-sm rounded border-[1px] border-[#B2F6FF]/50 bg-inherit py-1 pl-2"
                             />
+                        </div>
+                        <div className="flex flex-col mb-2">
+                            <label className={`${inputLabelClassName} mb-2`}>
+                                Priority
+                            </label>
+                            <div className="flex flex-row justify-between w-3/4">
+                                <div className="flex items-center mr-2">
+                                    <input
+                                        id="lowPriorityRadio"
+                                        name="priority"
+                                        type="radio"
+                                        value={1}
+                                        checked={priority===1}
+                                        onChange={(e)=>setPriority(parseInt(e.target.value))}
+                                        className='w-4 h-4 mr-1 text-[#397AB9] focus:ring-0 focus:ring-offset-0'
+                                    />
+                                    <label className='text-sm font-medium text-white dark:text-gray-300'>Low</label>
+                                </div>
+                                <div className="flex items-center mr-2">
+                                    <input
+                                        id="mediumPriorityRadio"
+                                        name="priority"
+                                        type="radio"
+                                        value={2}
+                                        checked={priority===2}
+                                        onChange={(e)=>setPriority(parseInt(e.target.value))}
+                                        className='w-4 h-4 mr-1 text-[#397AB9] focus:ring-0 focus:ring-offset-0'
+                                    />
+                                    <label className='text-sm font-medium text-white dark:text-gray-300'>Medium</label>
+                                </div>
+                                <div className="flex items-center mr-2">
+                                    <input
+                                        id="highPriorityRadio"
+                                        name="priority"
+                                        type="radio"
+                                        value={3}
+                                        checked={priority===3}
+                                        onChange={(e)=>setPriority(parseInt(e.target.value))}
+                                        className='w-4 h-4 mr-1 text-[#397AB9] focus:ring-0 focus:ring-offset-0'
+                                    />
+                                    <label className='text-sm font-medium text-white dark:text-gray-300'>High</label>
+                                </div>
+                            </div>
                         </div>
                         <div className='flex flex-col mb-2'>
                             <label className="text-sm mb-2">Payment</label>

@@ -157,15 +157,16 @@ router.post("/home", async (req, res) =>{
     } else if (func === 'deleteProject'){
       const id = req.body.deleteProject.id;
 
-      console.log(id);
       const hourlog = await db.query(
-        "DELETE FROM hourlog WHERE projectid = $1",
+        "DELETE FROM hourlog WHERE taskid IN (SELECT id FROM tasks WHERE projectid = $1)",
         [id]
       )
+
       const task = await db.query(
         "DELETE FROM tasks WHERE projectid = $1",
         [id]
       )
+
       const result = await db.query(
         "DELETE FROM projects WHERE id = $1",
         [id]
@@ -175,31 +176,57 @@ router.post("/home", async (req, res) =>{
       const projectid = req.body.newTask.projectid;
       const name = req.body.newTask.name;
       const paymenttype = req.body.newTask.paymenttype;
+      const priority = req.body.newTask.priority;
       const amount = req.body.newTask.amount;
       const employeelist = req.body.newTask.employeelist;
       const description = req.body.newTask.desc;
       const status = req.body.newTask.status;
 
       const result = await db.query(
-        "INSERT INTO tasks (projectid, name, paymenttype, amount, employeelist, description, status) VALUES ($1, $2, $3, $4, $5, $6, $7)",
-        [projectid, name, paymenttype, amount, employeelist, description, status]
+        "INSERT INTO tasks (projectid, name, paymenttype, priority, amount, employeelist, description, status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
+        [projectid, name, paymenttype, priority, amount, employeelist, description, status]
+      );
+
+    } else if(func === 'editTask'){
+      const id = req.body.editedTask.id;
+      const projectid = req.body.editedTask.projectid;
+      const name = req.body.editedTask.name;
+      const paymenttype = req.body.editedTask.paymenttype;
+      const priority = req.body.editedTask.priority;
+      const amount = req.body.editedTask.amount;
+      const employeelist = req.body.editedTask.employeelist;
+      const description = req.body.editedTask.desc;
+      const status = req.body.editedTask.status;
+
+      const result = await db.query(
+        "UPDATE tasks SET id = $1, projectid = $2, name = $3, paymenttype = $4, priority = $5, amount = $6, employeelist = $7, description = $8, status = $9 WHERE id = $1",
+        [id, projectid, name, paymenttype, priority, amount, employeelist, description, status]
+      );
+
+    } else if(func === 'deleteTask'){
+      const id = req.body.deleteTask.id;
+
+      const result = await db.query(
+        "DELETE FROM tasks WHERE id = $1",
+        [id]
       );
 
     } else if (func === 'addNewHourlog'){
-      const projectid = req.body.newHourlog.projectid;
-      const taskname = req.body.newHourlog.taskname;
+      const taskid = req.body.newHourlog.taskid;
       const employeeassigned = req.body.newHourlog.employeeassigned;
+      const date = req.body.newHourlog.data;
       const seconds = req.body.newHourlog.seconds;
       const minutes = req.body.newHourlog.minutes;
       const hours = req.body.newHourlog.hours;
       const starttimer = req.body.newHourlog.starttimer;
-      const isrunning = req.body.newHourlog.isRunning;
+      const amount = req.body.newHourlog.amount;
       const pendingamount = req.body.newHourlog.pendingamount;
 
       const result = await db.query(
-        "INSERT INTO hourlog (projectid, taskname, employeeassigned, seconds, minutes, hours, starttimer, isrunning, pendingamount) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)",
-        [projectid, taskname, employeeassigned, seconds, minutes, hours, starttimer, isrunning, pendingamount]
+        "INSERT INTO hourlog (taskid, employeeassigned, date, seconds, minutes, hours, starttimer, isrunning, amount, pendingamount) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)",
+        [taskid, employeeassigned, date, seconds, minutes, hours, starttimer, amount, pendingamount]
       );
+
     } else if (func === 'runTimer'){
       const id = req.body.time.id;
       const starttimer = req.body.time.starttimer;
@@ -222,13 +249,13 @@ router.get("/home", async (req, res) => {
   const userId = req.headers['userid']||req.query.userId;
 
   try {
-    const result = await db.query("SELECT * FROM projects P WHERE userid = $1 OR EXISTS (SELECT 1 FROM unnest(p.employees) AS emp WHERE emp = $1)", [
+    const result = await db.query("SELECT * FROM projects p WHERE userid = $1 OR EXISTS (SELECT 1 FROM unnest(p.employees) AS emp WHERE emp = $1) ORDER BY p.id ASC", [
       userId,
     ]);
-    const tasks = await db.query("SELECT t.* FROM tasks t JOIN projects p ON t.projectid = p.id WHERE p.userid = $1 OR EXISTS (SELECT 1 FROM unnest(t.employeelist) AS emp WHERE emp = $1)",[
+    const tasks = await db.query("SELECT t.* FROM tasks t JOIN projects p ON t.projectid = p.id WHERE p.userid = $1 OR EXISTS (SELECT 1 FROM unnest(t.employeelist) AS emp WHERE emp = $1) ORDER BY t.id ASC",[
       userId,
     ]); 
-    const hourlog = await db.query("SELECT h.* FROM hourlog h INNER JOIN tasks t ON h.taskname = t.name INNER JOIN projects p ON t.projectid = p.id WHERE (p.userid = $1) OR (h.employeeassigned = $1)",[
+    const hourlog = await db.query("SELECT h.* FROM hourlog h INNER JOIN tasks t ON h.taskid = t.id INNER JOIN projects p ON t.projectid = p.id WHERE (p.userid = $1) OR (h.employeeassigned = $1) ORDER BY h.id ASC",[
       userId,
     ]);
 
