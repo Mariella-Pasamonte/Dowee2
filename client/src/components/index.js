@@ -3,6 +3,7 @@
 export {default as AddProjectModal} from './addProjectModal';
 export {default as EditProjectModal} from './editProjectModal';
 export {default as ProjectModal} from './projectModal';
+export {default as HourlogModal} from './hourlogModal';
 
 // Employee features
 export {default as EditEmployeesModal} from './editEmployeesModal';
@@ -18,3 +19,4 @@ export {default as ErrorToast} from './errorToast';
 export {default as InputLabel} from './inputLabel';
 export {default as Popover} from './popover';
 export {default as Tooltips} from './tooltips';
+export {default as Stopwatch} from './stopwatch';

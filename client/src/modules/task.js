@@ -134,7 +134,8 @@ function Task(props){
 
     return(
         <>
-            <div>
+            <div className='relative'>
+                <HourlogModal isOpen={isOpenHourlog} closeModal={setIsOpenHourlog} projectId={props.projectId} hourlog={props.hourlog} tasks={props.tasks} issuedDate={props.issuedDate} dueDate={props.dueDate} userId={userId} fetchData={props.fetchData}/>
                 <div className='flex flex-row w-96 py-2'>
                     <div className="text-xl mb-2 mr-4 w-fit font-medium text-white">
                         Tasks
@@ -151,7 +152,6 @@ function Task(props){
                         >
                             Hour log
                         </button>
-                        <HourlogModal isOpen={isOpenHourlog} closeModal={setIsOpenHourlog}/>
                     </div>
                 </div>
                 <div className='overflow-hidden max-h-80 w-fit rounded-b-md'>

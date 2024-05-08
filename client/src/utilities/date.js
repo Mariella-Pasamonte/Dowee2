@@ -18,10 +18,23 @@ export function getClickedDate(newDate){
 export function convertToDate(newDate){
     var date = new Date();
     var parts = newDate.split('/');
-    console.log(newDate);
     if (parts.length === 3){
         var [month, day, year] = parts;
         date = new Date(`${month}/${day}/${year}`);
+    }
+    return date;
+}
+
+export function convertToTextDate(newDate){
+    var date = ''
+    var parts = newDate.split('/');
+    const monthNames = ["January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"];
+    
+    if (parts.length === 3){
+        var [month, day, year] = parts;
+        const monthName = monthNames[parseInt(month)-1];
+        date = monthName+' '+day+', '+year;
     }
     return date;
 }
