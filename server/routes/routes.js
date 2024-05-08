@@ -212,9 +212,9 @@ router.post("/home", async (req, res) =>{
       );
 
     } else if (func === 'addNewHourlog'){
-      const taskid = req.body.newHourlog.taskid;
+      const taskid = req.body.newHourlog.taskId;
       const employeeassigned = req.body.newHourlog.employeeassigned;
-      const date = req.body.newHourlog.data;
+      const date = req.body.newHourlog.date;
       const seconds = req.body.newHourlog.seconds;
       const minutes = req.body.newHourlog.minutes;
       const hours = req.body.newHourlog.hours;
@@ -223,7 +223,7 @@ router.post("/home", async (req, res) =>{
       const pendingamount = req.body.newHourlog.pendingamount;
 
       const result = await db.query(
-        "INSERT INTO hourlog (taskid, employeeassigned, date, seconds, minutes, hours, starttimer, isrunning, amount, pendingamount) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)",
+        "INSERT INTO hourlog (taskid, employeeassigned, date, seconds, minutes, hours, starttimer, amount, pendingamount) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)",
         [taskid, employeeassigned, date, seconds, minutes, hours, starttimer, amount, pendingamount]
       );
 
@@ -233,11 +233,12 @@ router.post("/home", async (req, res) =>{
       const hours = req.body.time.hours;
       const minutes = req.body.time.minutes;
       const seconds = req.body.time.seconds;
+
       const result = await db.query(
         "UPDATE hourlog SET id = $1, starttimer = $2, hours = $3, minutes = $4, seconds = $5 WHERE id = $1",
         [id, starttimer, hours, minutes, seconds]
       )
-      console.log("result:", result);
+      
     }
   } catch(error) {
     console.error("Error: ", error);

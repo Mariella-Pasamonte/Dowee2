@@ -65,7 +65,7 @@ function Sidebar(props){
         }); 
         props.setProject(newProject);
         setProjectFocus(newProject.id);
-        props.fetchData();
+        props.fetchData(userId);
     }
 
     function editedProject(editedProject){
@@ -83,7 +83,7 @@ function Sidebar(props){
         }); 
         props.setProject(editedProject); 
         setProjectFocus(editedProject.id);
-        props.fetchData();
+        props.fetchData(userId);
     }
 
     function deletingProject(deleteProject){
@@ -101,7 +101,7 @@ function Sidebar(props){
         });
         props.setProject(null); 
         setProjectFocus(null);
-        props.fetchData();
+        props.fetchData(userId);
     }
 
     const handleButtonClick = (projectId) => {

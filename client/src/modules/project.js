@@ -60,7 +60,7 @@ function Project(props){
             console.log("Error: ", error);
         }); 
         addNewInvoice(newTask);
-        props.fetchData();
+        props.fetchData(userId);
     }
 
     function editTask(editedTask){
@@ -75,7 +75,7 @@ function Project(props){
         .catch((error) => {
             console.log("Error: ", error);
         }); 
-        props.fetchData()
+        props.fetchData(userId)
     }
 
     function deleteTask(deleteTask){
@@ -90,7 +90,7 @@ function Project(props){
         .catch((error) => {
             console.log("Error: ", error);
         });
-        props.fetchData();         
+        props.fetchData(userId);         
     }
 
     function addNewInvoice(newInvoice){
@@ -249,7 +249,7 @@ function Project(props){
                         </WarningModal>
                     </div>
                     <div>
-                        {taskOrInvoiceFocus === 0 ? <Task tasks={props.tasks} projectId={props.project.id} userId={props.project.userid} users={props.users} hourlog={props.hourlog} edit={edit} setEdit={setEdit} setEditedTask={setEditedTask} setDeletedTask={setDeletedTask} setOpenEditTaskModal={setOpenEditTaskModal} setOpenDeleteWarningModal={setOpenDeleteWarningModal} setEmployees={setEmployeeList} setOpenTaskModal={setOpenTaskModal} setTask={setTask}/>:<Invoice invoices={invoices} projectId={props.project.id} />}
+                        {taskOrInvoiceFocus === 0 ? <Task tasks={props.tasks} projectId={props.project.id} userId={props.project.userid} users={props.users} hourlog={props.hourlog} edit={edit} setEdit={setEdit} setEditedTask={setEditedTask} setDeletedTask={setDeletedTask} setOpenEditTaskModal={setOpenEditTaskModal} setOpenDeleteWarningModal={setOpenDeleteWarningModal} setEmployees={setEmployeeList} setOpenTaskModal={setOpenTaskModal} setTask={setTask} fetchData={props.fetchData}/>:<Invoice invoices={invoices} projectId={props.project.id} />}
                     </div>
                 </div>
             </div>

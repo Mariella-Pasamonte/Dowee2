@@ -21,7 +21,7 @@ const Home = () => {
         setProject(proj);
     };
 
-    const memoizedFetchData = useCallback(() => {
+    const memoizedFetchData = useCallback((userId) => {
         axios
         .get('http://localhost:5000/home', {
           headers:{ 
@@ -38,11 +38,11 @@ const Home = () => {
         .catch((error) =>{
             console.log(error);
         });
-    },[userId, projectId, setProjList, setProject, setUsers, setTasks, setHourlog]);
+    },[projectId, setProjList, setProject, setUsers, setTasks, setHourlog]);
 
     useEffect(() => {
-        memoizedFetchData();
-    },[memoizedFetchData])
+        memoizedFetchData(userId);
+    },[userId, memoizedFetchData])
 
     return(
         <div className='static flex flex-col h-dvh'>
