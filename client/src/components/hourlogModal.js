@@ -164,14 +164,20 @@ function HourlogModal(props){
     }   
 
     function addHourlog(){
-        let hourlogExist=props.hourlog.some((hl)=>hl.taskid===task.id&&hl.employeeassigned===props.userId&&hl.date===hourlogDate);
-        if(hourlogExist===false&&taskTitle!==''&&hourlogDate!==''&&timeStart.hour>0&&timeFinished.hour>0){
-            time.date=hourlogDate;
-            getDuration();
-            addNewHourlog(task,pairItems(task),time);
+        
+        if(taskTitle!==''&&hourlogDate!==''&&timeStart.hour>0&&timeFinished.hour>0){
+            let hourlogExist=props.hourlog.some((hl)=>hl.taskid===task.id&&hl.employeeassigned===props.userId&&hl.date===hourlogDate);
+            if(hourlogExist===false)
+            {
+                time.date=hourlogDate;
+                getDuration();
+                addNewHourlog(task,pairItems(task),time);
+            } else{
+                setIsFilled(false);
+                setHourlogExistError(true);
+            }
         }else{
             setIsFilled(false);
-            setHourlogExistError(true);
         }
     }
 

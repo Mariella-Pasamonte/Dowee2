@@ -101,6 +101,7 @@ function Sidebar(props){
         });
         props.setProject(null); 
         setProjectFocus(null);
+        localStorage.removeItem("projectId");
         props.fetchData(userId);
     }
 
