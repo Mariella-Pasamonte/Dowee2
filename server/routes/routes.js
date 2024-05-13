@@ -1,17 +1,18 @@
 import express from "express";
-import pg from "pg";
+// import pg from "pg";
+import {db} from '@vercel/postgres';
 import bcrypt from "bcrypt";
 
 const router = express.Router();
 
-const db = new pg.Client({
-  user: "postgres",
-  host: "localhost",
-  database: "Doify",
-  password: "doifyapp",
-  port: 5432,
-});
-try {
+// const db = new pg.Client({
+//   user: "default",
+//   host: "ep-autumn-cell-a1hs24pd-pooler.ap-southeast-1.aws.neon.tech/verceldb?sslmode=require",
+//   database: "verceldb",
+//   password: "Ej5Nzx9edRBl",
+// });
+
+try { 
   db.connect();
   console.log("Connected to Database");
 } catch {
@@ -22,11 +23,11 @@ router.post("/login", async (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
   const hashPass = await bcrypt.hash(password, 10);
-  
   try {
     const result = await db.query("SELECT * FROM users WHERE username = $1", [
       username,
     ]);
+    res.send("Success");
     if (result.rows.length > 0) {
       let success = false;
       const user = result.rows[0];
@@ -35,18 +36,14 @@ router.post("/login", async (req, res) => {
 
       if (match === true) {
         success = true;
-        console.log("Success: ", success);
         res.send({status: success, data:user.id});
       } else {
-        console.log("Invalid credentials");
         res.send(success);
       }
     } else {
-      console.log("User not found");
       res.send("User not found");
     }
   } catch (error) {
-    console.error("Error: ", error);
     res.status(500).send("Shit hit the fan Error");
   }
 });

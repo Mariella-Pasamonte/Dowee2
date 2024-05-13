@@ -48,7 +48,7 @@ function Project(props){
     }
 
     function addNewTask(newTask){
-        axios.post("http://localhost:5000/home", {
+        axios.post("https://dowee2-server2.vercel.app/home", {
             headers:{
                 function: 'addNewTask'
             },newTask
@@ -64,7 +64,7 @@ function Project(props){
     }
 
     function editTask(editedTask){
-        axios.post("http://localhost:5000/home", {
+        axios.post("https://dowee2-server2.vercel.app/home", {
             headers:{
                 function: 'editTask'
             },editedTask
@@ -79,7 +79,7 @@ function Project(props){
     }
 
     function deleteTask(deleteTask){
-        axios.post("http://localhost:5000/home",{
+        axios.post("https://dowee2-server2.vercel.app/home",{
             headers:{
                 function: 'deleteTask'
             },deleteTask

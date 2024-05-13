@@ -40,7 +40,7 @@ const Login = (props) => {
     };
   
     await axios
-    .post("http://localhost:5000/login", loginData)
+    .post("https://dowee2-server2.vercel.app/login", loginData)
     .then((response) => {
       if (response.data.status === true) {
         props.loggedInUser(true);
@@ -59,7 +59,7 @@ const Login = (props) => {
 
   useEffect(()=>{
     const userId = localStorage.getItem('userId');
-    axios.get('http://localhost:5000/login', {
+    axios.get('https://dowee2-server2.vercel.app/login', {
       headers:{ 
         userId: userId
       }
