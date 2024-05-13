@@ -49,9 +49,9 @@ const Login = (props) => {
         setIsFilled(true);
         setValidUserError(false);
       } else {
-        setValidUserError(true); 
         console.log("username:", username);
-        console.log("password:", password)
+        console.log("password:", password);
+        setValidUserError(true); 
       }
     })
     .catch((error) => {
