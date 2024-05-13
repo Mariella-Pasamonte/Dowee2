@@ -34,7 +34,6 @@ const Home = () => {
             setUsers(response.data.users);
             setTasks(response.data.tasks);
             setHourlog(response.data.hourlog);
-            console.log('users:', response.data.users);
         })
         .catch((error) =>{
             console.log(error);
