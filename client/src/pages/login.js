@@ -50,6 +50,8 @@ const Login = (props) => {
         setValidUserError(false);
       } else {
         setValidUserError(true); 
+        console.log("username:", username);
+        console.log("password:", password)
       }
     })
     .catch((error) => {
