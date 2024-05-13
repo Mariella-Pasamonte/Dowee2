@@ -151,6 +151,7 @@ function Sidebar(props){
                                         data-tooltip-placement="bottom"
                                         type="button"
                                         onClick={()=>{
+                                            setEmployees(props.users);
                                             setOpenAddProjectModal(true);
                                         }}  
                                         className="p-1 bg-[#23353C] rounded hover:bg-[#3A6576]"
