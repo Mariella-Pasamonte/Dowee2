@@ -21,7 +21,9 @@ const db = new pg.Client({
   user: "postgres",
   host: "localhost",
   database: "Doify",
-  password: "doifyapp",
+  //Akoa's password
+  password: "doifywebapp",
+  //password: "doifyapp",
   port: 5432,
 });
 try {

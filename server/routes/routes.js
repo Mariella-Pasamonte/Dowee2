@@ -8,7 +8,10 @@ const db = new pg.Client({
   user: "postgres",
   host: "localhost",
   database: "Doify",
-  password: "doifyapp",
+  //Akoa's password
+  password: "doifywebapp",
+  //Mariela's password
+  //password: "doifyapp",
   port: 5432,
 });
 try {
@@ -22,7 +25,7 @@ router.post("/login", async (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
   const hashPass = await bcrypt.hash(password, 10);
-  
+
   try {
     const result = await db.query("SELECT * FROM users WHERE username = $1", [
       username,
@@ -36,7 +39,7 @@ router.post("/login", async (req, res) => {
       if (match === true) {
         success = true;
         console.log("Success: ", success);
-        res.send({status: success, data:user.id});
+        res.send({ status: success, data: user.id });
       } else {
         console.log("Invalid credentials");
         res.send(success);
@@ -46,32 +49,30 @@ router.post("/login", async (req, res) => {
       res.send("User not found");
     }
   } catch (error) {
-    console.error("Error: ", error);
+    console.error("post/login errorError: ", error);
     res.status(500).send("Shit hit the fan Error");
   }
 });
 
-router.get("/login", async (req,res) =>{
-  const userId = req.headers['userid']||req.query.userId;
-  try{
+router.get("/login", async (req, res) => {
+  const userId = req.headers["userid"] || req.query.userId;
+  try {
     let success = false;
     const result = await db.query("SELECT * FROM users WHERE id = $1", [
       userId,
     ]);
 
-    if(result.rows.length>0){
+    if (result.rows.length > 0) {
       success = true;
-      res.send({status: success});
+      res.send({ status: success });
+    } else {
+      res.send({ status: success });
     }
-    else{
-      res.send({status: success});
-    }
-
   } catch (error) {
-    console.error("Error:", error);
+    console.error("get/login errorError:", error);
     res.status(500).send("User does not exist");
   }
-})
+});
 
 router.post("/register", async (req, res) => {
   const fname = req.body.fname;
@@ -114,16 +115,16 @@ router.post("/register", async (req, res) => {
       res.send(exist);
     }
   } catch (error) {
-    console.error("Error: ", error);
+    console.error("post/register errorError: ", error);
     res.status(500).send("Shit hit the fan Error");
   }
 });
 
-router.post("/home", async (req, res) =>{
+router.post("/home", async (req, res) => {
   const func = req.body.headers.function;
 
-  try{
-    if(func==='addNewProject'){
+  try {
+    if (func === "addNewProject") {
       const userid = req.body.newProject.userId;
       const name = req.body.newProject.name;
       const clientname = req.body.newProject.clientname;
@@ -136,9 +137,19 @@ router.post("/home", async (req, res) =>{
 
       const result = await db.query(
         "INSERT INTO projects (userid, name, clientname, clientemadd, clientconnum, issueddate, duedate, description, employees) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)",
-        [userid, name, clientname, clientemadd, clientconnum, issueddate, duedate, description,employees]
+        [
+          userid,
+          name,
+          clientname,
+          clientemadd,
+          clientconnum,
+          issueddate,
+          duedate,
+          description,
+          employees,
+        ]
       );
-    } else if (func === 'editProject'){
+    } else if (func === "editProject") {
       const id = req.body.editedProject.id;
       const userid = req.body.editedProject.userid;
       const name = req.body.editedProject.name;
@@ -152,27 +163,33 @@ router.post("/home", async (req, res) =>{
 
       const result = await db.query(
         "UPDATE projects SET id = $10, userid = $1, name = $2, clientname = $3, clientemadd = $4, clientconnum = $5, issueddate = $6, duedate = $7, description = $8, employees = $9 WHERE id = $10",
-        [userid, name, clientname, clientemadd, clientconnum, issueddate, duedate, description,employees, id]
+        [
+          userid,
+          name,
+          clientname,
+          clientemadd,
+          clientconnum,
+          issueddate,
+          duedate,
+          description,
+          employees,
+          id,
+        ]
       );
-    } else if (func === 'deleteProject'){
+    } else if (func === "deleteProject") {
       const id = req.body.deleteProject.id;
 
       const hourlog = await db.query(
         "DELETE FROM hourlog WHERE taskid IN (SELECT id FROM tasks WHERE projectid = $1)",
         [id]
-      )
-
-      const task = await db.query(
-        "DELETE FROM tasks WHERE projectid = $1",
-        [id]
-      )
-
-      const result = await db.query(
-        "DELETE FROM projects WHERE id = $1",
-        [id]
       );
 
-    } else if (func === 'addNewTask'){
+      const task = await db.query("DELETE FROM tasks WHERE projectid = $1", [
+        id,
+      ]);
+
+      const result = await db.query("DELETE FROM projects WHERE id = $1", [id]);
+    } else if (func === "addNewTask") {
       const projectid = req.body.newTask.projectid;
       const name = req.body.newTask.name;
       const paymenttype = req.body.newTask.paymenttype;
@@ -184,10 +201,18 @@ router.post("/home", async (req, res) =>{
 
       const result = await db.query(
         "INSERT INTO tasks (projectid, name, paymenttype, priority, amount, employeelist, description, status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
-        [projectid, name, paymenttype, priority, amount, employeelist, description, status]
+        [
+          projectid,
+          name,
+          paymenttype,
+          priority,
+          amount,
+          employeelist,
+          description,
+          status,
+        ]
       );
-
-    } else if(func === 'editTask'){
+    } else if (func === "editTask") {
       const id = req.body.editedTask.id;
       const projectid = req.body.editedTask.projectid;
       const name = req.body.editedTask.name;
@@ -200,18 +225,23 @@ router.post("/home", async (req, res) =>{
 
       const result = await db.query(
         "UPDATE tasks SET id = $1, projectid = $2, name = $3, paymenttype = $4, priority = $5, amount = $6, employeelist = $7, description = $8, status = $9 WHERE id = $1",
-        [id, projectid, name, paymenttype, priority, amount, employeelist, description, status]
+        [
+          id,
+          projectid,
+          name,
+          paymenttype,
+          priority,
+          amount,
+          employeelist,
+          description,
+          status,
+        ]
       );
-
-    } else if(func === 'deleteTask'){
+    } else if (func === "deleteTask") {
       const id = req.body.deleteTask.id;
 
-      const result = await db.query(
-        "DELETE FROM tasks WHERE id = $1",
-        [id]
-      );
-
-    } else if (func === 'addNewHourlog'){
+      const result = await db.query("DELETE FROM tasks WHERE id = $1", [id]);
+    } else if (func === "addNewHourlog") {
       const taskid = req.body.newHourlog.taskId;
       const employeeassigned = req.body.newHourlog.employeeassigned;
       const date = req.body.newHourlog.date;
@@ -224,10 +254,19 @@ router.post("/home", async (req, res) =>{
 
       const result = await db.query(
         "INSERT INTO hourlog (taskid, employeeassigned, date, seconds, minutes, hours, starttimer, amount, pendingamount) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)",
-        [taskid, employeeassigned, date, seconds, minutes, hours, starttimer, amount, pendingamount]
+        [
+          taskid,
+          employeeassigned,
+          date,
+          seconds,
+          minutes,
+          hours,
+          starttimer,
+          amount,
+          pendingamount,
+        ]
       );
-
-    } else if (func === 'runTimer'){
+    } else if (func === "runTimer") {
       const id = req.body.time.id;
       const starttimer = req.body.time.starttimer;
       const hours = req.body.time.hours;
@@ -237,28 +276,30 @@ router.post("/home", async (req, res) =>{
       const result = await db.query(
         "UPDATE hourlog SET id = $1, starttimer = $2, hours = $3, minutes = $4, seconds = $5 WHERE id = $1",
         [id, starttimer, hours, minutes, seconds]
-      )
-      
+      );
     }
-  } catch(error) {
-    console.error("Error: ", error);
+  } catch (error) {
+    console.error("post/home errorError: ", error);
     res.status(500).send("Shit hit the fan Error in function home");
   }
 });
 
 router.get("/home", async (req, res) => {
-  const userId = req.headers['userid']||req.query.userId;
+  const userId = req.headers["userid"] || req.query.userId;
 
   try {
-    const result = await db.query("SELECT * FROM projects p WHERE userid = $1 OR EXISTS (SELECT 1 FROM unnest(p.employees) AS emp WHERE emp = $1) ORDER BY p.id ASC", [
-      userId,
-    ]);
-    const tasks = await db.query("SELECT t.* FROM tasks t JOIN projects p ON t.projectid = p.id WHERE p.userid = $1 OR EXISTS (SELECT 1 FROM unnest(t.employeelist) AS emp WHERE emp = $1) ORDER BY t.id ASC",[
-      userId,
-    ]); 
-    const hourlog = await db.query("SELECT h.* FROM hourlog h INNER JOIN tasks t ON h.taskid = t.id INNER JOIN projects p ON t.projectid = p.id WHERE (p.userid = $1) OR (h.employeeassigned = $1) ORDER BY h.id ASC",[
-      userId,
-    ]);
+    const result = await db.query(
+      "SELECT * FROM projects p WHERE userid = $1 OR EXISTS (SELECT 1 FROM unnest(p.employees) AS emp WHERE emp = $1) ORDER BY p.id ASC",
+      [userId]
+    );
+    const tasks = await db.query(
+      "SELECT t.* FROM tasks t JOIN projects p ON t.projectid = p.id WHERE p.userid = $1 OR EXISTS (SELECT 1 FROM unnest(t.employeelist) AS emp WHERE emp = $1) ORDER BY t.id ASC",
+      [userId]
+    );
+    const hourlog = await db.query(
+      "SELECT h.* FROM hourlog h INNER JOIN tasks t ON h.taskid = t.id INNER JOIN projects p ON t.projectid = p.id WHERE (p.userid = $1) OR (h.employeeassigned = $1) ORDER BY h.id ASC",
+      [userId]
+    );
 
     const users = await db.query("SELECT * FROM users");
 
@@ -267,12 +308,16 @@ router.get("/home", async (req, res) => {
     let taskLength = tasks.rows.length;
     let hlLength = hourlog.rows.length;
 
-    res.send({projects: projLength?projects:null, users:users.rows, tasks:taskLength?tasks.rows:null, hourlog:hlLength?hourlog.rows:null});
-    
-  } catch(error) {
-    console.error("Error: ", error);
+    res.send({
+      projects: projLength ? projects : null,
+      users: users.rows,
+      tasks: taskLength ? tasks.rows : null,
+      hourlog: hlLength ? hourlog.rows : null,
+    });
+  } catch (error) {
+    console.error("get/home error Error: ", error);
     res.status(500).send("Shit hit the fan Error in get data home");
   }
-})
+});
 
 export default router;
