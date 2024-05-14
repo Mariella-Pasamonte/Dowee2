@@ -11,7 +11,7 @@ const db = new pg.Client({
   //Akoa's password
   password: "doifywebapp",
   //Mariela's password
-  //password: "doifyapp",
+  // password: "doifyapp",
   port: 5432,
 });
 try {
@@ -283,6 +283,17 @@ router.post("/home", async (req, res) => {
     res.status(500).send("Shit hit the fan Error in function home");
   }
 });
+
+//Get users from database
+router.get("/getUsers", async(req,res)=>{
+  try {
+    const users = await db.query("SELECT * FROM users");
+    res.send({users: users.rows})
+  } catch(error){
+    console.error("get/getUsers error Error: ", error);
+    res.status(500).send("Problem in /getUsers");
+  }
+})
 
 router.get("/home", async (req, res) => {
   const userId = req.headers["userid"] || req.query.userId;
