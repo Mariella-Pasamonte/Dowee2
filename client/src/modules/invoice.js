@@ -1,8 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { InvoiceTemplate } from "../components";
+import { InvoiceTemplate, InvoiceSmallTemplate } from "../components";
+import axios from "axios";
+
 
 function Invoice({ invoices, projectId }) {
+  const [openInvoiceTemplateModal, setOpenInvoiceTemplateModal] =
+    useState(false);
+  const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
+  const [invoiceFocus, setInvoiceFocus] = useState(null);
+  let userId = parseInt(localStorage.getItem("userId"));
+
+  function handleInvoiceTemplateModal() {
+    setOpenInvoiceTemplateModal(true);
+  }
+
   return (
     <>
       <div>
@@ -11,13 +23,10 @@ function Invoice({ invoices, projectId }) {
             Project Invoice
           </div>
           <div className="relative flex flex-col justify-center h-full mr-2 text-white font-thin">
-            <button className="font-Inter text-sm py-1 px-3 rounded-md bg-[#212628]/50">
-              Sort by
-            </button>
           </div>
           <div className="relative flex flex-col justify-center h-full ml-2 text-white font-thin">
             <button className="font-Inter text-sm py-1 px-3 rounded-md bg-[#212628]/50">
-              Select
+              Generate Invoice
             </button>
           </div>
         </div>
@@ -38,7 +47,15 @@ function Invoice({ invoices, projectId }) {
               )}
             </div>
           )}
-          <InvoiceTemplate />
+          {/* <InvoiceTemplate /> */}
+          <div className="w-100 h-100 border-[#AEAEE3] border-[1px] rounded-lg flex flex-row gap-3 py-3 px-3 justify-center flex-wrap">
+              <InvoiceSmallTemplate id={1}/>
+              <InvoiceSmallTemplate id={2}/>
+              <InvoiceSmallTemplate/>
+              <InvoiceSmallTemplate/>
+              <InvoiceSmallTemplate/>
+              <InvoiceSmallTemplate/>
+           </div>
         </div>
       </div>
     </>
