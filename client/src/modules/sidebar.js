@@ -49,7 +49,8 @@ function Sidebar(props) {
 
     function addNewProject(newProject){
         axios
-        .post("http://localhost:5000/addProject", newProject)
+        .post("https://dowee2-server2.vercel.app/addProject", newProject)
+        // .post("http://localhost:5000/addProject", newProject)
         .then((res) => {
             console.log(newProject);
         })
@@ -63,7 +64,8 @@ function Sidebar(props) {
 
     function editedProject(editedProject){
         axios
-        .post("http://localhost:5000/editProject",editedProject)
+        .post("https://dowee2-server2.vercel.app/editProject",editedProject)
+        // .post("http://localhost:5000/editProject",editedProject)
         .then((res) => {
             console.log(editedProject);
         })
@@ -77,7 +79,8 @@ function Sidebar(props) {
 
     function deletingProject(deleteProject){
         axios
-        .post("http://localhost:5000/deleteProject",deleteProject)
+        .post("https://dowee2-server2.vercel.app/deleteProject",deleteProject)
+        // .post("http://localhost:5000/deleteProject",deleteProject)
         .then((res) => {
             console.log(deleteProject);
         })

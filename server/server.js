@@ -1,5 +1,5 @@
-import pg from "pg";
-// import { db } from '@vercel/postgres';
+// import pg from "pg";
+import { db } from '@vercel/postgres';
 import express from "express";
 import cors from "cors";
 import router from "./routes/routes.js";
@@ -19,15 +19,16 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-const db = new pg.Client({
-  user: "postgres",
-  host: "localhost",
-  database: "Doify",
-  //Akoa's password
-  // password: "doifywebapp",
-  password: "doifyapp",
-  port: 5432,
-});
+// For localhost
+// const db = new pg.Client({
+//   user: "postgres",
+//   host: "localhost",
+//   database: "Doify",
+//   //Akoa's password
+//   // password: "doifywebapp",
+//   password: "doifyapp",
+//   port: 5432,
+// });
 
 // const db = new pg.Client({
 //   user: "default",
@@ -35,6 +36,7 @@ const db = new pg.Client({
 //   database: "verceldb",
 //   password: "Ej5Nzx9edRBl",
 // });
+
 try {
   db.connect();
   console.log("Connected to Database");

@@ -1,20 +1,22 @@
 import express from "express";
-import pg from "pg";
-// import {db} from '@vercel/postgres';
+// import pg from "pg";
+import {db} from '@vercel/postgres';
 import bcrypt from "bcrypt";
 
 const router = express.Router();
 
-const db = new pg.Client({
-  user: "postgres",
-  host: "localhost",
-  database: "Doify",
-  //Akoa's password
-  // password: "doifywebapp",
-  //Mariela's password
-  password: "doifyapp",
-  port: 5432,
-});
+//For localhost
+// const db = new pg.Client({
+//   user: "postgres",
+//   host: "localhost",
+//   database: "Doify",
+//   //Akoa's password
+//   // password: "doifywebapp",
+//   //Mariela's password
+//   password: "doifyapp",
+//   port: 5432,
+// });
+
 try { 
   db.connect();
   console.log("Connected to Database");

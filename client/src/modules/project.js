@@ -48,7 +48,9 @@ function Project(props){
     }
 
     function addNewTask(newTask){
-        axios.post("http://localhost:5000/addTask",newTask)
+        axios
+        .post("https://dowee2-server2.vercel.app/addTask",newTask)
+        // .post("http://localhost:5000/addTask",newTask)
         .then((res) => {
             console.log(newTask);
         })
@@ -60,7 +62,9 @@ function Project(props){
     }
 
     function editTask(editedTask){
-        axios.post("http://localhost:5000/editTask",editedTask)
+        axios
+        .post("https://dowee2-server2.vercel.app/editTask",editedTask)
+        // .post("http://localhost:5000/editTask",editedTask)
         .then((res) => {
             console.log(editedTask);
         })
@@ -71,7 +75,9 @@ function Project(props){
     }
 
     function deleteTask(deleteTask){
-        axios.post("http://localhost:5000/deleteTask",deleteTask)
+        axios
+        .post("https://dowee2-server2.vercel.app/deleteTask",deleteTask)
+        // .post("http://localhost:5000/deleteTask",deleteTask)
         .then((res) => {
             console.log(deleteTask);
         })
