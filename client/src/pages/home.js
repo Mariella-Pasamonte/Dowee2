@@ -22,7 +22,7 @@ const Home = (props) => {
 
     const memoizedFetchData = useCallback((userId) => {
         axios
-        .get('https://dowee2.vercel.app/home', {
+        .get('https://dowee2-server2.vercel.app/home', {
           headers:{ 
             userId: userId
           }

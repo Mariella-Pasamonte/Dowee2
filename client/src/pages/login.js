@@ -42,7 +42,7 @@ const Login = (props) => {
     };
   
     await axios
-    .post("http://dowee2-server2.vercel.app/login", loginData)
+    .post("https://dowee2-server2.vercel.app/login", loginData)
     // .post("http://localhost:3000/login", loginData)
     .then((response) => {
       if (response.data.status === true) {
@@ -65,7 +65,9 @@ const Login = (props) => {
   };
 
   useEffect(()=>{
-    axios.get('http://dowee2-server2.vercel.app/login', {
+    axios
+    .get('https://dowee2-server2.vercel.app/login', {
+    // .get("http://localhost:3000/login", {
       headers:{ 
         userId: userID
       }
