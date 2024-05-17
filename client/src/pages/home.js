@@ -1,12 +1,11 @@
-import React, {useState, useEffect, useCallback} from "react";
+import React, {useState, useEffect, useCallback, useContext} from "react";
 //import {Link} from "react-router-dom";
 import { ProjectModal } from "../components";
 import Navbar from "../modules/navbar";
 import Sidebar from "../modules/sidebar";
 import Project from "../modules/project";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
-
+import AuthContext from "../utilities/AuthContext";
 
 const Home = (props) => {
     const [projList, setProjList] = useState(null);
@@ -15,17 +14,15 @@ const Home = (props) => {
     const [tasks, setTasks] = useState(null);
     const [hourlog, setHourlog] = useState(null);
     const [openProjectModal, setOpenProjectModal] = useState(false);
-    const userId = parseInt(localStorage.getItem('userId'));
+    const {userID} = useContext(AuthContext);
     const projectId = parseInt(localStorage.getItem('projectId'));
-    const navigate = useNavigate();
-    const isLoggedIn = localStorage.getItem("isLoggedIn");
     const getProject=(proj)=>{
         setProject(proj);
     };
 
     const memoizedFetchData = useCallback((userId) => {
         axios
-        .get('https://dowee2-server2.vercel.app/home', {
+        .get('http://localhost:5000/home', {
           headers:{ 
             userId: userId
           }
@@ -43,18 +40,14 @@ const Home = (props) => {
     },[projectId, setProjList, setProject, setUsers, setTasks, setHourlog]);
 
     useEffect(() => {
-        memoizedFetchData(userId);
-
-        if(isLoggedIn===false){
-            navigate("/");
-        }
-    },[userId, memoizedFetchData])
-
-    return isLoggedIn&&( 
+        memoizedFetchData(userID);
+    },[ userID, memoizedFetchData])
+    console.log(userID);
+    return( 
         <div className='static flex flex-col h-dvh'>
             <div className='relative my-3 ml-3 flex flex-col h-full justify-center'>
                 <div className='mb-3 mr-3'>
-                    <Navbar login={props.login}/>
+                    <Navbar/>
                 </div>
                 <div className="h-full flex flex-row">
                     <div className="h-full w-1/6 mr-2">

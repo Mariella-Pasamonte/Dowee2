@@ -1,45 +1,53 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import React, { useEffect, useState } from "react";
+import { BrowserRouter, Routes, Route,} from "react-router-dom";
+import React from "react";
 import { Login, Home, Register, Invoice } from "./pages";
+import PrivateRoute from "./utilities/PrivateRoute";
+import { AuthProvider } from './utilities/AuthContext';
 import "./App.css";
 
+
 function App() {
-  const [loggedInUser, setLoggedInUser] = useState(false);
-  
   //Loading animation
   window.onload = function() {
     document.getElementById("loading-animation").style.display = "none";
   };
-  function login(flag) {
-    setLoggedInUser(()=>flag);
-  }
-  const checkUser = () => {
-    if (localStorage.getItem('userId'))
-      setLoggedInUser(()=>true);
-  }
-  useEffect (()=>{
+
+  // function login(flag) {
+  //   setLoggedInUser(()=>flag);
+  // }
+  
+  // const checkUser = () => {
+  //   if (localStorage.getItem('userId'))
+  //     setLoggedInUser(()=>true);
+  // }
+  // useEffect (()=>{
     
-    checkUser();
-    return ()=> checkUser();
-  },[])
+  // checkUser();
+  //   return ()=> checkUser();
+  // },[])
   return (
     <BrowserRouter>
-      <Routes>
-        <Route
-          index
-          path="/"
-          element={<Login login={login} />}
-        />
-        <Route
-          path="/home"
-          element={<Home loggedInUser={loggedInUser} login={login}/>}
-        />
-        <Route
-          path="/invoice/:id"
-          element={<Invoice loggedInUser={loggedInUser}/>}
+      <AuthProvider>
+        <Routes>
+          <Route
+            index
+            path="/"
+            element={<Login/>}
           />
-        <Route path="/register" element={<Register />} />
-      </Routes>
+          <Route
+            path="/home"
+            element={<PrivateRoute><Home/></PrivateRoute>}
+          />
+          <Route
+            path="/invoice/:id"
+            element={<PrivateRoute><Invoice/></PrivateRoute>}
+          />
+          <Route 
+            path="/register" 
+            element={<Register />} 
+          />
+        </Routes>
+      </AuthProvider>
     </BrowserRouter>
   );
 }

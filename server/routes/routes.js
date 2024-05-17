@@ -1,6 +1,6 @@
 import express from "express";
 import pg from "pg";
-import {db} from '@vercel/postgres';
+// import {db} from '@vercel/postgres';
 import bcrypt from "bcrypt";
 
 const router = express.Router();
@@ -31,7 +31,6 @@ router.post("/login", async (req, res) => {
     const result = await db.query("SELECT * FROM users WHERE username = $1", [
       username,
     ]);
-    res.send("Success");
     if (result.rows.length > 0) {
       let success = false;
       const user = result.rows[0];
@@ -43,9 +42,11 @@ router.post("/login", async (req, res) => {
         console.log("Success: ", success);
         res.send({ status: success, data: user.id });
       } else {
+        console.log("Invalid credentials");
         res.send(success);
       }
     } else {
+      console.log("User not found");
       res.send("User not found");
     }
   } catch (error) {
