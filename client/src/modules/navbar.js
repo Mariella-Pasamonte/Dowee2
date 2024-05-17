@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {Link, useNavigate} from 'react-router-dom';
 import { Tooltips } from '../components';
 
-function Navbar(){
+function Navbar(props){
     const [isTooltipOpen, setIsTooltipOpen] = useState(false);
     const navigate = useNavigate();
 
@@ -16,6 +16,7 @@ function Navbar(){
 
     const loggingOut = () =>{
         localStorage.removeItem('userId');
+        props.login(false);
         navigate('/');
     }
 
