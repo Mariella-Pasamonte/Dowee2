@@ -65,7 +65,7 @@ const Login = (props) => {
   };
 
   useEffect(()=>{
-    axios.get('http://localhost:3000/login', {
+    axios.get('http://dowee2-server2.vercel.app/login', {
       headers:{ 
         userId: userID
       }
