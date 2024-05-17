@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ErrorToast, InputLabel } from "../components";
+import AuthContext from "../utilities/AuthContext";
 import loginImg from "../images/Login.png";
 import loginImg2 from "../images/Login2.png";
 import axios from "axios";
@@ -11,6 +12,7 @@ const Login = (props) => {
   const [validUserError, setValidUserError] = useState(false);
   const [isFilled, setIsFilled] = useState(true);
   const [isFilledError, setIsFilledError] = useState(false);
+  const { login, userID } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleUsernameChange = (e) => {
@@ -40,15 +42,18 @@ const Login = (props) => {
     };
   
     await axios
-    .post("http://localhost:5000/login", loginData)
+    .post("http://localhost:3000/login", loginData)
     .then((response) => {
       if (response.data.status === true) {
-        props.login(true);
-        localStorage.setItem("userId", response.data.data);
+        // props.login(true);
+        // localStorage.setItem("isLoggedIn", true);
+        login(response.data.data);
         navigate("/home");
         setIsFilled(true);
         setValidUserError(false);
       } else {
+        console.log("username:", username);
+        console.log("password:", password);
         setValidUserError(true); 
       }
     })
@@ -58,10 +63,9 @@ const Login = (props) => {
   };
 
   useEffect(()=>{
-    const userId = localStorage.getItem('userId');
-    axios.get('http://localhost:5000/login', {
+    axios.get('http://localhost:3000/login', {
       headers:{ 
-        userId: userId
+        userId: userID
       }
     })
     .then((response)=>{
@@ -72,7 +76,7 @@ const Login = (props) => {
     }).catch((error) =>{
       console.log(error);
     });
-  },[navigate,props])
+  },[navigate,userID])
 
   var inputLabelClassName = "flex flex-row mt-4 xl:mt-7";
   return (

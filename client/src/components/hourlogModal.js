@@ -115,7 +115,7 @@ function HourlogModal(props){
                 }
             )
         })
-        axios.post("http://localhost:5000/home", {
+        axios.post("https://dowee2-server2.vercel.app/home", {
             headers:{
                 function: 'addNewHourlog'
             },newHourlog

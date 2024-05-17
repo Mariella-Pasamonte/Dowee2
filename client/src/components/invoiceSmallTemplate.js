@@ -1,9 +1,10 @@
 import React from "react";
-import axios from "axios";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function InvoiceSmallTemplate(props){
     const [invoice, setInvoice] = useState({});
+    const navigate = useNavigate();
     return(
         <div name="mainbox" className="p-5 lg:w-[470px] w-full bg-[#4F8FA8]/50 rounded-md text-white drop-shadow-md font-sans flex flex-col ">
             <div name="headerInvoiceTitle" className="mx-3 text-[30px] font-medium uppercase border-white" >
@@ -19,9 +20,9 @@ function InvoiceSmallTemplate(props){
                     Total Invoice Amount: {invoice.total}69420
                 </div>
             <div className="w-full flex justify-center">
-                <a href={`/invoice/${props.id}`} className="rounded-full bg-white text-black text-center py-3 px-7 w-fit m-3 mb-7 hover:bg-gray-200">
+                <button onClick={()=>navigate(`/invoice/${props.id}`)} className="rounded-full bg-white text-black text-center py-3 px-7 w-fit m-3 mb-7 hover:bg-gray-200">
                     View Invoice    
-                </a>
+                </button>
             </div>
         </div>
     )

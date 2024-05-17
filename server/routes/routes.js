@@ -1,5 +1,6 @@
 import express from "express";
 import pg from "pg";
+// import {db} from '@vercel/postgres';
 import bcrypt from "bcrypt";
 
 const router = express.Router();
@@ -14,7 +15,7 @@ const db = new pg.Client({
   password: "doifyapp",
   port: 5432,
 });
-try {
+try { 
   db.connect();
   console.log("Connected to Database");
 } catch {
