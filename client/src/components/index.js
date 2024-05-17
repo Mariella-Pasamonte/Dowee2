@@ -24,3 +24,4 @@ export { default as Stopwatch } from "./stopwatch";
 // invoice features
 
 export { default as InvoiceTemplate } from "./invoiceTemplate";
+export { default as InvoiceSmallTemplate} from "./invoiceSmallTemplate";

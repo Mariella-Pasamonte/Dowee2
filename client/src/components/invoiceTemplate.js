@@ -13,7 +13,7 @@ function InvoiceTemplate(props) {
     <div className="invoice-faq7 thq-section-padding">
       <div className="invoice-max-width thq-section-max-width" ref={targetRef}>
         <div className="invoice-container">
-          <span className="invoice-text">Invoice No:</span>
+          <span className="invoice-text">Invoice No: #{props.id}</span>
           <span className="invoice-text01">Invoice Date:</span>
           <span className="invoice-date-time"></span>
           <span className="invoice-text02">Invoice To:</span>
