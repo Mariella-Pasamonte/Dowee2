@@ -83,6 +83,7 @@ const Register = () => {
       };
       await axios
       .post("https://dowee2-server2.vercel.app/register", registerData)
+      // .post("http://localhost:3000/login", registerData)
       .then((res) => {
       const data = res.data;
       if (data === true) {

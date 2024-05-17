@@ -42,7 +42,8 @@ const Login = (props) => {
     };
   
     await axios
-    .post("http://localhost:3000/login", loginData)
+    .post("http://dowee2-server2.vercel.app/login", loginData)
+    // .post("http://localhost:3000/login", loginData)
     .then((response) => {
       if (response.data.status === true) {
         // props.login(true);
