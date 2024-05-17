@@ -1,17 +1,20 @@
 import express from "express";
-// import pg from "pg";
+import pg from "pg";
 import {db} from '@vercel/postgres';
 import bcrypt from "bcrypt";
 
 const router = express.Router();
 
-// const db = new pg.Client({
-//   user: "default",
-//   host: "ep-autumn-cell-a1hs24pd-pooler.ap-southeast-1.aws.neon.tech/verceldb?sslmode=require",
-//   database: "verceldb",
-//   password: "Ej5Nzx9edRBl",
-// });
-
+const db = new pg.Client({
+  user: "postgres",
+  host: "localhost",
+  database: "Doify",
+  //Akoa's password
+  // password: "doifywebapp",
+  //Mariela's password
+  password: "doifyapp",
+  port: 5432,
+});
 try { 
   db.connect();
   console.log("Connected to Database");
@@ -23,6 +26,7 @@ router.post("/login", async (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
   const hashPass = await bcrypt.hash(password, 10);
+
   try {
     const result = await db.query("SELECT * FROM users WHERE username = $1", [
       username,
@@ -36,7 +40,8 @@ router.post("/login", async (req, res) => {
 
       if (match === true) {
         success = true;
-        res.send({status: success, data:user.id});
+        console.log("Success: ", success);
+        res.send({ status: success, data: user.id });
       } else {
         res.send(success);
       }
@@ -44,6 +49,7 @@ router.post("/login", async (req, res) => {
       res.send("User not found");
     }
   } catch (error) {
+    console.error("post/login errorError: ", error);
     res.status(500).send("Shit hit the fan Error");
   }
 });
@@ -116,132 +122,222 @@ router.post("/register", async (req, res) => {
   }
 });
 
-router.post("/home", async (req, res) =>{
-  const func = req.body.headers.function;
+router.post("/addProject", async (req, res) => {
+  const userid = req.body.userId;
+  const name = req.body.name;
+  const clientname = req.body.clientname;
+  const clientemadd = req.body.clientemadd;
+  const clientconnum = req.body.clientconnum;
+  const issueddate = req.body.issueddate;
+  const duedate = req.body.duedate;
+  const description = req.body.description;
+  const employees = req.body.employees;
 
   try{
-    if(func==='addNewProject'){
-      const userid = req.body.newProject.userId;
-      const name = req.body.newProject.name;
-      const clientname = req.body.newProject.clientname;
-      const clientemadd = req.body.newProject.clientemadd;
-      const clientconnum = req.body.newProject.clientconnum;
-      const issueddate = req.body.newProject.issueddate;
-      const duedate = req.body.newProject.duedate;
-      const description = req.body.newProject.description;
-      const employees = req.body.newProject.employees;
-
-      const result = await db.query(
-        "INSERT INTO projects (userid, name, clientname, clientemadd, clientconnum, issueddate, duedate, description, employees) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)",
-        [userid, name, clientname, clientemadd, clientconnum, issueddate, duedate, description,employees]
-      );
-    } else if (func === 'editProject'){
-      const id = req.body.editedProject.id;
-      const userid = req.body.editedProject.userid;
-      const name = req.body.editedProject.name;
-      const clientname = req.body.editedProject.clientname;
-      const clientemadd = req.body.editedProject.clientemadd;
-      const clientconnum = req.body.editedProject.clientconnum;
-      const issueddate = req.body.editedProject.issueddate;
-      const duedate = req.body.editedProject.duedate;
-      const description = req.body.editedProject.description;
-      const employees = req.body.editedProject.employees;
-
-      const result = await db.query(
-        "UPDATE projects SET id = $10, userid = $1, name = $2, clientname = $3, clientemadd = $4, clientconnum = $5, issueddate = $6, duedate = $7, description = $8, employees = $9 WHERE id = $10",
-        [userid, name, clientname, clientemadd, clientconnum, issueddate, duedate, description,employees, id]
-      );
-    } else if (func === 'deleteProject'){
-      const id = req.body.deleteProject.id;
-
-      const hourlog = await db.query(
-        "DELETE FROM hourlog WHERE taskid IN (SELECT id FROM tasks WHERE projectid = $1)",
-        [id]
-      )
-
-      const task = await db.query(
-        "DELETE FROM tasks WHERE projectid = $1",
-        [id]
-      )
-
-      const result = await db.query(
-        "DELETE FROM projects WHERE id = $1",
-        [id]
-      );
-
-    } else if (func === 'addNewTask'){
-      const projectid = req.body.newTask.projectid;
-      const name = req.body.newTask.name;
-      const paymenttype = req.body.newTask.paymenttype;
-      const priority = req.body.newTask.priority;
-      const amount = req.body.newTask.amount;
-      const employeelist = req.body.newTask.employeelist;
-      const description = req.body.newTask.desc;
-      const status = req.body.newTask.status;
-
-      const result = await db.query(
-        "INSERT INTO tasks (projectid, name, paymenttype, priority, amount, employeelist, description, status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
-        [projectid, name, paymenttype, priority, amount, employeelist, description, status]
-      );
-
-    } else if(func === 'editTask'){
-      const id = req.body.editedTask.id;
-      const projectid = req.body.editedTask.projectid;
-      const name = req.body.editedTask.name;
-      const paymenttype = req.body.editedTask.paymenttype;
-      const priority = req.body.editedTask.priority;
-      const amount = req.body.editedTask.amount;
-      const employeelist = req.body.editedTask.employeelist;
-      const description = req.body.editedTask.desc;
-      const status = req.body.editedTask.status;
-
-      const result = await db.query(
-        "UPDATE tasks SET id = $1, projectid = $2, name = $3, paymenttype = $4, priority = $5, amount = $6, employeelist = $7, description = $8, status = $9 WHERE id = $1",
-        [id, projectid, name, paymenttype, priority, amount, employeelist, description, status]
-      );
-
-    } else if(func === 'deleteTask'){
-      const id = req.body.deleteTask.id;
-
-      const result = await db.query(
-        "DELETE FROM tasks WHERE id = $1",
-        [id]
-      );
-
-    } else if (func === 'addNewHourlog'){
-      const taskid = req.body.newHourlog.taskId;
-      const employeeassigned = req.body.newHourlog.employeeassigned;
-      const date = req.body.newHourlog.date;
-      const seconds = req.body.newHourlog.seconds;
-      const minutes = req.body.newHourlog.minutes;
-      const hours = req.body.newHourlog.hours;
-      const starttimer = req.body.newHourlog.starttimer;
-      const amount = req.body.newHourlog.amount;
-      const pendingamount = req.body.newHourlog.pendingamount;
-
-      const result = await db.query(
-        "INSERT INTO hourlog (taskid, employeeassigned, date, seconds, minutes, hours, starttimer, amount, pendingamount) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)",
-        [taskid, employeeassigned, date, seconds, minutes, hours, starttimer, amount, pendingamount]
-      );
-
-    } else if (func === 'runTimer'){
-      const id = req.body.time.id;
-      const starttimer = req.body.time.starttimer;
-      const hours = req.body.time.hours;
-      const minutes = req.body.time.minutes;
-      const seconds = req.body.time.seconds;
-
-      const result = await db.query(
-        "UPDATE hourlog SET id = $1, starttimer = $2, hours = $3, minutes = $4, seconds = $5 WHERE id = $1",
-        [id, starttimer, hours, minutes, seconds]
-      )
-      
-    }
-  } catch(error) {
-    console.error("Error: ", error);
-    res.status(500).send("Shit hit the fan Error in function home");
+    const result = await db.query(
+      "INSERT INTO projects (userid, name, clientname, clientemadd, clientconnum, issueddate, duedate, description, employees) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)",
+      [
+        userid,
+        name,
+        clientname,
+        clientemadd,
+        clientconnum,
+        issueddate,
+        duedate,
+        description,
+        employees,
+      ]
+    );
+  }catch{
+    console.error("post. /addProject error Error: ", error);
+    res.status(500).send("Shit hit the fan Error in addProject");
   }
 });
+
+router.post("/editProject", async (req, res) => {
+  const id = req.body.id;
+  const userid = req.body.userId;
+  const name = req.body.name;
+  const clientname = req.body.clientname;
+  const clientemadd = req.body.clientemadd;
+  const clientconnum = req.body.clientconnum;
+  const issueddate = req.body.issueddate;
+  const duedate = req.body.duedate;
+  const description = req.body.description;
+  const employees = req.body.employees;
+
+  try{
+    const result = await db.query(
+      "UPDATE projects SET id = $10, userid = $1, name = $2, clientname = $3, clientemadd = $4, clientconnum = $5, issueddate = $6, duedate = $7, description = $8, employees = $9 WHERE id = $10",
+      [
+        userid,
+        name,
+        clientname,
+        clientemadd,
+        clientconnum,
+        issueddate,
+        duedate,
+        description,
+        employees,
+        id,
+      ]
+    );
+  }catch{
+    console.error("post. /editProject error Error: ", error);
+    res.status(500).send("Shit hit the fan Error in editProject");
+  }
+});
+
+router.post("/deleteProject", async (req, res) => {
+  const id = req.body.id;
+
+  try{
+    const hourlog = await db.query(
+      "DELETE FROM hourlog WHERE taskid IN (SELECT id FROM tasks WHERE projectid = $1)",[id]);
+
+    const task = await db.query("DELETE FROM tasks WHERE projectid = $1", [id]);
+
+    const result = await db.query("DELETE FROM projects WHERE id = $1", [id]);
+
+  }catch{
+    console.error("post. /deleteProject error Error: ", error);
+    res.status(500).send("Shit hit the fan Error in deleteProject");
+  }
+});
+
+router.post("/addTask", async (req, res) => {
+  const projectid = req.body.projectid;
+  const name = req.body.name;
+  const paymenttype = req.body.paymenttype;
+  const priority = req.body.priority;
+  const amount = req.body.amount;
+  const employeelist = req.body.employeelist;
+  const description = req.body.desc;
+  const status = req.body.status;
+  
+  try{
+    const result = await db.query(
+      "INSERT INTO tasks (projectid, name, paymenttype, priority, amount, employeelist, description, status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
+      [
+        projectid,
+        name,
+        paymenttype,
+        priority,
+        amount,
+        employeelist,
+        description,
+        status,
+      ]
+    );
+  }catch{
+    console.error("post. /addTask error Error: ", error);
+    res.status(500).send("Shit hit the fan Error in addTask");
+  }
+});
+
+router.post("/editTask", async (req, res) => {
+  const id = req.body.id;
+  const projectid = req.body.projectid;
+  const name = req.body.name;
+  const paymenttype = req.body.paymenttype;
+  const priority = req.body.priority;
+  const amount = req.body.amount;
+  const employeelist = req.body.employeelist;
+  const description = req.body.desc;
+  const status = req.body.status;
+  
+  try{
+    const result = await db.query(
+      "UPDATE tasks SET id = $1, projectid = $2, name = $3, paymenttype = $4, priority = $5, amount = $6, employeelist = $7, description = $8, status = $9 WHERE id = $1",
+      [
+        id,
+        projectid,
+        name,
+        paymenttype,
+        priority,
+        amount,
+        employeelist,
+        description,
+        status,
+      ]
+    );
+  }catch{
+    console.error("post. /editTask error Error: ", error);
+    res.status(500).send("Shit hit the fan Error in editTask");
+  }
+});
+
+router.post("/deleteTask", async (req, res) => {
+  const id = req.body.id;
+  
+  try{
+    const result = await db.query("DELETE FROM tasks WHERE id = $1", [id]);
+  }catch{
+    console.error("post. /deleteTask error Error: ", error);
+    res.status(500).send("Shit hit the fan Error in deleteTask");
+  }
+});
+
+router.post("/addHourlog", async (req, res) => {
+  const taskid = req.body.taskId;
+  const employeeassigned = req.body.employeeassigned;
+  const date = req.body.date;
+  const seconds = req.body.seconds;
+  const minutes = req.body.minutes;
+  const hours = req.body.hours;
+  const starttimer = req.body.starttimer;
+  const amount = req.body.amount;
+  const pendingamount = req.body.pendingamount;
+  
+  try{
+    const result = await db.query(
+      "INSERT INTO hourlog (taskid, employeeassigned, date, seconds, minutes, hours, starttimer, amount, pendingamount) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)",
+      [
+        taskid,
+        employeeassigned,
+        date,
+        seconds,
+        minutes,
+        hours,
+        starttimer,
+        amount,
+        pendingamount,
+      ]
+    );
+  }catch{
+    console.error("post. /addHourlog error Error: ", error);
+    res.status(500).send("Shit hit the fan Error in addHourlog");
+  }
+});
+
+router.post("/runTimer", async (req, res) => {
+  const id = req.body.id;
+  const starttimer = req.body.starttimer;
+  const hours = req.body.hours;
+  const minutes = req.body.minutes;
+  const seconds = req.body.seconds;
+  
+  try{
+    const result = await db.query(
+      "UPDATE hourlog SET id = $1, starttimer = $2, hours = $3, minutes = $4, seconds = $5 WHERE id = $1",
+      [id, starttimer, hours, minutes, seconds]
+    );
+  }catch{
+    console.error("post. /runTimer error Error: ", error);
+    res.status(500).send("Shit hit the fan Error in runTimer");
+  }
+});
+
+//Get users from database
+router.get("/getUsers", async(req,res)=>{
+  try {
+    const users = await db.query("SELECT * FROM users");
+    res.send({users: users.rows})
+  } catch(error){
+    console.error("get/getUsers error Error: ", error);
+    res.status(500).send("Problem in /getUsers");
+  }
+})
 
 router.get("/home", async (req, res) => {
   const userId = req.headers['userid']||req.query.userId;

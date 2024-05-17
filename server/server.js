@@ -1,4 +1,4 @@
-// import pg from "pg";
+import pg from "pg";
 import { db } from '@vercel/postgres';
 import express from "express";
 import cors from "cors";
@@ -18,6 +18,16 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+
+const db = new pg.Client({
+  user: "postgres",
+  host: "localhost",
+  database: "Doify",
+  //Akoa's password
+  // password: "doifywebapp",
+  password: "doifyapp",
+  port: 5432,
+});
 
 // const db = new pg.Client({
 //   user: "default",
