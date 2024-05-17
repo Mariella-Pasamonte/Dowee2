@@ -2,7 +2,7 @@ import React, {useState, useEffect, useRef, useCallback} from "react";
 import { Calendar } from "@natscale/react-calendar";
 import InputMask from 'react-input-mask';
 import { convertToDate, onChangeDate} from '../utilities/date';
-import {InputLabel} from '../components';
+import {InputLabel, ErrorToast} from '../components';
 
 function AddProjectModal(props){
     const [projTitle, setProjTitle] = useState('Project '+String(props.projLength+1).padStart(2,'0'));
@@ -17,8 +17,15 @@ function AddProjectModal(props){
     const [dueDate, setDueDate] = useState('');
     const [dueDateCalendar, setDueDateCalendar] = useState(null);
     const [isFilled, setIsFilled] = useState(true);
+    
     const issueCalendarDivRef = useRef(null);
+    const inputIssueCalendarDivRef = useRef(null);
+    const [isDateValid, setIsDateValid] = useState(false);
+    const [isOpenDateError, setIsOpenDateError] = useState(false);
+
     const dueCalendarDivRef = useRef(null);
+    const inputDueCalendarDivRef = useRef(null);
+
     const emps = props.employees&&props.employees;
     const getUsername = (userId) => {
         const user = props.users&&props.users.find(user => user.id === userId);
@@ -33,13 +40,27 @@ function AddProjectModal(props){
 
     useEffect(() => {
         const handleClickOutside = (e) => {
-          if (issueCalendarDivRef.current && !issueCalendarDivRef.current.contains(e.target)) {
-            setShowIssueCalendar(false);
-          }
-          
-          if (dueCalendarDivRef.current && !dueCalendarDivRef.current.contains(e.target)){
-            setShowDueCalendar(false);
-          }
+            if(props.isOpen===true){
+                const issueCalendarDivRect = issueCalendarDivRef.current.getBoundingClientRect();
+                const dueCalendarDivRect = dueCalendarDivRef.current.getBoundingClientRect();
+                if (inputIssueCalendarDivRef.current && (!inputIssueCalendarDivRef.current.contains(e.target)
+                    &&(e.clientX < issueCalendarDivRect.left ||
+                    e.clientX > issueCalendarDivRect.right ||
+                    e.clientY < issueCalendarDivRect.top ||
+                    e.clientY > issueCalendarDivRect.bottom)
+                )) {
+                    setShowIssueCalendar(false);
+                }
+                
+                if (inputDueCalendarDivRef.current && (!inputDueCalendarDivRef.current.contains(e.target)
+                &&(e.clientX < dueCalendarDivRect.left ||
+                e.clientX > dueCalendarDivRect.right ||
+                e.clientY < dueCalendarDivRect.top ||
+                e.clientY > dueCalendarDivRect.bottom)
+                )) {
+                    setShowDueCalendar(false);
+                }
+            }
         };
 
         document.addEventListener('click', handleClickOutside);
@@ -55,6 +76,7 @@ function AddProjectModal(props){
             setDueDate('');
             setDueDateCalendar(new Date());
             setIsFilled(true);
+            setIsDateValid(false);
         }
 
         return () => {
@@ -68,12 +90,10 @@ function AddProjectModal(props){
 
     const getIssuedDate = (e) =>{
         setIssuedDate(e.target.value);
-        convertToDate(e.target.value);
     }
 
     const getDueDate = (e) =>{
         setDueDate(e.target.value);
-        convertToDate(e.target.value);
     }
 
     function closeMainModal(){
@@ -83,7 +103,7 @@ function AddProjectModal(props){
     }
 
     function addProject(){
-        if(projTitle !== '' && clientName !== '' && emailAddress !== '' && contactNum !== '' && props.employees.length !== 0){
+        if(convertToDate(issuedDate) != "Invalid Date" && convertToDate(dueDate)!= "Invalid Date" && isDateValid === false && projTitle !== '' && clientName !== '' && emailAddress !== '' && contactNum !== '' && props.employees.length !== 0){
             setIsFilled(true);
             props.addNewProject(
                 {
@@ -102,6 +122,9 @@ function AddProjectModal(props){
             props.setOpenEmpModal(false);
             props.setEmployees([]);
         } else{
+            if(convertToDate(issuedDate) == "Invalid Date" || convertToDate(dueDate) == "Invalid Date"){
+                setIsOpenDateError(true);
+            }
             setIsFilled(false);
         }
     };
@@ -111,6 +134,11 @@ function AddProjectModal(props){
         <>
             <div data-modal-backdrop='static' className='z-10 absolute w-fit h-fit flex flex-row top-11 inset-x-[17%]'>
                 <div className='h-fit w-72 bg-[#5C6E75]/50 p-3 border-[1px] border-white/50 rounded-xl backdrop-blur-2xl'>  
+                    <ErrorToast id="isDateValid" isError={isOpenDateError} setIsError={setIsOpenDateError}>
+                        <div className="ms-3 text-sm font-normal">
+                            Please fill out the correct date.
+                        </div>
+                    </ErrorToast> 
                     <div className='flex flex-col font-Inter text-white text-sm w-full'>
                         <div className='flex flex-row justify-end'>
                             <button
@@ -201,7 +229,7 @@ function AddProjectModal(props){
                                 >
                                     Issued on
                                 </InputLabel>
-                                <div ref={issueCalendarDivRef} className="relative">
+                                <div ref={inputIssueCalendarDivRef} className="relative">
                                     <InputMask
                                         id="issuedDate"
                                         name="issuedDate"
@@ -213,17 +241,14 @@ function AddProjectModal(props){
                                         placeholder="mm/dd/yyyy" 
                                         className="h-7 text-sm rounded w-full border-[1px] border-[#B2F6FF]/50 bg-inherit pt-1 pl-1"
                                     />
-                                    { showIssueCalendar===true &&
-                                        <div className="z-20 absolute inline -top-5">
-                                            <Calendar
-                                                useDarkMode
-                                                value={issuedDateCalendar}
-                                                onChange={(e)=>onChangeDate(e,setIssuedDateCalendar,setIssuedDate,setShowIssueCalendar)} 
-                                                onClick={(e)=>setShowIssueCalendar(false)}
-                                                className="border-[1px] bg-[#1B333A]"
-                                            />
-                                        </div>
-                                    } 
+                                    <div ref={issueCalendarDivRef} className={`z-20 absolute -top-5 ${showIssueCalendar?'inline':'hidden'}`}>
+                                        <Calendar
+                                            useDarkMode
+                                            value={issuedDateCalendar}
+                                            onChange={(e)=>onChangeDate(e,setIssuedDateCalendar,setIssuedDate,setShowIssueCalendar)}
+                                            className="border-[1px] bg-[#1B333A]"
+                                        />
+                                    </div>
                                 </div>
                             </div>
                             <div className='flex flex-col w-1/2 pl-1'>
@@ -234,7 +259,7 @@ function AddProjectModal(props){
                                 >
                                     Due date
                                 </InputLabel>
-                                <div ref={dueCalendarDivRef} className="relative">
+                                <div ref={inputDueCalendarDivRef} className="relative">
                                     <InputMask
                                         id="dueDate"
                                         name="dueDate"
@@ -243,22 +268,20 @@ function AddProjectModal(props){
                                         placeholder="mm/dd/yyyy" 
                                         onChange={(e)=>getDueDate(e)}
                                         type="text"
+                                        mask="99/99/9999"
                                         className="h-7 text-sm rounded w-full border-[1px] border-[#B2F6FF]/50 bg-inherit pt-1 pl-1"
                                         disabled={!issuedDate}
                                     >
                                     </InputMask>
-                                    { showDueCalendar===true &&
-                                        <div className="z-20 absolute inline -top-5">
-                                            <Calendar
-                                                useDarkMode
-                                                value={dueDateCalendar} 
-                                                onChange={(e)=>onChangeDate(e,setDueDateCalendar,setDueDate,setShowDueCalendar)} 
-                                                onClick={()=>setShowDueCalendar(false)}
-                                                className="border-[1px] bg-[#1B333A]"
-                                                isDisabled={disableDueDate}
-                                            />
-                                        </div>
-                                    }
+                                    <div ref={dueCalendarDivRef} className={`z-20 absolute -top-5 ${showDueCalendar?'inline':'hidden'}`}>
+                                        <Calendar
+                                            useDarkMode
+                                            value={dueDateCalendar} 
+                                            onChange={(e)=>onChangeDate(e,setDueDateCalendar,setDueDate,setShowDueCalendar)}
+                                            className="border-[1px] bg-[#1B333A]"
+                                            isDisabled={disableDueDate}
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         </div>

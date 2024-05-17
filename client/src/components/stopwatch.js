@@ -125,11 +125,7 @@ function Stopwatch(props) {
                 }
             )
         })
-        axios.post("http://localhost:5000/home", {
-            headers:{
-                function: 'addNewHourlog'
-            },newHourlog
-        })
+        axios.post("http://localhost:5000/addHourlog",newHourlog)
         .then((res) => {
             console.log(newHourlog)
         })
@@ -141,11 +137,7 @@ function Stopwatch(props) {
 
     function setTimer(time){
         axios
-        .post("http://localhost:5000/home", {
-            headers:{
-                function: 'runTimer'
-            },time
-        })
+        .post("http://localhost:5000/runTimer",time)
         .then((res) => {
             console.log(time);
         })

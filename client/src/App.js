@@ -6,6 +6,7 @@ import "./App.css";
 function App() {
   const [loggedInUser, setLoggedInUser] = useState(false);
   
+  //Loading animation
   window.onload = function() {
     document.getElementById("loading-animation").style.display = "none";
   };
@@ -19,6 +20,10 @@ function App() {
         />
         <Route
           path="/home"
+          element={loggedInUser ? <Home /> : <Navigate to="/" />}
+        />
+        <Route
+          path="/invoice/:id"
           element={loggedInUser ? <Home /> : <Navigate to="/" />}
         />
         <Route path="/register" element={<Register />} />
