@@ -8,25 +8,30 @@ import '@natscale/react-calendar/dist/main.css';
 import axios from "axios";
 
 const Register = () => {
+  //Details for users
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [emailAddress, setEmailAddress] = useState('');
   const [gender, setGender] = useState('');
   const [birthday, setBirthday] = useState('');
-  const today = new Date();
-  const [calendarDate, setCalendarDate] = useState(today);
+  const [calendarDate, setCalendarDate] = useState(today); //the value in this variable is for the highlighted date in calendar
   const [contactNum, setContactNum] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [showCalendar, setShowCalendar]= useState(false);
-  const [isFilled, setIsFilled] = useState(true);
-  const [isFilledError, setIsFilledError] = useState(false);
-  const [isValidDateError, setIsValidDateError] = useState(false);
-  const [existingUser, setExistingUser] = useState(false);
-  const [existingUserError, setExistingUserError] = useState(false);
-  const navigate = useNavigate();
+
+  const [showCalendar, setShowCalendar]= useState(false); //this variable is used to make the calendar show or hidden
+  const [isFilled, setIsFilled] = useState(true); //value that determines the inputs aren't blank
+  const [isFilledError, setIsFilledError] = useState(false); //if true, it will show ErrorToast to tell user that there are inputs that are blank
+  const [isValidDateError, setIsValidDateError] = useState(false);//Check if date is valid for birthday
+
+  const [existingUserError, setExistingUserError] = useState(false);//if true, it will tell that the data they inputted already existed to another user either username, contact number, or email addresss.
+ 
+  const navigate = useNavigate();//use to navigate home when register successfully
+  
   const calendarDivRef = useRef(null);
   const inputCalendarDivRef = useRef(null);
+
+  const today = new Date();
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -81,7 +86,6 @@ const Register = () => {
       .then((res) => {
       const data = res.data;
       if (data === true) {
-        setExistingUser(true);
         setExistingUserError(true);
         console.log("Account Exists");
       } else {
@@ -220,7 +224,6 @@ const Register = () => {
                           useDarkMode
                           value={calendarDate}
                           onChange={(e)=>convertToBirthDate(getClickedDate(e), setIsValidDateError, setCalendarDate, setBirthday, setShowCalendar)}
-                          onClick={(e)=>console.log("calendar:", calendarDivRef.current && !calendarDivRef.current.contains(e.target))}
                           className='border-[1px] h-fit bg-[#1B333A]'
                           isDisabled={isDisabled}
                         />

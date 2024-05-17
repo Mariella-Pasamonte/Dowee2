@@ -19,12 +19,24 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
+// For localhost
+// const db = new pg.Client({
+//   user: "postgres",
+//   host: "localhost",
+//   database: "Doify",
+//   //Akoa's password
+//   // password: "doifywebapp",
+//   password: "doifyapp",
+//   port: 5432,
+// });
+
 // const db = new pg.Client({
 //   user: "default",
 //   host: "ep-autumn-cell-a1hs24pd-pooler.ap-southeast-1.aws.neon.tech/verceldb?sslmode=require",
 //   database: "verceldb",
 //   password: "Ej5Nzx9edRBl",
 // });
+
 try {
   db.connect();
   console.log("Connected to Database");

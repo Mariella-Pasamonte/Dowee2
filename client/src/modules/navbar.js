@@ -1,10 +1,11 @@
-import React, {useState} from 'react';
-import {Link, useNavigate} from 'react-router-dom';
+import React, {useState, useContext} from 'react';
+import {Link} from 'react-router-dom';
+import AuthContext from "../utilities/AuthContext";
 import { Tooltips } from '../components';
 
-function Navbar(){
+function Navbar(props){
     const [isTooltipOpen, setIsTooltipOpen] = useState(false);
-    const navigate = useNavigate();
+    const { logout } = useContext(AuthContext);
 
     const toggleTooltipEnter = () => {
         setIsTooltipOpen(true);
@@ -15,8 +16,7 @@ function Navbar(){
     }
 
     const loggingOut = () =>{
-        localStorage.removeItem('userId');
-        navigate('/');
+        logout();
     }
 
     return(

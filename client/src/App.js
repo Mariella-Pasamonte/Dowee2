@@ -1,28 +1,53 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import React, { useState } from "react";
-import { Login, Home, Register } from "./pages";
+import { BrowserRouter, Routes, Route,} from "react-router-dom";
+import React from "react";
+import { Login, Home, Register, Invoice } from "./pages";
+import PrivateRoute from "./utilities/PrivateRoute";
+import { AuthProvider } from './utilities/AuthContext';
 import "./App.css";
 
+
 function App() {
-  const [loggedInUser, setLoggedInUser] = useState(false);
-  
+  //Loading animation
   window.onload = function() {
     document.getElementById("loading-animation").style.display = "none";
   };
+
+  // function login(flag) {
+  //   setLoggedInUser(()=>flag);
+  // }
+  
+  // const checkUser = () => {
+  //   if (localStorage.getItem('userId'))
+  //     setLoggedInUser(()=>true);
+  // }
+  // useEffect (()=>{
+    
+  // checkUser();
+  //   return ()=> checkUser();
+  // },[])
   return (
     <BrowserRouter>
-      <Routes>
-        <Route
-          index
-          path="/"
-          element={<Login loggedInUser={setLoggedInUser} />}
-        />
-        <Route
-          path="/home"
-          element={loggedInUser ? <Home /> : <Navigate to="/" />}
-        />
-        <Route path="/register" element={<Register />} />
-      </Routes>
+      <AuthProvider>
+        <Routes>
+          <Route
+            index
+            path="/"
+            element={<Login/>}
+          />
+          <Route
+            path="/home"
+            element={<PrivateRoute><Home/></PrivateRoute>}
+          />
+          <Route
+            path="/invoice/:id"
+            element={<PrivateRoute><Invoice/></PrivateRoute>}
+          />
+          <Route 
+            path="/register" 
+            element={<Register />} 
+          />
+        </Routes>
+      </AuthProvider>
     </BrowserRouter>
   );
 }
