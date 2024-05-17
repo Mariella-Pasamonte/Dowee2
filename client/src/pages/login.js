@@ -49,6 +49,7 @@ const Login = (props) => {
         // props.login(true);
         // localStorage.setItem("isLoggedIn", true);
         login(response.data.data);
+        console.log("Navigating to home");
         navigate("/home");
         setIsFilled(true);
         setValidUserError(false);
