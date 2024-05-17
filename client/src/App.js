@@ -1,26 +1,43 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import React, { useState } from "react";
-import { Login, Home, Register } from "./pages";
+import React, { useEffect, useState } from "react";
+import { Login, Home, Register, Invoice } from "./pages";
 import "./App.css";
 
 function App() {
   const [loggedInUser, setLoggedInUser] = useState(false);
   
+  //Loading animation
   window.onload = function() {
     document.getElementById("loading-animation").style.display = "none";
   };
+  function login(flag) {
+    setLoggedInUser(()=>flag);
+  }
+  const checkUser = () => {
+    if (localStorage.getItem('userId'))
+      setLoggedInUser(()=>true);
+  }
+  useEffect (()=>{
+    
+    checkUser();
+    return ()=> checkUser();
+  },[])
   return (
     <BrowserRouter>
       <Routes>
         <Route
           index
           path="/"
-          element={<Login loggedInUser={setLoggedInUser} />}
+          element={<Login login={login} />}
         />
         <Route
           path="/home"
-          element={loggedInUser ? <Home /> : <Navigate to="/" />}
+          element={<Home loggedInUser={loggedInUser} login={login}/>}
         />
+        <Route
+          path="/invoice/:id"
+          element={<Invoice loggedInUser={loggedInUser}/>}
+          />
         <Route path="/register" element={<Register />} />
       </Routes>
     </BrowserRouter>

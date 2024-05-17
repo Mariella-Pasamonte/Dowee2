@@ -5,9 +5,10 @@ import Navbar from "../modules/navbar";
 import Sidebar from "../modules/sidebar";
 import Project from "../modules/project";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 
-const Home = () => {
+const Home = (props) => {
     const [projList, setProjList] = useState(null);
     const [project, setProject] = useState(null);
     const [users, setUsers] = useState(null);
@@ -16,7 +17,8 @@ const Home = () => {
     const [openProjectModal, setOpenProjectModal] = useState(false);
     const userId = parseInt(localStorage.getItem('userId'));
     const projectId = parseInt(localStorage.getItem('projectId'));
-
+    const navigate = useNavigate();
+    const isLoggedIn = localStorage.getItem("isLoggedIn");
     const getProject=(proj)=>{
         setProject(proj);
     };
@@ -42,13 +44,17 @@ const Home = () => {
 
     useEffect(() => {
         memoizedFetchData(userId);
+
+        if(isLoggedIn===false){
+            navigate("/");
+        }
     },[userId, memoizedFetchData])
 
-    return(
+    return isLoggedIn&&( 
         <div className='static flex flex-col h-dvh'>
             <div className='relative my-3 ml-3 flex flex-col h-full justify-center'>
                 <div className='mb-3 mr-3'>
-                    <Navbar/>
+                    <Navbar login={props.login}/>
                 </div>
                 <div className="h-full flex flex-row">
                     <div className="h-full w-1/6 mr-2">

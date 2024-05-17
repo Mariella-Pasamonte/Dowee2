@@ -43,7 +43,7 @@ const Login = (props) => {
     .post("https://dowee2-server2.vercel.app/login", loginData)
     .then((response) => {
       if (response.data.status === true) {
-        props.loggedInUser(true);
+        props.login(true);
         localStorage.setItem("userId", response.data.data);
         navigate("/home");
         setIsFilled(true);
@@ -68,7 +68,7 @@ const Login = (props) => {
     })
     .then((response)=>{
       if (response.data.status === true) {
-        props.loggedInUser(true);
+        localStorage.setItem('isLoggedIn', true);
         navigate("/home");
       }
     }).catch((error) =>{

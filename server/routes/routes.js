@@ -54,27 +54,25 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.get("/login", async (req,res) =>{
-  const userId = req.headers['userid']||req.query.userId;
-  try{
+router.get("/login", async (req, res) => {
+  const userId = req.headers["userid"] || req.query.userId;
+  try {
     let success = false;
     const result = await db.query("SELECT * FROM users WHERE id = $1", [
       userId,
     ]);
 
-    if(result.rows.length>0){
+    if (result.rows.length > 0) {
       success = true;
-      res.send({status: success});
+      res.send({ status: success });
+    } else {
+      res.send({ status: success });
     }
-    else{
-      res.send({status: success});
-    }
-
   } catch (error) {
-    console.error("Error:", error);
+    console.error("get/login errorError:", error);
     res.status(500).send("User does not exist");
   }
-})
+});
 
 router.post("/register", async (req, res) => {
   const fname = req.body.fname;
@@ -117,7 +115,7 @@ router.post("/register", async (req, res) => {
       res.send(exist);
     }
   } catch (error) {
-    console.error("Error: ", error);
+    console.error("post/register errorError: ", error);
     res.status(500).send("Shit hit the fan Error");
   }
 });
@@ -340,18 +338,21 @@ router.get("/getUsers", async(req,res)=>{
 })
 
 router.get("/home", async (req, res) => {
-  const userId = req.headers['userid']||req.query.userId;
+  const userId = req.headers["userid"] || req.query.userId;
 
   try {
-    const result = await db.query("SELECT * FROM projects p WHERE userid = $1 OR EXISTS (SELECT 1 FROM unnest(p.employees) AS emp WHERE emp = $1) ORDER BY p.id ASC", [
-      userId,
-    ]);
-    const tasks = await db.query("SELECT t.* FROM tasks t JOIN projects p ON t.projectid = p.id WHERE p.userid = $1 OR EXISTS (SELECT 1 FROM unnest(t.employeelist) AS emp WHERE emp = $1) ORDER BY t.id ASC",[
-      userId,
-    ]); 
-    const hourlog = await db.query("SELECT h.* FROM hourlog h INNER JOIN tasks t ON h.taskid = t.id INNER JOIN projects p ON t.projectid = p.id WHERE (p.userid = $1) OR (h.employeeassigned = $1) ORDER BY h.id ASC",[
-      userId,
-    ]);
+    const result = await db.query(
+      "SELECT * FROM projects p WHERE userid = $1 OR EXISTS (SELECT 1 FROM unnest(p.employees) AS emp WHERE emp = $1) ORDER BY p.id ASC",
+      [userId]
+    );
+    const tasks = await db.query(
+      "SELECT t.* FROM tasks t JOIN projects p ON t.projectid = p.id WHERE p.userid = $1 OR EXISTS (SELECT 1 FROM unnest(t.employeelist) AS emp WHERE emp = $1) ORDER BY t.id ASC",
+      [userId]
+    );
+    const hourlog = await db.query(
+      "SELECT h.* FROM hourlog h INNER JOIN tasks t ON h.taskid = t.id INNER JOIN projects p ON t.projectid = p.id WHERE (p.userid = $1) OR (h.employeeassigned = $1) ORDER BY h.id ASC",
+      [userId]
+    );
 
     const users = await db.query("SELECT * FROM users");
 
@@ -360,12 +361,16 @@ router.get("/home", async (req, res) => {
     let taskLength = tasks.rows.length;
     let hlLength = hourlog.rows.length;
 
-    res.send({projects: projLength?projects:null, users:users.rows, tasks:taskLength?tasks.rows:null, hourlog:hlLength?hourlog.rows:null});
-    
-  } catch(error) {
-    console.error("Error: ", error);
+    res.send({
+      projects: projLength ? projects : null,
+      users: users.rows,
+      tasks: taskLength ? tasks.rows : null,
+      hourlog: hlLength ? hourlog.rows : null,
+    });
+  } catch (error) {
+    console.error("get/home error Error: ", error);
     res.status(500).send("Shit hit the fan Error in get data home");
   }
-})
+});
 
 export default router;

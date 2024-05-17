@@ -1,3 +1,7 @@
+-- This file contains the queries for creating the tables in the database
+-- Do not copy and paste all of the queries at once, run them one by one in the database
+-- separated by a semicolon
+
 CREATE TABLE users(
     id SERIAL PRIMARY KEY,
     username VARCHAR(100) NOT NULL UNIQUE,
