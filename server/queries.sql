@@ -51,3 +51,48 @@ CREATE TABLE hourLog(
     amount NUMERIC(10,2) NOT NULL,
     pendingamount NUMERIC(10,2)
 );
+
+CREATE TABLE invoice (
+    id SERIAL PRIMARY KEY,
+    invoice_number INT NOT NULL,
+    invoice_date DATE DEFAULT CURRENT_DATE,
+    invoice_to_clientName VARCHAR(100) NOT NULL,
+    invoice_to_clientEmAdd VARCHAR(100) NOT NULL,
+    invoice_from_userId INT REFERENCES users(id),
+    notes TEXT,
+    invoice_project INT REFERENCES projects(id),
+    invoice_tasks INT[] NOT NULL,
+    invoice_hourlogs INT[] NOT NULL,
+    invoice_total NUMERIC(10, 2) NOT NULL
+);
+
+-- possible queries to use for testing
+/*
+-----------------------------------------------------------------------------------------------
+display query to see the results for the tasks under the test project with a status of finished and assigned to testuser:
+
+SELECT 
+    t.id AS task_id,
+    t.name AS task_name,
+    t.amount AS task_amount,
+    hl.seconds,
+    hl.minutes,
+    hl.hours,
+    hl.pendingamount
+FROM 
+    tasks t
+JOIN 
+    projects p ON t.projectId = p.id
+JOIN 
+    hourLog hl ON hl.taskId = t.id
+JOIN 
+    users u ON hl.employeeAssigned = u.id
+WHERE 
+    p.name = 'test' AND
+    t.status = 'finished' AND
+    u.username = 'testuser';
+
+-----------------------------------------------------------------------------------------------
+
+
+*/
