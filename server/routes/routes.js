@@ -1,25 +1,25 @@
 import express from "express";
-// import pg from "pg";
-import {db} from '@vercel/postgres';
+import pg from "pg";
+//import {db} from '@vercel/postgres';
 import bcrypt from "bcrypt";
 
 const router = express.Router();
 
 //For localhost
-// const db = new pg.Client({
-//   user: "postgres",
-//   host: "localhost",
-//   database: "Doify",
-//   //Akoa's password
-//   // password: "doifywebapp",
-//   //Mariela's password
-//   password: "doifyapp",
-//   port: 5432,
-// });
+const db = new pg.Client({
+  user: "postgres",
+  host: "localhost",
+  database: "Doify",
+  //Akoa's password
+  password: "doifywebapp",
+  //Mariela's password
+  //password: "doifyapp",
+  port: 5432,
+});
 
 try { 
   db.connect();
-  console.log("Connected to Database");
+  console.log("Connected Routes to Database");
 } catch {
   console.log("error connecting to Database");
 }
@@ -373,6 +373,129 @@ router.get("/home", async (req, res) => {
   } catch (error) {
     console.error("get/home error Error: ", error);
     res.status(500).send("Shit hit the fan Error in get data home");
+  }
+});
+
+router.post("/generateInvoice", async(req, res) => {
+  const {
+    invoice_number,
+    invoice_to_clientName,
+    invoice_to_clientEmAdd,
+    invoice_from_userId,
+    notes,
+    invoice_project,
+    invoice_tasks,
+    invoice_hourlogs,
+    invoice_total,
+  } = req.body;
+  try {
+    const result = await db.query(
+      `INSERT INTO invoice (invoice_number, invoice_to_clientName, invoice_to_clientEmAdd, invoice_from_userId, notes, invoice_project, invoice_tasks, invoice_hourlogs, invoice_total) 
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`,
+      [
+        invoice_number,
+        invoice_to_clientName,
+        invoice_to_clientEmAdd,
+        invoice_from_userId,
+        notes,
+        invoice_project,
+        invoice_tasks,
+        invoice_hourlogs,
+        invoice_total,
+      ]
+    );
+    res.status(201).json(result.rows[0]);
+    
+    console.log('Invoice generated:', result.rows[0]);
+  } catch (error) {
+    console.log(`some shit went down. It was probably ${error}`);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// Route to update an existing invoice
+router.post('/updateInvoice/:id', async (req, res) => {
+  const { id } = req.params;
+  const {
+    invoice_number,
+    invoice_to_clientName,
+    invoice_to_clientEmAdd,
+    invoice_from_userId,
+    notes,
+    invoice_project,
+    invoice_tasks,
+    invoice_hourlogs,
+    invoice_total,
+  } = req.body;
+
+  try {
+    const result = await db.query(
+      `UPDATE invoice SET 
+        invoice_number = $1,
+        invoice_to_clientName = $2,
+        invoice_to_clientEmAdd = $3,
+        invoice_from_userId = $4,
+        notes = $5,
+        invoice_project = $6,
+        invoice_tasks = $7,
+        invoice_hourlogs = $8,
+        invoice_total = $9
+       WHERE id = $10 RETURNING *`,
+      [
+        invoice_number,
+        invoice_to_clientName,
+        invoice_to_clientEmAdd,
+        invoice_from_userId,
+        notes,
+        invoice_project,
+        invoice_tasks,
+        invoice_hourlogs,
+        invoice_total,
+        id,
+      ]
+    );
+    res.status(200).json(result.rows[0]);
+    console.log('Invoice updated:', result.rows[0]);
+  } catch (error) {
+    console.error('Error updating invoice:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// Route to get a specific invoice by ID
+router.post('/getInvoice/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const result = await db.query('SELECT * FROM invoice WHERE id = $1', [id]);
+    res.status(200).json(result.rows[0]);
+  } catch (error) {
+    console.error('Error getting invoice:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// Route to delete an invoice by ID
+router.post('/deleteInvoice/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const result = await db.query('DELETE FROM invoice WHERE id = $1 RETURNING *', [id]);
+    res.status(200).json(result.rows[0]);
+  } catch (error) {
+    console.error('Error deleting invoice:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// Route to get all invoices
+router.post('/getAllInvoices', async (req, res) => {
+  try {
+    const result = await db.query('SELECT * FROM invoice');
+    res.status(200).json(result.rows);
+  } catch (error) {
+    console.error('Error getting all invoices:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
