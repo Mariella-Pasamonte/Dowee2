@@ -6,7 +6,7 @@ function InvoiceSmallTemplate(props){
     const [invoice, setInvoice] = useState({});
     const navigate = useNavigate();
     return(
-        <div name="mainbox" className="p-5 lg:w-[470px] w-full bg-[#4F8FA8]/50 rounded-md text-white drop-shadow-md font-sans flex flex-col ">
+        <div name="mainbox" className="p-5 lg:w-[470px] xl:w-[550px] 2xl:w-[470px] bg-[#4F8FA8]/50 rounded-md text-white drop-shadow-md font-sans flex flex-col">
             <div name="headerInvoiceTitle" className="mx-3 text-[30px] font-medium uppercase border-white" >
                 {invoice.number}TEST
             </div>
