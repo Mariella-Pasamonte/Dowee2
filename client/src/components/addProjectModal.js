@@ -1,8 +1,10 @@
-import React, {useState, useEffect, useRef, useCallback} from "react";
+import React, {useState, useEffect, useRef, useCallback, useContext} from "react";
 import { Calendar } from "@natscale/react-calendar";
 import InputMask from 'react-input-mask';
 import { convertToDate, onChangeDate} from '../utilities/date';
 import {InputLabel, ErrorToast} from '../components';
+import AuthContext from "../utilities/AuthContext";
+import axios from "axios";
 
 function AddProjectModal(props){
     const [projTitle, setProjTitle] = useState('Project '+String(props.projLength+1).padStart(2,'0'));
@@ -26,9 +28,10 @@ function AddProjectModal(props){
     const dueCalendarDivRef = useRef(null);
     const inputDueCalendarDivRef = useRef(null);
 
+    const [users,setUsers] = useState([]);
     const emps = props.employees&&props.employees;
     const getUsername = (userId) => {
-        const user = props.users&&props.users.find(user => user.id === userId);
+        const user = users.find(user => user.id === userId);
         return user ? user.username : 'Unknown';
     };
     const empUsernames = props.employees&&props.employees.map(employee =>getUsername(employee));
@@ -37,10 +40,12 @@ function AddProjectModal(props){
         if (joinEmpUsernames.length === 0) return '';
         else return joinEmpUsernames.length > 30 ? joinEmpUsernames.slice(0,30) + '...' : joinEmpUsernames;
     }
+    const {userID} = useContext(AuthContext);
 
     useEffect(() => {
         const handleClickOutside = (e) => {
             if(props.isOpen===true){
+                memoizedFetchUsers();
                 const issueCalendarDivRect = issueCalendarDivRef.current.getBoundingClientRect();
                 const dueCalendarDivRect = dueCalendarDivRef.current.getBoundingClientRect();
                 if (inputIssueCalendarDivRef.current && (!inputIssueCalendarDivRef.current.contains(e.target)
@@ -67,6 +72,7 @@ function AddProjectModal(props){
 
         if (!props.isOpen) {
             setProjTitle('Project ' + String(props.projLength+1).padStart(2, '0'));
+            setUsers([]);
             setClientName('');
             setEmailAddress('');
             setContactNum('');
@@ -79,10 +85,24 @@ function AddProjectModal(props){
             setIsDateValid(false);
         }
 
+
         return () => {
           document.removeEventListener('click', handleClickOutside);
         };
     }, [props, issueCalendarDivRef, dueCalendarDivRef, setShowIssueCalendar, setShowDueCalendar]);
+
+    //get users from backend
+    const memoizedFetchUsers = useCallback(() => {
+        axios
+        // .get('https://dowee2-server2.vercel.app/getUsers', {})
+        .get('http://localhost:3000/getUsers', {})
+        .then((response)=>{
+            setUsers(response.data.users);
+        })
+        .catch((error) =>{
+            console.log(error);
+        });
+    },[setUsers]);
 
     const disableDueDate = useCallback((date) => {
         return date < issuedDateCalendar;
@@ -107,7 +127,7 @@ function AddProjectModal(props){
             setIsFilled(true);
             props.addNewProject(
                 {
-                    userId: localStorage.getItem('userId'),
+                    userId: userID,
                     name: projTitle,
                     clientname: clientName,
                     clientemadd: emailAddress,
@@ -308,7 +328,7 @@ function AddProjectModal(props){
                                     Employees:
                                 </InputLabel>
                                 <div>
-                                    {truncatedText()}
+                                    {props.employees&&truncatedText()}
                                 </div>
                             </div>
                             <div className="flex flex-col justify-center">

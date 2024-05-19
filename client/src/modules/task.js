@@ -1,20 +1,35 @@
-import React, {useState, useCallback, useMemo} from 'react';
+import React, {useState, useCallback, useMemo, useContext, useEffect} from 'react';
 import {
     Stopwatch,
     HourlogModal
 } from "../components";
+import AuthContext from '../utilities/AuthContext';
+import axios from 'axios';
 
 function Task(props){
-    let userId = parseInt(localStorage.getItem('userId'));
+    const {userID} = useContext(AuthContext);
     const [taskFocus, setTaskFocus] = useState(null);
     const [isOpenHourlog, setIsOpenHourlog] = useState(false);
+    const [users, setUsers] = useState([]);
     const getUsername = (userId) => {
-        const user = props.users&&props.users.find(user => user.id === userId);
+        const user = users.find(user => user.id === userId);
         return user ? user.username : 'Unknown';
     };
     const tasks = useMemo(()=> {
         return props.tasks?props.tasks.filter((task)=>task.projectid === props.projectId):[];
     },[props]);
+
+    const memoizedFetchUsers = useCallback(() => {
+        axios
+        // .get('https://dowee2-server2.vercel.app/getUsers', {})
+        .get('http://localhost:3000/getUsers', {})
+        .then((response)=>{
+            setUsers(response.data.users);
+        })
+        .catch((error) =>{
+            console.log(error);
+        });
+    },[setUsers]);
 
     function getAmount(amntArr){
         let most = 0;
@@ -124,18 +139,21 @@ function Task(props){
                 </td>
                 <td className='rounded-r-md border-1 border-black font-light py-3 w-40'>
                     {task.employeelist.map((emp)=>
-                        emp === userId&&
-                        <Stopwatch isOpen={task.paymenttype} task={task} hourlog={props.hourlog} userId={userId} fetchData={props.fetchData}/>
+                        emp === userID&&
+                        <Stopwatch isOpen={task.paymenttype} task={task} hourlog={props.hourlog} userId={userID} fetchData={props.fetchData}/>
                     )}
                 </td>
             </tr>
         )
-    },[tasks, props, taskFocus, truncatedEmpNames, userId]);
+    },[tasks, props, taskFocus, truncatedEmpNames, userID]);
 
+    useEffect(() => {
+        memoizedFetchUsers();
+    })
     return(
         <>
             <div className='relative'>
-                <HourlogModal isOpen={isOpenHourlog} closeModal={setIsOpenHourlog} projectId={props.projectId} hourlog={props.hourlog} tasks={props.tasks} issuedDate={props.issuedDate} dueDate={props.dueDate} userId={userId} fetchData={props.fetchData}/>
+                <HourlogModal isOpen={isOpenHourlog} closeModal={setIsOpenHourlog} projectId={props.projectId} hourlog={props.hourlog} tasks={props.tasks} issuedDate={props.issuedDate} dueDate={props.dueDate} userId={userID} fetchData={props.fetchData}/>
                 <div className='flex flex-row w-96 py-2'>
                     <div className="text-xl mb-2 mr-4 w-fit font-medium text-white">
                         Tasks

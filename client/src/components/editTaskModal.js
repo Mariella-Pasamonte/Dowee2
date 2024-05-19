@@ -1,25 +1,30 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useContext, useCallback} from "react";
 import {
     InputLabel,
     ErrorToast
 } from "../components";
+import axios from 'axios';
+import AuthContext from "../utilities/AuthContext";
 
 function EditTaskModal(props){
     //Task Details
+    const [taskId, setTaskId] = useState(props.task.id);
     const [taskTitle, setTaskTitle] = useState(props.task.name);
     const [paymentType, setPaymentType] = useState(props.task.paymenttype)
     const [priority, setPriority] = useState(props.task.priority);
     const [taskDescription, setTaskDescription] = useState(props.task.description);
     const [amount, setAmount] = useState(props.task.amount);
     const [status, setStatus] = useState(props.task.status);
+    const {userID} = useContext(AuthContext);
     const emps = props.employees;
     
     //checks
     const [isFilled, setIsFilled] = useState(true);
     const [nameExist, setNameExist] = useState(false);
     const [nameExistError, setNameExistError]= useState(false);
+    const [users, setUsers] = useState([]);
     const getUsername = (userId) => {
-        const user = props.users&&props.users.find(user => user.id === userId);
+        const user = users.find(user => user.id === userId);
         return user ? user.username : 'Unknown';
     };
     const amountCheck = checkEmptyAmount(amount);
@@ -35,9 +40,23 @@ function EditTaskModal(props){
             setIsFilled(true);
             setNameExist(false);
             setNameExistError(false);
+        } else{
+            memoizedFetchUsers();
         }
 
     }, [props]);
+
+    const memoizedFetchUsers = useCallback(() => {
+        axios
+        // .get('https://dowee2-server2.vercel.app/getUsers', {})
+        .get('http://localhost:5000/getUsers', {})
+        .then((response)=>{
+            setUsers(response.data.users);
+        })
+        .catch((error) =>{
+            console.log(error);
+        });
+    },[setUsers]);
 
     function getAmount(e, index){
         const updatedAmount = [...amount];
@@ -75,13 +94,15 @@ function EditTaskModal(props){
     }
 
     function editTask(){
-        const taskExist = props.tasks?props.tasks.some((task)=>task.name===taskTitle&&task.projectid===props.projectId):false;
-
+        const taskExist = props.tasks?props.tasks.some((task)=>task.name===taskTitle&&task.projectid===props.project.id):false;
+        if(status==="Finished"){
+            finishedTask();
+        }
         if(taskExist===false && taskTitle !== ''&& emps.length!==0 && !amountCheck && taskDescription!==''){
             props.editTask(
                 {
-                    id:props.task.id,
-                    projectid: props.projectId,
+                    id:taskId,
+                    projectid: props.task.projectid,
                     name: taskTitle,
                     paymenttype: paymentType,
                     priority: priority,
@@ -103,11 +124,67 @@ function EditTaskModal(props){
         }
     };
 
+    function finishedTask(){
+        axios
+        // .get("https://dowee2-server2.vercel.app/checkInvoice", invoiceData)
+        .get("http://localhost:3000/checkInvoice", {
+            headers:{ 
+                projectid: props.task.projectid
+            }
+        })
+        .then((res)=>{
+            console.log('status:', res.data.status);
+            const taskids = [taskId];
+            const hourlogs = props.hourlog.map((hl)=>
+                hl.taskid===taskId&&hl.employeeassigned===userID&&hl.id
+            )
+            const filteredHourlogs = props.hourlog.filter(
+                (item) =>
+                    item.employeeassigned === userID && item.taskid === taskId
+            );
+            let total = filteredHourlogs.reduce((acc, hl) => acc+parseFloat(hl.pendingamount),0).toFixed(2);
+            
+            if (res.data.status===true){
+                const invoice = res.data.invoice;
+                axios
+                // .post(`{https://dowee2-server2.vercel.app/updateInvoice/${userID}}`, invoice)
+                .post(`{http://localhost:3000/updateInvoice/${userID}}`, invoice)
+                .then((res))
+                .catch((error) => {
+                    console.log(error);
+                }); 
+            } else{
+                const newInvoice = {
+                    invoice_number: props.invoices?props.invoices.length+1:1,
+                    invoice_to_clientName: props.project.clientname,
+                    invoice_to_clientEmAdd: props.project.clientemadd,
+                    invoice_from_userId: userID,
+                    notes: "Thank you for your service",
+                    invoice_project:props.project.id,
+                    invoice_tasks: taskids,
+                    invoice_hourlogs: hourlogs,
+                    invoice_total: parseFloat(total)
+                }
+                axios
+                // .post("https://dowee2-server2.vercel.app/generateInvoice")
+                .post("http://localhost:3000/generateInvoice", newInvoice)
+                .then((res))
+                .catch((error) => {
+                    console.log(error);
+                });
+                
+            }
+        })
+        .catch((error) => {
+            console.log(error);
+          });
+    }
+    
     var inputLabelClassName="flex flex-row text-sm";
 
     return props.isOpen&&(
         <>
-            <div className='z-10 absolute w-full h-[90%] flex flex-row justify-center -top-7'>
+            <div className='z-10 absolute w-full h-[90%] flex flex-row justify-center -top-10'>
                 <ErrorToast
                     id='TaskTitleExistError'
                     isError={nameExistError}
@@ -135,6 +212,49 @@ function EditTaskModal(props){
                                 onChange={e=>setTaskTitle(e.target.value)}
                                 className="mt-1 text-sm rounded border-[1px] border-[#B2F6FF]/50 bg-inherit py-1 pl-2"
                             />
+                        </div>
+                        <div className="flex flex-col mb-2">
+                            <label className={`${inputLabelClassName} mb-2`}>
+                                Status
+                            </label>
+                            <div className="flex flex-row justify-between w-full">
+                                <div className="flex items-center mr-2">
+                                    <input
+                                        id="onHoldStatusRadio"
+                                        name="status"
+                                        type="radio"
+                                        value="On Hold"
+                                        checked={status==="On Hold"}
+                                        onChange={(e)=>setStatus("On Hold")}
+                                        className='w-4 h-4 mr-1 text-[#397AB9] focus:ring-0 focus:ring-offset-0'
+                                    />
+                                    <label className='text-sm font-medium text-white dark:text-gray-300'>On Hold</label>
+                                </div>
+                                <div className="flex items-center mr-2">
+                                    <input
+                                        id="inProgressStatusRadio"
+                                        name="status"
+                                        type="radio"
+                                        value="In Progress"
+                                        checked={status==="In Progress"}
+                                        onChange={(e)=>setStatus("In Progress")}
+                                        className='w-4 h-4 mr-1 text-[#397AB9] focus:ring-0 focus:ring-offset-0'
+                                    />
+                                    <label className='text-sm font-medium text-white dark:text-gray-300'>In Progress</label>
+                                </div>
+                                <div className="flex items-center mr-2">
+                                    <input
+                                        id="finishedStatusRadio"
+                                        name="status"
+                                        type="radio"
+                                        value="Finished"
+                                        checked={status==="Finished"}
+                                        onChange={(e)=>setStatus("Finished")}
+                                        className='w-4 h-4 mr-1 text-[#397AB9] focus:ring-0 focus:ring-offset-0'
+                                    />
+                                    <label className='text-sm font-medium text-white dark:text-gray-300'>Finished</label>
+                                </div>
+                            </div>
                         </div>
                         <div className="flex flex-col mb-2">
                             <label className={`${inputLabelClassName} mb-2`}>

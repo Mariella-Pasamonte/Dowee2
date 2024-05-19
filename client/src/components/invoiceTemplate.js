@@ -19,9 +19,9 @@ function InvoiceTemplate(props) {
 
   const uploadImageDisplay = () => {
     try {
-    const uploadedFile = fileUploadRef.current.files[0];
-    const cachedImageUrl = URL.createObjectURL(uploadedFile);
-    setImageSrc(cachedImageUrl);
+      const uploadedFile = fileUploadRef.current.files[0];
+      const cachedImageUrl = URL.createObjectURL(uploadedFile);
+      setImageSrc(cachedImageUrl);
     } catch (error) {
       console.log(error);
     }
