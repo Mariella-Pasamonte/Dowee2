@@ -89,8 +89,8 @@ function EditEmployeesModal(props){
     //get users from backend
     const memoizedFetchUsers = useCallback(() => {
         axios
-        .get('https://dowee2-server2.vercel.app/getUsers', {})
-        // .get('http://localhost:5000/getUsers', {})
+        // .get('https://dowee2-server2.vercel.app/getUsers', {})
+        .get('http://localhost:5000/getUsers', {})
         .then((response)=>{
             setUsers(response.data.users);
         })
