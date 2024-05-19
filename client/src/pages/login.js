@@ -12,7 +12,7 @@ const Login = (props) => {
   const [validUserError, setValidUserError] = useState(false);
   const [isFilled, setIsFilled] = useState(true);
   const [isFilledError, setIsFilledError] = useState(false);
-  const { login, userID } = useContext(AuthContext);
+  const { login, userID, setUserID } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleUsernameChange = (e) => {
@@ -48,6 +48,7 @@ const Login = (props) => {
       if (response.data.status === true) {
         // props.login(true);
         // localStorage.setItem("isLoggedIn", true);
+        setUserID(response.data.data);
         login(response.data.data);
         console.log("Navigating to home");
         navigate("/home");
@@ -74,7 +75,6 @@ const Login = (props) => {
     })
     .then((response)=>{
       if (response.data.status === true) {
-        localStorage.setItem('isLoggedIn', true);
         navigate("/home");
       }
     }).catch((error) =>{

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 //import {Link} from "react-router-dom";
 import Task from "./task";
 import Invoice from "./invoice";
@@ -10,6 +10,7 @@ import {
     WarningModal
 } from "../components";
 import axios from 'axios';
+import AuthContext from '../utilities/AuthContext';
 
 function Project(props){
     const [openAddTaskModal, setOpenAddTaskModal] = useState(false);
@@ -27,7 +28,7 @@ function Project(props){
     const [deletedTask, setDeletedTask] = useState(null);
     const [task, setTask] = useState(null);
     const users = props.project.employees.map((emp)=>props.users.find(user=>user.id===emp));
-    let userId =  parseInt(localStorage.getItem('userId'));
+    const {userID} = useContext(AuthContext);
 
     const getEmployees = (newEmployee) =>{
         if(employeeList.length>0) {
@@ -50,7 +51,7 @@ function Project(props){
     function addNewTask(newTask){
         axios
         // .post("https://dowee2-server2.vercel.app/addTask",newTask)
-        .post("http://localhost:5000/addTask",newTask)
+        .post("http://localhost:3000/addTask",newTask)
         .then((res) => {
             console.log(newTask);
         })
@@ -58,33 +59,33 @@ function Project(props){
             console.log("Error: ", error);
         }); 
         addNewInvoice(newTask);
-        props.fetchData(userId);
+        props.fetchData(userID);
     }
 
     function editTask(editedTask){
         axios
         // .post("https://dowee2-server2.vercel.app/editTask",editedTask)
-        .post("http://localhost:5000/editTask",editedTask)
+        .post("http://localhost:3000/editTask",editedTask)
         .then((res) => {
             console.log(editedTask);
         })
         .catch((error) => {
             console.log("Error: ", error);
         }); 
-        props.fetchData(userId)
+        props.fetchData(userID)
     }
 
     function deleteTask(deleteTask){
         axios
         // .post("https://dowee2-server2.vercel.app/deleteTask",deleteTask)
-        .post("http://localhost:5000/deleteTask",deleteTask)
+        .post("http://localhost:3000/deleteTask",deleteTask)
         .then((res) => {
             console.log(deleteTask);
         })
         .catch((error) => {
             console.log("Error: ", error);
         });
-        props.fetchData(userId);         
+        props.fetchData(userID);         
     }
 
     function addNewInvoice(newInvoice){
@@ -136,7 +137,7 @@ function Project(props){
                             <hr className="w-full h-1 bg-[#8381BB] border-0 rounded dark:bg-gray-700"/>
                         </div>
                         <div className='flex flex-row text-[#AEAEE3] justify-end font-thin w-64 mb-3 pr-2'>
-                            {props.project.userid===userId&&
+                            {props.project.userid===userID&&
                                 <div className="relative flex flex-col justify-center h-full">
                                     {edit?
                                         <button 
@@ -228,9 +229,9 @@ function Project(props){
                         </div>
                     </div>
                     <div className='w-72'>
-                        <AddTaskModal isOpen={openAddTaskModal} openEmployeesModal={setOpenEmployeesModal} closeModal={setOpenAddTaskModal} addNewTasks={addNewTask} tasks={props.tasks} projectId={props.project.id} employees={employeeList} setEmployees={setEmployeeList} users={props.users}/>
-                        {editedTask&&<EditTaskModal isOpen={openEditTaskModal} openEmployeesModal={setOpenEmployeesModal} closeModal={setOpenEditTaskModal} editTask={editTask} task={editedTask} setTask={setEditedTask} projectId={props.project.id} employees={employeeList} setEmployees={setEmployeeList} users={props.users}/>}
-                        {task&&<TaskModal isOpen={openTaskModal} closeModal={setOpenTaskModal} task={task} setTask={setTask} users={props.users}/>}
+                        <AddTaskModal isOpen={openAddTaskModal} openEmployeesModal={setOpenEmployeesModal} closeModal={setOpenAddTaskModal} addNewTasks={addNewTask} tasks={props.tasks} project={props.project} employees={employeeList} setEmployees={setEmployeeList}/>
+                        {editedTask&&<EditTaskModal isOpen={openEditTaskModal} openEmployeesModal={setOpenEmployeesModal} closeModal={setOpenEditTaskModal} editTask={editTask} task={editedTask} setTask={setEditedTask} project={props.project} employees={employeeList} setEmployees={setEmployeeList} hourlog={props.hourlog} invoices={props.invoices}/>}
+                        {task&&<TaskModal isOpen={openTaskModal} closeModal={setOpenTaskModal} task={task} setTask={setTask} users={users}/>}
                         <WarningModal isOpen={openDeleteWarningModal} closeModal={setOpenDeleteWarningModal} delete={deleteTask} deleteObject={deletedTask}>
                             <div className='text-center'>
                                 <div className='text-xl font-bold'>
@@ -243,7 +244,7 @@ function Project(props){
                         </WarningModal>
                     </div>
                     <div>
-                        {taskOrInvoiceFocus === 0 ? <Task tasks={props.tasks} projectId={props.project.id} issuedDate={props.project.issueddate} dueDate={props.project.duedate} userId={props.project.userid} users={props.users} hourlog={props.hourlog} edit={edit} setEdit={setEdit} setEditedTask={setEditedTask} setDeletedTask={setDeletedTask} setOpenEditTaskModal={setOpenEditTaskModal} setOpenDeleteWarningModal={setOpenDeleteWarningModal} setEmployees={setEmployeeList} setOpenTaskModal={setOpenTaskModal} setTask={setTask} fetchData={props.fetchData}/>:<Invoice invoices={invoices} projectId={props.project.id} />}
+                        {taskOrInvoiceFocus === 0 ? <Task tasks={props.tasks} projectId={props.project.id} issuedDate={props.project.issueddate} dueDate={props.project.duedate} userId={props.project.userid} hourlog={props.hourlog} edit={edit} setEdit={setEdit} setEditedTask={setEditedTask} setDeletedTask={setDeletedTask} setOpenEditTaskModal={setOpenEditTaskModal} setOpenDeleteWarningModal={setOpenDeleteWarningModal} setEmployees={setEmployeeList} setOpenTaskModal={setOpenTaskModal} setTask={setTask} fetchData={props.fetchData}/>:<Invoice invoices={props.invoices} projectId={props.project.id} />}
                     </div>
                 </div>
             </div>

@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { InvoiceTemplate } from "../components";
 
 
-const Invoice = (props) => {
+const Invoice = () => {
     const {id} = useParams("id");
     const navigate = useNavigate();
     const isLoggedIn= localStorage.getItem("isLoggedIn");

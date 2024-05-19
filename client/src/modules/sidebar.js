@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   AddProjectModal,
   EditEmployeesModal,
@@ -6,6 +6,7 @@ import {
   WarningModal,
   Tooltips,
 } from "../components";
+import AuthContext from "../utilities/AuthContext";
 import axios from "axios";
 
 function Sidebar(props) {
@@ -20,9 +21,9 @@ function Sidebar(props) {
   const [projectFocus, setProjectFocus] = useState(null);
   const [dropdownId, setDropdownId] = useState(null);
   const [employees, setEmployees] = useState([]);
+  const {userID} = useContext(AuthContext);
 
   var projLength = props.projList ? props.projList.length : 0;
-  let userId = parseInt(localStorage.getItem("userId"));
 
   const toggleTooltipEnter = () => {
     setIsTooltipOpen(true);
@@ -50,7 +51,7 @@ function Sidebar(props) {
     function addNewProject(newProject){
         axios
         // .post("https://dowee2-server2.vercel.app/addProject", newProject)
-        .post("http://localhost:5000/addProject", newProject)
+        .post("http://localhost:3000/addProject", newProject)
         .then((res) => {
             console.log(newProject);
         })
@@ -59,13 +60,13 @@ function Sidebar(props) {
         }); 
         props.setProject(newProject);
         setProjectFocus(newProject.id);
-        props.fetchData(userId);
+        props.fetchData(userID);
     }
 
     function editedProject(editedProject){
         axios
         // .post("https://dowee2-server2.vercel.app/editProject",editedProject)
-        .post("http://localhost:5000/editProject",editedProject)
+        .post("http://localhost:3000/editProject",editedProject)
         .then((res) => {
             console.log(editedProject);
         })
@@ -74,13 +75,13 @@ function Sidebar(props) {
         }); 
         props.setProject(editedProject); 
         setProjectFocus(editedProject.id);
-        props.fetchData(userId);
+        props.fetchData(userID);
     }
 
     function deletingProject(deleteProject){
         axios
         // .post("https://dowee2-server2.vercel.app/deleteProject",deleteProject)
-        .post("http://localhost:5000/deleteProject",deleteProject)
+        .post("http://localhost:3000/deleteProject",deleteProject)
         .then((res) => {
             console.log(deleteProject);
         })
@@ -90,14 +91,12 @@ function Sidebar(props) {
         props.setProject(null); 
         setProjectFocus(null);
         localStorage.removeItem("projectId");
-        props.fetchData(userId);
+        props.fetchData(userID);
     }
 
-  const handleButtonClick = (projectId) => {
-    setProjectFocus(projectId);
-    const proj = props.projList.find((proj) => proj.id === projectId);
-    props.setProject(proj);
-    localStorage.setItem("projectId", projectId);
+  const handleButtonClick = (project) => {
+    setProjectFocus(project.id);
+    props.setProject(project);
   };
 
   const handleOpenDropdown = (projectId) => {
@@ -251,7 +250,7 @@ function Sidebar(props) {
                   {props.projList.map((project) => (
                     <button
                       key={project.id}
-                      onClick={(e) => handleButtonClick(project.id)}
+                      onClick={(e) => handleButtonClick(project)}
                       className={`flex flex-row w-full justify-between pt-1 px-1 rounded-md ${
                         projectFocus === project.id ? "bg-white/20" : null
                       }`}>
@@ -289,7 +288,7 @@ function Sidebar(props) {
                           {project.name}{" "}
                         </div>
                       </div>
-                      {project.userid === userId && (
+                      {project.userid === userID && (
                         <div className="relative">
                           <div
                             data-tooltip-target={project.id}

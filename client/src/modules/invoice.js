@@ -4,7 +4,7 @@ import { InvoiceTemplate, InvoiceSmallTemplate } from "../components";
 import axios from "axios";
 
 
-function Invoice({ invoices, projectId }) {
+function Invoice(props) {
   const [openInvoiceTemplateModal, setOpenInvoiceTemplateModal] =
     useState(false);
   const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
@@ -41,18 +41,6 @@ function Invoice({ invoices, projectId }) {
                 <a href="#" className="flex items-center justify-center px-3 h-8 leading-tight text-blue-600 border border-blue-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white ">1</a>
               </li>
               <li>
-                <a href="#" className="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">2</a>
-              </li>
-              <li>
-                <a href="#" aria-current="page" className="z-10 flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">3</a>
-              </li>
-              <li>
-                <a href="#" className="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">4</a>
-              </li>
-              <li>
-                <a href="#" className="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">5</a>
-              </li>
-              <li>
                 <a href="#" className="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
                   <span className="sr-only">Next</span>
                   <svg className="w-2.5 h-2.5 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
@@ -64,31 +52,23 @@ function Invoice({ invoices, projectId }) {
           </nav>
         </div>
         <div className="flex h-[30rem] xl:h-full">
-          {invoices && (
-            <div className="flex flex-row">
-              {invoices.map(
+          {props.invoices && (
+            <div className="w-full h-full border-[#AEAEE3] border-[1px]  rounded-lg  flex flex-row gap-5 xl:gap-x-5 xl:gap-y-3 2xl:gap-5 px-3 justify-center flex-wrap">
+              {props.invoices.map(
                 (invoice) =>
-                  invoice.projId === projectId && (
-                    <div
-                      key={invoice.id}
-                      className="rounded-md bg-[#4F8FA8]/50 h-28 w-48 p-3">
-                      <div className="font-Inter text-white text-lg">
-                        {invoice.name}
-                      </div>
-                    </div>
-                  )
+                  <InvoiceSmallTemplate invoice={invoice}/>
               )}
             </div>
           )}
           {/* <InvoiceTemplate /> */}
-          <div className="w-full h-full border-[#AEAEE3] border-[1px]  rounded-lg  flex flex-row gap-5 xl:gap-x-5 xl:gap-y-3 2xl:gap-5 px-3 justify-center flex-wrap">
-              <InvoiceSmallTemplate />
+          {/* <div className="w-full h-full border-[#AEAEE3] border-[1px]  rounded-lg  flex flex-row gap-5 xl:gap-x-5 xl:gap-y-3 2xl:gap-5 px-3 justify-center flex-wrap">
               <InvoiceSmallTemplate />
               <InvoiceSmallTemplate/>
               <InvoiceSmallTemplate/>
-              {/* <InvoiceSmallTemplate/>
-              <InvoiceSmallTemplate/> */}
-           </div>
+              <InvoiceSmallTemplate />
+              <InvoiceSmallTemplate/>
+              <InvoiceSmallTemplate/>
+           </div> */}
         </div>
       </div>
     </>

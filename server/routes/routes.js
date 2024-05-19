@@ -58,7 +58,7 @@ router.post("/login", async (req, res) => {
 });
 
 router.get("/login", async (req, res) => {
-  const userId = req.headers["userid"] || req.query.userId;
+  const userId = req.headers["userId"] || req.query.userId;
   try {
     let success = false;
     const result = await db.query("SELECT * FROM users WHERE id = $1", [
@@ -149,6 +149,7 @@ router.post("/addProject", async (req, res) => {
         employees,
       ]
     );
+    console.log(result);
   }catch{
     console.error("post. /addProject error Error: ", error);
     res.status(500).send("Shit hit the fan Error in addProject");
@@ -342,7 +343,6 @@ router.get("/getUsers", async(req,res)=>{
 
 router.get("/home", async (req, res) => {
   const userId = req.headers["userid"] || req.query.userId;
-
   try {
     const result = await db.query(
       "SELECT * FROM projects p WHERE userid = $1 OR EXISTS (SELECT 1 FROM unnest(p.employees) AS emp WHERE emp = $1) ORDER BY p.id ASC",
@@ -356,6 +356,10 @@ router.get("/home", async (req, res) => {
       "SELECT h.* FROM hourlog h INNER JOIN tasks t ON h.taskid = t.id INNER JOIN projects p ON t.projectid = p.id WHERE (p.userid = $1) OR (h.employeeassigned = $1) ORDER BY h.id ASC",
       [userId]
     );
+    const invoice = await db.query(
+      "SELECT i.* FROM invoice i WHERE i.invoice_from_userid = $1 ORDER BY i.id ASC",
+      [userId]
+    );
 
     const users = await db.query("SELECT * FROM users");
 
@@ -364,12 +368,7 @@ router.get("/home", async (req, res) => {
     let taskLength = tasks.rows.length;
     let hlLength = hourlog.rows.length;
 
-    res.send({
-      projects: projLength ? projects : null,
-      users: users.rows,
-      tasks: taskLength ? tasks.rows : null,
-      hourlog: hlLength ? hourlog.rows : null,
-    });
+    res.send({projects: projLength ? projects : null, users: users.rows, tasks: taskLength ? tasks.rows : null, hourlog: hlLength ? hourlog.rows : null, invoices: invoice.rows.length ? invoice.rows : null});
   } catch (error) {
     console.error("get/home error Error: ", error);
     res.status(500).send("Shit hit the fan Error in get data home");
@@ -498,5 +497,25 @@ router.post('/getAllInvoices', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
+router.get('/checkInvoice', async (req, res)=>{
+  const projectid = req.headers["projectid"];
+  try{
+    const result = await db.query('SELECT * FROM invoice WHERE invoice_project = $1;', [
+      projectid
+    ]);
+    console.log(result.rows.length);
+    if(result.rows.length>0){
+      res.send({ status: true, invoice:result.rows });
+    } else{
+      res.send({ status: false });
+    }
+    
+  } catch (error) {
+    console.error('Error checking invoice:', error);
+    res.status(500).json({ error: 'Internal Server Error in check invoice' });
+  }
+
+})
 
 export default router;
