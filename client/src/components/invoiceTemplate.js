@@ -28,7 +28,7 @@ function InvoiceTemplate(props) {
   }
 
   return (
-    <div className="invoice-faq7 thq-section-padding">
+    <div className="invoice-faq7 thq-section-padding scroll-smooth">
       <div className="invoice-max-width" ref={targetRef}>
         <div className="invoice-container">
           <span className="invoice-text">Invoice No: #{props.id}</span>
