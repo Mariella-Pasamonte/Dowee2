@@ -22,7 +22,8 @@ const Home = (props) => {
 
     const memoizedFetchData = useCallback((userId) => {
         axios
-        .get('https://dowee2-server2.vercel.app/home', {
+        // .get('https://dowee2-server2.vercel.app/home', {
+        .get('http://localhost:3000/home', {
           headers:{ 
             userId: userId
           }
@@ -54,7 +55,7 @@ const Home = (props) => {
                         <Sidebar setProject={getProject} project={project} projList={projList} setProjList={setProjList} users={users} hourlog={hourlog} fetchData={memoizedFetchData}/>
                     </div>
                     <div className="relative h-full w-5/6 pl-2">
-                    {project&&<ProjectModal isOpen={openProjectModal} closeModal={setOpenProjectModal} project={project} users={users}/>}
+                        {project&&<ProjectModal isOpen={openProjectModal} closeModal={setOpenProjectModal} project={project} users={users}/>}
                         <div className="h-full border-y-[1px] border-l-[1px] border-white/20 bg-gradient-to-r from-[#6F6483]/60 to-[#4F2E5D]/60 rounded-l-3xl">
                             {project && <Project project={project} setOpenProjectModal={setOpenProjectModal} users={users} tasks={tasks} hourlog={hourlog} fetchData={memoizedFetchData}/>}
                         </div>
