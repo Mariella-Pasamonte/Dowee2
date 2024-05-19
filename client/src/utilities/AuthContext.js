@@ -11,11 +11,12 @@ const AuthContext = createContext({
 
 export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userID, setUserID] = useState(null);
+  const [userID, setUserID] = useState({});
 
   // Simulate login logic (replace with your backend integration)
   const login = (userID) => {
     // Simulate successful login
+    console.log("login succssful")
     setIsLoggedIn(true);
     setUserID(userID); // Example user data
   };
@@ -23,7 +24,7 @@ export const AuthProvider = ({ children }) => {
   // Simulate logout logic
   const logout = () => {
     setIsLoggedIn(false);
-    setUserID(null);
+    setUserID({});
   };
 
   const value = {

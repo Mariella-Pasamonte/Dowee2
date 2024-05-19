@@ -42,12 +42,14 @@ const Login = (props) => {
     };
   
     await axios
+    // .post("https://dowee2-server2.vercel.app/login", loginData)
     .post("http://localhost:3000/login", loginData)
     .then((response) => {
       if (response.data.status === true) {
         // props.login(true);
         // localStorage.setItem("isLoggedIn", true);
         login(response.data.data);
+        console.log("Navigating to home");
         navigate("/home");
         setIsFilled(true);
         setValidUserError(false);
@@ -63,7 +65,9 @@ const Login = (props) => {
   };
 
   useEffect(()=>{
-    axios.get('http://localhost:3000/login', {
+    axios
+    // .get('https://dowee2-server2.vercel.app/login', {
+    .get("http://localhost:3000/login", {
       headers:{ 
         userId: userID
       }
