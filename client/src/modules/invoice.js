@@ -20,9 +20,7 @@ function Invoice(props) {
   const tasks = validTasks.filter(tasks => tasks.status === "Finished" && tasks.projectid === props.projects.id);
   const user = props.user;
   const hourlog = props.hourlog;
-  function handleInvoiceTemplateModal() {
-    setOpenInvoiceTemplateModal(true);
-  }
+
   console.log("invoices",projectInvoices)
   console.log("tasks",tasks)
 

@@ -19,13 +19,9 @@ function InvoiceTemplate(props) {
     fileUploadRef.current.click();
   };
 
-  
   const location = useLocation();
 
   const {invoices, projects, tasks, user, hourlog} = location.state || {};  
-
-  console.log("tasks", tasks);
-  console.log("hourlog", hourlog);
   
   const uploadImageDisplay = () => {
     try {
@@ -54,8 +50,11 @@ function InvoiceTemplate(props) {
     return hourlog.reduce((total, hourlog) => total + hourlog.pendingamount, 0);
   };
 
-  const total = calculateTotal(hourlog);
+  const validHourlog = Array.isArray(props.hourlog) && props.hourlog.length > 0 ? props.hourlog : [];
+  const hourlogMain = validHourlog.filter(hourlog => hourlog.taskid === tasks.id)
 
+  const total = calculateTotal(hourlog);
+  console.log("hourlog", hourlog);
 
   return (
     <div className="invoice-faq7 thq-section-padding scroll-smooth">
@@ -99,7 +98,7 @@ function InvoiceTemplate(props) {
             <ul className="invoice-ul list">
             {tasks.map((task) => (
               <li>
-                <span>{task.paymenttype === false ? 1 : convertToDecimalHours(hourlog.hours, hourlog.minutes, hourlog.seconds)}</span>
+                <span>{task.paymenttype === false ? 1 : hourlog.pendingamount}</span>
               </li>
             ))}
             </ul>
@@ -147,7 +146,7 @@ function InvoiceTemplate(props) {
               <h1 className="invoice-text25">TOTAL</h1>
             </div>
             <div className="invoice-container16">
-              <h1 className="invoice-text25">{total}</h1>
+              <h1 className="invoice-text25">{total.substring(1)}</h1>
             </div>
           </div>
         </div>

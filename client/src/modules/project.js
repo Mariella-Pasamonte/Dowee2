@@ -59,7 +59,6 @@ function Project(props){
         .catch((error) => {
             console.log("Error: ", error);
         }); 
-        addNewInvoice(newTask);
         props.fetchData(userID);
     }
 
@@ -87,21 +86,6 @@ function Project(props){
             console.log("Error: ", error);
         });
         props.fetchData(userID);         
-    }
-
-    function addNewInvoice(newInvoice){
-        (invoices !== null ?
-            (
-                setInvoices(previous=>[
-                ...previous,
-                newInvoice
-                ])
-            )
-            :
-            (
-                setInvoices([newInvoice])
-            )
-        )
     }
 
     const onClickCreateTask = () =>{
