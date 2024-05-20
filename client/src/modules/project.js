@@ -1,7 +1,7 @@
 import React, {useContext, useState} from 'react';
 //import {Link} from "react-router-dom";
 import Task from "./task";
-import InvoiceModule from "./invoiceModule";
+import Invoice from "./invoice";
 import {
     AddTaskModal,
     EditTaskModal,
@@ -230,7 +230,7 @@ function Project(props){
                         {taskOrInvoiceFocus === 0 ? 
                             <Task tasks={props.tasks} projectId={props.project.id} issuedDate={props.project.issueddate} dueDate={props.project.duedate} userId={props.project.userid} hourlog={props.hourlog} edit={edit} setEdit={setEdit} setEditedTask={setEditedTask} setDeletedTask={setDeletedTask} setOpenEditTaskModal={setOpenEditTaskModal} setOpenDeleteWarningModal={setOpenDeleteWarningModal} setEmployees={setEmployeeList} setOpenTaskModal={setOpenTaskModal} setTask={setTask} fetchData={props.fetchData}/>
                             :
-                            <InvoiceModule 
+                            <Invoice
                                 invoices={props.invoices} 
                                 projects={props.projects} 
                                 tasks={props.tasks} 
