@@ -21,18 +21,20 @@ function InvoiceSmallTemplate(props){
                 Total Invoice Amount: {props.invoice.invoice_total}
             </div>
             <div className="w-full flex justify-center">
-                <button onClick={()=>
-                navigate(`/invoice/${props.id}`, {
-                    state: {
-                        invoices:props.invoice,
-                        projects:props.projects,
-                        tasks:props.tasks,
-                        user: props.user,
-                        hourlog: props.hourlog,
-                        },
-                    })
-                } 
-                className="rounded-full bg-white text-black text-center text-base xl:text-sm 2xl:text-base py-1 2xl:py-3 px-7 xl:px-4 2xl:px-7 w-fit m-3 xl:m-1 2xl:m-3  hover:bg-gray-200">
+                <button 
+                    onClick={()=>
+                        navigate(`/invoice/${props.id}`, {
+                            state: {
+                                invoices:props.invoice,
+                                projects:props.projects,
+                                tasks:props.tasks,
+                                user: props.user,
+                                hourlog: props.hourlog,
+                                },
+                            })
+                        } 
+                    className="rounded-full bg-white text-black text-center text-base xl:text-sm 2xl:text-base py-1 2xl:py-3 px-7 xl:px-4 2xl:px-7 w-fit m-3 xl:m-1 2xl:m-3  hover:bg-gray-200"
+                >
                     View Invoice    
                 </button>
             </div>

@@ -1,7 +1,7 @@
 import React, {useContext, useState} from 'react';
 //import {Link} from "react-router-dom";
 import Task from "./task";
-import Invoice from "./invoice";
+import InvoiceModule from "./invoiceModule";
 import {
     AddTaskModal,
     EditTaskModal,
@@ -21,7 +21,6 @@ function Project(props){
     const [taskOrInvoiceFocus, setTaskOrInvoiceFocus] = useState(0);
     const [employeeList, setEmployeeList] = useState([]);
     const [openEmployeesModal, setOpenEmployeesModal] = useState(false);
-    const [invoices, setInvoices] = useState(null);
     const [edit, setEdit] = useState(false);
     const [editedTask, setEditedTask] = useState(null);
     
@@ -30,7 +29,6 @@ function Project(props){
     const users = props.project.employees.map((emp)=>props.users.find(user=>user.id===emp));
     const {userID} = useContext(AuthContext);
 
-    
     const getEmployees = (newEmployee) =>{
         if(employeeList.length>0) {
             const isEmp = employeeList.find((emp) => emp === newEmployee);
@@ -59,7 +57,6 @@ function Project(props){
         .catch((error) => {
             console.log("Error: ", error);
         }); 
-        addNewInvoice(newTask);
         props.fetchData(userID);
     }
 
@@ -89,21 +86,6 @@ function Project(props){
         props.fetchData(userID);         
     }
 
-    function addNewInvoice(newInvoice){
-        (invoices !== null ?
-            (
-                setInvoices(previous=>[
-                ...previous,
-                newInvoice
-                ])
-            )
-            :
-            (
-                setInvoices([newInvoice])
-            )
-        )
-    }
-
     const onClickCreateTask = () =>{
         setTaskOrInvoiceFocus(0);
         setOpenAddTaskModal(true);
@@ -113,8 +95,6 @@ function Project(props){
     const onClickInvoice = () =>{
         setTaskOrInvoiceFocus(1);
     }
-    console.log("invoices from", invoices);
-    const currentUser = props.users.find(user=>user.id=== userID);
     return(
         <>
             <div className="h-full w-full px-5 py-3" >
@@ -247,7 +227,17 @@ function Project(props){
                         </WarningModal>
                     </div>
                     <div>
-                        {taskOrInvoiceFocus === 0 ? <Task tasks={props.tasks} projectId={props.project.id} issuedDate={props.project.issueddate} dueDate={props.project.duedate} userId={props.project.userid} hourlog={props.hourlog} edit={edit} setEdit={setEdit} setEditedTask={setEditedTask} setDeletedTask={setDeletedTask} setOpenEditTaskModal={setOpenEditTaskModal} setOpenDeleteWarningModal={setOpenDeleteWarningModal} setEmployees={setEmployeeList} setOpenTaskModal={setOpenTaskModal} setTask={setTask} fetchData={props.fetchData}/>:<Invoice invoices={props.invoices} projects={props.project} tasks={props.tasks} user={currentUser} hourlog={props.hourlog}/>}
+                        {taskOrInvoiceFocus === 0 ? 
+                            <Task tasks={props.tasks} projectId={props.project.id} issuedDate={props.project.issueddate} dueDate={props.project.duedate} userId={props.project.userid} hourlog={props.hourlog} edit={edit} setEdit={setEdit} setEditedTask={setEditedTask} setDeletedTask={setDeletedTask} setOpenEditTaskModal={setOpenEditTaskModal} setOpenDeleteWarningModal={setOpenDeleteWarningModal} setEmployees={setEmployeeList} setOpenTaskModal={setOpenTaskModal} setTask={setTask} fetchData={props.fetchData}/>
+                            :
+                            <InvoiceModule 
+                                invoices={props.invoices} 
+                                projects={props.projects} 
+                                tasks={props.tasks} 
+                                hourlog={props.hourlog} 
+                                users={props.users} 
+                            />
+                        }
                     </div>
                 </div>
             </div>

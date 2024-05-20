@@ -22,6 +22,6 @@ export { default as Tooltips } from "./tooltips";
 export { default as Stopwatch } from "./stopwatch";
 
 // invoice features
-
+export { default as AddInvoiceModal} from "./addInvoiceModal";
 export { default as InvoiceTemplate } from "./invoiceTemplate";
 export { default as InvoiceSmallTemplate} from "./invoiceSmallTemplate";

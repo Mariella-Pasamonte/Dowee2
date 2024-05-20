@@ -11,9 +11,9 @@ const db = new pg.Client({
   host: "localhost",
   database: "Doify",
   //Akoa's password
-   password: "doifywebapp",
+  //  password: "doifywebapp",
   //Mariela's password
-  //password: "doifyapp",
+  password: "doifyapp",
   port: 5432,
 });
 
@@ -127,7 +127,7 @@ router.post("/register", async (req, res) => {
 });
 
 router.post("/addProject", async (req, res) => {
-  const userid = req.body.userId;
+  const userid = req.body.userid;
   const name = req.body.name;
   const clientname = req.body.clientname;
   const clientemadd = req.body.clientemadd;
@@ -151,8 +151,8 @@ router.post("/addProject", async (req, res) => {
         description,
         employees,
       ]
+      
     );
-    console.log(result);
   }catch{
     console.error("post. /addProject error Error: ", error);
     res.status(500).send("Shit hit the fan Error in addProject");
@@ -161,7 +161,7 @@ router.post("/addProject", async (req, res) => {
 
 router.post("/editProject", async (req, res) => {
   const id = req.body.id;
-  const userid = req.body.userId;
+  const userid = req.body.userid;
   const name = req.body.name;
   const clientname = req.body.clientname;
   const clientemadd = req.body.clientemadd;
