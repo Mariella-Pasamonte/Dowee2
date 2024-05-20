@@ -93,6 +93,10 @@
   font-weight: 700;
   text-transform: uppercase;
 }
+.font-normal {
+  font-weight: 300;
+  text-transform: none;
+}
 .invoice-text04 {
   top: 5px;
   color: #ffffff;

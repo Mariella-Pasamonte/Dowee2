@@ -3,6 +3,7 @@ import "./css/invoiceTemplate.css";
 //import { usePDF } from "react-to-pdf";
 import generatePDF, { Resolution, Margin } from "react-to-pdf";
 import addimage from "./css/add_image.png";
+import { useLocation } from "react-router-dom";
 
 //the ones in comments are for a version using react-to-pdf hooks. The one's that aren't are using default function
 
@@ -11,12 +12,21 @@ function InvoiceTemplate(props) {
   const targetRef = useRef();
   const [imageSrc, setImageSrc] = useState(addimage);
   const fileUploadRef = useRef();
+  const [totalAmount, setTotalAmount] = useState(0);
 
   const handleImageUpload = (e) => {
     e.preventDefault();
     fileUploadRef.current.click();
   };
 
+  
+  const location = useLocation();
+
+  const {invoices, projects, tasks, user, hourlog} = location.state || {};  
+
+  console.log("tasks", tasks);
+  console.log("hourlog", hourlog);
+  
   const uploadImageDisplay = () => {
     try {
       const uploadedFile = fileUploadRef.current.files[0];
@@ -27,15 +37,34 @@ function InvoiceTemplate(props) {
     }
   }
 
+  const today = new Date();
+  const formattedDate = `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`;
+
+  const convertToDecimalHours = (hours, minutes, seconds) => {
+    // console.log(hours, minutes, seconds);
+    const hoursFromMinutes = minutes / 60;
+    const hoursFromSeconds = seconds / 3600;
+    return hours + hoursFromMinutes + hoursFromSeconds;
+  };
+  const addTotalAmount = (amount) => {
+    setTotalAmount(totalAmount + amount);
+  };
+
+  const calculateTotal = (hourlog) => {
+    return hourlog.reduce((total, hourlog) => total + hourlog.pendingamount, 0);
+  };
+
+  const total = calculateTotal(hourlog);
+
+
   return (
     <div className="invoice-faq7 thq-section-padding scroll-smooth">
       <div className="invoice-max-width" ref={targetRef}>
-        <div className="invoice-container">
-          <span className="invoice-text">Invoice No: #{props.id}</span>
-          <span className="invoice-text01">Invoice Date:</span>
-          <span className="invoice-date-time"></span>
-          <span className="invoice-text02">Invoice To:</span>
-          <span className="invoice-text03">Invoice From:</span>
+        <div className="invoice-container ">
+          <span className="invoice-text font-normal">Invoice No: {invoices.invoice_number}</span>
+          <span className="invoice-text01 font-normal">Invoice Date: {formattedDate}</span>
+          <span className="invoice-text02 font-normal">Invoice To: {projects.clientname}</span>
+          <span className="invoice-text03 font-normal">Invoice From: {user.lname}, {user.fname}</span>
           <h1 className="invoice-text04">INVOICE</h1>
           <button type="submit" className="invoice-image" onClick={handleImageUpload}>
           <img
@@ -56,15 +85,11 @@ function InvoiceTemplate(props) {
               <span className="invoice-text05">TASK NAME / DESCRIPTION</span>
             </div>
             <ul className="invoice-ul list">
+              {tasks.map((task) => (
               <li>
-                <span>Text</span>
+                <span>{task.name}</span>
               </li>
-              <li>
-                <span>Text</span>
-              </li>
-              <li>
-                <span>Text</span>
-              </li>
+            ))}
             </ul>
           </div>
           <div className="invoice-container04">
@@ -72,15 +97,11 @@ function InvoiceTemplate(props) {
               <span className="invoice-text09">QUANTITY</span>
             </div>
             <ul className="invoice-ul list">
-              <li className="list-item">
-                <span>Text</span>
+            {tasks.map((task) => (
+              <li>
+                <span>{task.paymenttype === false ? 1 : convertToDecimalHours(hourlog.hours, hourlog.minutes, hourlog.seconds)}</span>
               </li>
-              <li className="list-item">
-                <span>Text</span>
-              </li>
-              <li className="list-item">
-                <span>Text</span>
-              </li>
+            ))}
             </ul>
           </div>
           <div className="invoice-container06">
@@ -88,15 +109,11 @@ function InvoiceTemplate(props) {
               <span className="invoice-text13">PRICE</span>
             </div>
             <ul className="invoice-ul list">
-              <li className="list-item">
-                <span>Text</span>
-              </li>
-              <li className="list-item">
-                <span>Text</span>
-              </li>
-              <li className="list-item">
-                <span>Text</span>
-              </li>
+              {hourlog.map((hourlog) => (
+                <li>
+                  <span>{hourlog.amount}</span>
+                </li>
+              ))}
             </ul>
           </div>
           <div className="invoice-container08">
@@ -104,15 +121,11 @@ function InvoiceTemplate(props) {
               <span className="invoice-text17">AMOUNT</span>
             </div>
             <ul className="invoice-ul list">
-              <li className="list-item">
-                <span>Text</span>
-              </li>
-              <li className="list-item">
-                <span>Text</span>
-              </li>
-              <li className="list-item">
-                <span>Text</span>
-              </li>
+            {hourlog.map((hourlog) => (
+                <li>
+                  <span>{hourlog.pendingamount}</span>
+                </li>
+              ))}
             </ul>
           </div>
         </div>
@@ -124,7 +137,7 @@ function InvoiceTemplate(props) {
             <div className="invoice-container13">
               <ul className="list">
                 <li className="list-item">
-                  <span>Thank you for your work</span>
+                  <span>Thank you for your work {invoices.notes}</span>
                 </li>
               </ul>
             </div>
@@ -134,7 +147,7 @@ function InvoiceTemplate(props) {
               <h1 className="invoice-text25">TOTAL</h1>
             </div>
             <div className="invoice-container16">
-              <h1 className="invoice-text25">demo 25000</h1>
+              <h1 className="invoice-text25">{total}</h1>
             </div>
           </div>
         </div>

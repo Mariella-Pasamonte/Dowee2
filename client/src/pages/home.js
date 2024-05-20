@@ -43,11 +43,14 @@ const Home = (props) => {
     useEffect(() => {
         memoizedFetchData(userID);
     },[ userID, memoizedFetchData])
+
+    let username = users && users.find(user => user.id === userID).username;
+
     return( 
         <div className='static flex flex-col h-dvh'>
             <div className='relative my-3 ml-3 flex flex-col h-full justify-center'>
                 <div className='mb-3 mr-3'>
-                    <Navbar/>
+                    <Navbar user={username} userid={userID}/>
                 </div>
                 <div className="h-full flex flex-row">
                     <div className="h-full w-1/6 mr-2">

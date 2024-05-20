@@ -9,6 +9,8 @@ import axios from "axios";
 
 const Register = () => {
   //Details for users
+  
+  const today = new Date();
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [emailAddress, setEmailAddress] = useState('');
@@ -31,7 +33,6 @@ const Register = () => {
   const calendarDivRef = useRef(null);
   const inputCalendarDivRef = useRef(null);
 
-  const today = new Date();
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -83,7 +84,7 @@ const Register = () => {
       };
       await axios
       // .post("https://dowee2-server2.vercel.app/register", registerData)
-      .post("http://localhost:3000/login", registerData)
+      .post("http://localhost:3000/register", registerData)
       .then((res) => {
       const data = res.data;
       if (data === true) {
@@ -120,7 +121,7 @@ const Register = () => {
             </ErrorToast>
             <ErrorToast isError={existingUserError} setIsError={setExistingUserError}>
               <div  className="ms-3 text-sm font-normal">
-                Account already exists
+                Username, Email Address, or Contact number is already taken
               </div>
             </ErrorToast>
             <div className="w-1/2 h-fit text-white rounded-md flex flex-col pt-4 pb-8 px-8 bg-white/10"> 

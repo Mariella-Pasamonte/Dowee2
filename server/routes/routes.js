@@ -11,9 +11,9 @@ const db = new pg.Client({
   host: "localhost",
   database: "Doify",
   //Akoa's password
-  // password: "doifywebapp",
+   password: "doifywebapp",
   //Mariela's password
-  password: "doifyapp",
+  //password: "doifyapp",
   port: 5432,
 });
 
@@ -105,10 +105,13 @@ router.post("/register", async (req, res) => {
 
     if (checkExistingUsername.rows.length > 0) {
       res.send(exist);
+      console.log("Username already exists")
     } else if (checkExistingContact.rows.length > 0) {
       res.send(exist);
+      console.log("Contact number already exists")
     } else if (checkExistingEmail.rows.length > 0) {
       res.send(exist);
+      console.log("Email already exists")
     } else {
       const result = await db.query(
         "INSERT INTO users (fname, lname, username, password, email, contactno, gender, birthdate) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",

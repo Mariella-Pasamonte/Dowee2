@@ -11,9 +11,20 @@ function Invoice(props) {
   const [invoiceFocus, setInvoiceFocus] = useState(null);
   let userId = parseInt(localStorage.getItem("userId"));
 
+  const validProject = Array.isArray(props.projects) && props.projects.length > 0 ? props.projects : [];
+  const validInvoices = Array.isArray(props.invoices) && props.invoices.length > 0 ? props.invoices : [];
+  const validTasks = Array.isArray(props.tasks) && props.tasks.length > 0 ? props.tasks : [];
+
+  const projectInvoices = validInvoices.filter(invoice => invoice.invoice_project === props.projects.id);
+  const projects = props.projects;
+  const tasks = validTasks.filter(tasks => tasks.status === "Finished" && tasks.projectid === props.projects.id);
+  const user = props.user;
+  const hourlog = props.hourlog;
   function handleInvoiceTemplateModal() {
     setOpenInvoiceTemplateModal(true);
   }
+  console.log("invoices",projectInvoices)
+  console.log("tasks",tasks)
 
   return (
     <>
@@ -52,11 +63,11 @@ function Invoice(props) {
           </nav>
         </div>
         <div className="flex h-[30rem] xl:h-full">
-          {props.invoices && (
+          {projectInvoices && projects && tasks && user && hourlog &&(
             <div className="w-full h-full border-[#AEAEE3] border-[1px]  rounded-lg  flex flex-row gap-5 xl:gap-x-5 xl:gap-y-3 2xl:gap-5 px-3 justify-center flex-wrap">
-              {props.invoices.map(
+              {projectInvoices.map(
                 (invoice) =>
-                  <InvoiceSmallTemplate invoice={invoice}/>
+                  <InvoiceSmallTemplate invoice={invoice} projects={projects} tasks={tasks} user={user} hourlog={hourlog}/>
               )}
             </div>
           )}

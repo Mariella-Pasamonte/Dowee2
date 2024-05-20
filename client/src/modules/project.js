@@ -30,6 +30,7 @@ function Project(props){
     const users = props.project.employees.map((emp)=>props.users.find(user=>user.id===emp));
     const {userID} = useContext(AuthContext);
 
+    
     const getEmployees = (newEmployee) =>{
         if(employeeList.length>0) {
             const isEmp = employeeList.find((emp) => emp === newEmployee);
@@ -112,6 +113,8 @@ function Project(props){
     const onClickInvoice = () =>{
         setTaskOrInvoiceFocus(1);
     }
+    console.log("invoices from", invoices);
+    const currentUser = props.users.find(user=>user.id=== userID);
     return(
         <>
             <div className="h-full w-full px-5 py-3" >
@@ -244,7 +247,7 @@ function Project(props){
                         </WarningModal>
                     </div>
                     <div>
-                        {taskOrInvoiceFocus === 0 ? <Task tasks={props.tasks} projectId={props.project.id} issuedDate={props.project.issueddate} dueDate={props.project.duedate} userId={props.project.userid} hourlog={props.hourlog} edit={edit} setEdit={setEdit} setEditedTask={setEditedTask} setDeletedTask={setDeletedTask} setOpenEditTaskModal={setOpenEditTaskModal} setOpenDeleteWarningModal={setOpenDeleteWarningModal} setEmployees={setEmployeeList} setOpenTaskModal={setOpenTaskModal} setTask={setTask} fetchData={props.fetchData}/>:<Invoice invoices={props.invoices} projectId={props.project.id} />}
+                        {taskOrInvoiceFocus === 0 ? <Task tasks={props.tasks} projectId={props.project.id} issuedDate={props.project.issueddate} dueDate={props.project.duedate} userId={props.project.userid} hourlog={props.hourlog} edit={edit} setEdit={setEdit} setEditedTask={setEditedTask} setDeletedTask={setDeletedTask} setOpenEditTaskModal={setOpenEditTaskModal} setOpenDeleteWarningModal={setOpenDeleteWarningModal} setEmployees={setEmployeeList} setOpenTaskModal={setOpenTaskModal} setTask={setTask} fetchData={props.fetchData}/>:<Invoice invoices={props.invoices} projects={props.project} tasks={props.tasks} user={currentUser} hourlog={props.hourlog}/>}
                     </div>
                 </div>
             </div>
