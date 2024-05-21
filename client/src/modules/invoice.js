@@ -1,27 +1,75 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { InvoiceTemplate, InvoiceSmallTemplate } from "../components";
 import axios from "axios";
+import AuthContext from "../utilities/AuthContext";
 
 
 function Invoice(props) {
-  const [openInvoiceTemplateModal, setOpenInvoiceTemplateModal] =
-    useState(false);
+
+  const [openInvoiceTemplateModal, setOpenInvoiceTemplateModal] = useState(false);
+  const [openAddInvoiceModal, isOpenAddInvoiceModal] = useState(false);
   const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
   const [invoiceFocus, setInvoiceFocus] = useState(null);
-  let userId = parseInt(localStorage.getItem("userId"));
+  const {userID} = useContext(AuthContext);
 
   const validProject = Array.isArray(props.projects) && props.projects.length > 0 ? props.projects : [];
   const validInvoices = Array.isArray(props.invoices) && props.invoices.length > 0 ? props.invoices : [];
   const validTasks = Array.isArray(props.tasks) && props.tasks.length > 0 ? props.tasks : [];
 
-  const projectInvoices = validInvoices.filter(invoice => invoice.invoice_project === props.projects.id);
-  const projects = props.projects;
-  const tasks = validTasks.filter(tasks => tasks.status === "Finished" && tasks.projectid === props.projects.id);
-  const user = props.user;
+  // const filterProjectInvoices = invoices&&invoices.filter(invoice => invoice.invoice_project === props.projects.id);
+  const projectInvoices = validInvoices.map((invoice) => props.projects.some((project)=>project.id===invoice.invoice_project)&&invoice);
+  const tasks = validTasks.filter((tasks) => tasks.status === "Finished"&&tasks);
+  const user = props.users.filter((user)=> user.id === userID);
+  const projects = props.projects.filter(project=>tasks.some(task=>task.projectid===project.id));
   const hourlog = props.hourlog;
 
-  console.log("invoices",projectInvoices)
+  function generateInvoice(project){
+    let filterTasks = tasks.filter(task=>task.projectid===project.id);
+    let taskids = filterTasks.map(task=>task.id);
+    let filteredHourlogs = props.hourlog.filter(
+        (item) =>
+            item.employeeassigned === userID && taskids.some(taskId=>item.taskid === taskId)
+    );
+    let total = filteredHourlogs.reduce((acc, hl) => acc+parseFloat(hl.pendingamount),0).toFixed(2);
+    let hourlogids = filteredHourlogs.map(hl=>hl.id);
+    
+    const invoice = {
+      invoice_number: props.invoices?props.invoices.length+1:1,
+      invoice_to_clientName: project.clientname,
+      invoice_to_clientEmAdd: project.clientemadd,
+      invoice_from_userId: userID,
+      notes: "Thank you for your service",
+      invoice_project: project.id,
+      invoice_tasks: taskids,
+      invoice_hourlogs: hourlogids,
+      invoice_total: parseFloat(total)
+    }
+
+    if(projectInvoices.some(pi=>pi.invoice_project===project.id)){
+      const existingInvoice = projectInvoices.find(pi=>pi.invoice_project===project.id)
+      axios
+      // .post(`{https://dowee2-server2.vercel.app/updateInvoice/${userID}}`, invoice)
+      .post(`{http://localhost:3000/updateInvoice/${existingInvoice.id}}`, invoice)
+      .then()
+      .catch((error) => {
+          console.log(error);
+      });
+      props.fetchData(userID);
+    }else{
+      axios
+      // .post("https://dowee2-server2.vercel.app/generateInvoice")
+      .post("http://localhost:3000/generateInvoice", invoice)
+      .then()
+      .catch((error) => {
+          console.log(error);
+      });
+      props.fetchData(userID);
+    }       
+  }
+
+  
+
   return (
     <>
       <div>
@@ -30,7 +78,7 @@ function Invoice(props) {
             Project Invoice
           </div>
           <div className="relative flex flex-col justify-center h-full ml-2 text-white font-thin">
-            <button className="font-Inter text-sm py-1 px-3 rounded-md bg-[#212628]/50">
+            <button onClick={()=>{projects.map((project)=>generateInvoice(project))}} className="font-Inter text-sm py-1 px-3 rounded-md bg-[#212628]/50">
               Generate Invoice
             </button>
           </div>

@@ -151,7 +151,6 @@ router.post("/addProject", async (req, res) => {
         description,
         employees,
       ]
-      
     );
   }catch{
     console.error("post. /addProject error Error: ", error);

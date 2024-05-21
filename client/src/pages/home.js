@@ -48,7 +48,7 @@ const Home = (props) => {
     },[ userID, memoizedFetchData])
 
     let username = users && users.find(user => user.id === userID).username;
-    console.log("da invocies",invoices);
+
     return( 
         <div className='static flex flex-col h-dvh'>
             <div className='relative my-3 ml-3 flex flex-col h-full justify-center'>
@@ -62,7 +62,18 @@ const Home = (props) => {
                     <div className="relative h-full w-5/6 pl-2">
                         {project&&<ProjectModal isOpen={openProjectModal} closeModal={setOpenProjectModal} project={project} users={users}/>}
                         <div className="h-full border-y-[1px] border-l-[1px] border-white/20 bg-gradient-to-r from-[#6F6483]/60 to-[#4F2E5D]/60 rounded-l-3xl">
-                            {project && <Project project={project} setOpenProjectModal={setOpenProjectModal} projects={projList}  tasks={tasks} users={users} hourlog={hourlog} invoices={invoices} fetchData={memoizedFetchData}/>}
+                            {project && 
+                                <Project 
+                                    project={project} 
+                                    setOpenProjectModal={setOpenProjectModal} 
+                                    projects={projList}  
+                                    tasks={tasks} 
+                                    users={users} 
+                                    hourlog={hourlog} 
+                                    invoices={invoices} 
+                                    fetchData={memoizedFetchData}
+                                />
+                            }
                         </div>
                     </div>
                 </div>

@@ -407,6 +407,7 @@ function Project(props) {
                 tasks={props.tasks}
                 hourlog={props.hourlog}
                 users={props.users}
+                fetchData={props.fetchData}
               />
             )}
           </div>
