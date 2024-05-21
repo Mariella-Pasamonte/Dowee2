@@ -1,25 +1,25 @@
 import express from "express";
-// import pg from "pg";
-import {db} from '@vercel/postgres';
+import pg from "pg";
+//import {db} from '@vercel/postgres';
 import bcrypt from "bcrypt";
 
 const router = express.Router();
 
 //For localhost
-// const db = new pg.Client({
-//   user: "postgres",
-//   host: "localhost",
-//   database: "Doify",
-//   //Akoa's password
-//   // password: "doifywebapp",
-//   //Mariela's password
-//   password: "doifyapp",
-//   port: 5432,
-// });
+const db = new pg.Client({
+  user: "postgres",
+  host: "localhost",
+  database: "Doify",
+  //Akoa's password
+  //  password: "doifywebapp",
+  //Mariela's password
+  password: "doifyapp",
+  port: 5432,
+});
 
 try { 
   db.connect();
-  console.log("Connected to Database");
+  console.log("Connected Routes to Database");
 } catch {
   console.log("error connecting to Database");
 }
@@ -58,7 +58,7 @@ router.post("/login", async (req, res) => {
 });
 
 router.get("/login", async (req, res) => {
-  const userId = req.headers["userid"] || req.query.userId;
+  const userId = req.headers["userId"] || req.query.userId;
   try {
     let success = false;
     const result = await db.query("SELECT * FROM users WHERE id = $1", [
@@ -105,10 +105,13 @@ router.post("/register", async (req, res) => {
 
     if (checkExistingUsername.rows.length > 0) {
       res.send(exist);
+      console.log("Username already exists")
     } else if (checkExistingContact.rows.length > 0) {
       res.send(exist);
+      console.log("Contact number already exists")
     } else if (checkExistingEmail.rows.length > 0) {
       res.send(exist);
+      console.log("Email already exists")
     } else {
       const result = await db.query(
         "INSERT INTO users (fname, lname, username, password, email, contactno, gender, birthdate) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
@@ -124,7 +127,7 @@ router.post("/register", async (req, res) => {
 });
 
 router.post("/addProject", async (req, res) => {
-  const userid = req.body.userId;
+  const userid = req.body.userid;
   const name = req.body.name;
   const clientname = req.body.clientname;
   const clientemadd = req.body.clientemadd;
@@ -157,7 +160,7 @@ router.post("/addProject", async (req, res) => {
 
 router.post("/editProject", async (req, res) => {
   const id = req.body.id;
-  const userid = req.body.userId;
+  const userid = req.body.userid;
   const name = req.body.name;
   const clientname = req.body.clientname;
   const clientemadd = req.body.clientemadd;
@@ -317,11 +320,12 @@ router.post("/runTimer", async (req, res) => {
   const hours = req.body.hours;
   const minutes = req.body.minutes;
   const seconds = req.body.seconds;
+  const pendingamount = req.body.pendingamount;
   
   try{
     const result = await db.query(
-      "UPDATE hourlog SET id = $1, starttimer = $2, hours = $3, minutes = $4, seconds = $5 WHERE id = $1",
-      [id, starttimer, hours, minutes, seconds]
+      "UPDATE hourlog SET id = $1, starttimer = $2, hours = $3, minutes = $4, seconds = $5, pendingamount = $6 WHERE id = $1",
+      [id, starttimer, hours, minutes, seconds, pendingamount]
     );
   }catch{
     console.error("post. /runTimer error Error: ", error);
@@ -342,7 +346,6 @@ router.get("/getUsers", async(req,res)=>{
 
 router.get("/home", async (req, res) => {
   const userId = req.headers["userid"] || req.query.userId;
-
   try {
     const result = await db.query(
       "SELECT * FROM projects p WHERE userid = $1 OR EXISTS (SELECT 1 FROM unnest(p.employees) AS emp WHERE emp = $1) ORDER BY p.id ASC",
@@ -356,6 +359,10 @@ router.get("/home", async (req, res) => {
       "SELECT h.* FROM hourlog h INNER JOIN tasks t ON h.taskid = t.id INNER JOIN projects p ON t.projectid = p.id WHERE (p.userid = $1) OR (h.employeeassigned = $1) ORDER BY h.id ASC",
       [userId]
     );
+    const invoice = await db.query(
+      "SELECT i.* FROM invoice i WHERE i.invoice_from_userid = $1 ORDER BY i.id ASC",
+      [userId]
+    );
 
     const users = await db.query("SELECT * FROM users");
 
@@ -364,16 +371,154 @@ router.get("/home", async (req, res) => {
     let taskLength = tasks.rows.length;
     let hlLength = hourlog.rows.length;
 
-    res.send({
-      projects: projLength ? projects : null,
-      users: users.rows,
-      tasks: taskLength ? tasks.rows : null,
-      hourlog: hlLength ? hourlog.rows : null,
-    });
+    res.send({projects: projLength ? projects : null, users: users.rows, tasks: taskLength ? tasks.rows : null, hourlog: hlLength ? hourlog.rows : null, invoices: invoice.rows.length ? invoice.rows : null});
   } catch (error) {
     console.error("get/home error Error: ", error);
     res.status(500).send("Shit hit the fan Error in get data home");
   }
 });
+
+router.post("/generateInvoice", async(req, res) => {
+  const {
+    invoice_number,
+    invoice_to_clientName,
+    invoice_to_clientEmAdd,
+    invoice_from_userId,
+    notes,
+    invoice_project,
+    invoice_tasks,
+    invoice_hourlogs,
+    invoice_total,
+  } = req.body;
+  try {
+    const result = await db.query(
+      `INSERT INTO invoice (invoice_number, invoice_to_clientName, invoice_to_clientEmAdd, invoice_from_userId, notes, invoice_project, invoice_tasks, invoice_hourlogs, invoice_total) 
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`,
+      [
+        invoice_number,
+        invoice_to_clientName,
+        invoice_to_clientEmAdd,
+        invoice_from_userId,
+        notes,
+        invoice_project,
+        invoice_tasks,
+        invoice_hourlogs,
+        invoice_total,
+      ]
+    );
+    res.status(201).json(result.rows[0]);
+    
+    console.log('Invoice generated:', result.rows[0]);
+  } catch (error) {
+    console.log(`some shit went down. It was probably ${error}`);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// Route to update an existing invoice
+router.post('/updateInvoice/:id', async (req, res) => {
+  const { id } = req.params;
+  const {
+    invoice_number,
+    invoice_to_clientName,
+    invoice_to_clientEmAdd,
+    invoice_from_userId,
+    notes,
+    invoice_project,
+    invoice_tasks,
+    invoice_hourlogs,
+    invoice_total,
+  } = req.body;
+
+  try {
+    const result = await db.query(
+      `UPDATE invoice SET 
+        invoice_number = $1,
+        invoice_to_clientName = $2,
+        invoice_to_clientEmAdd = $3,
+        invoice_from_userId = $4,
+        notes = $5,
+        invoice_project = $6,
+        invoice_tasks = $7,
+        invoice_hourlogs = $8,
+        invoice_total = $9
+       WHERE id = $10 RETURNING *`,
+      [
+        invoice_number,
+        invoice_to_clientName,
+        invoice_to_clientEmAdd,
+        invoice_from_userId,
+        notes,
+        invoice_project,
+        invoice_tasks,
+        invoice_hourlogs,
+        invoice_total,
+        id,
+      ]
+    );
+    res.status(200).json(result.rows[0]);
+    console.log('Invoice updated:', result.rows[0]);
+  } catch (error) {
+    console.error('Error updating invoice:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// Route to get a specific invoice by ID
+router.post('/getInvoice/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const result = await db.query('SELECT * FROM invoice WHERE id = $1', [id]);
+    res.status(200).json(result.rows[0]);
+  } catch (error) {
+    console.error('Error getting invoice:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// Route to delete an invoice by ID
+router.post('/deleteInvoice/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const result = await db.query('DELETE FROM invoice WHERE id = $1 RETURNING *', [id]);
+    res.status(200).json(result.rows[0]);
+  } catch (error) {
+    console.error('Error deleting invoice:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// Route to get all invoices
+router.post('/getAllInvoices', async (req, res) => {
+  try {
+    const result = await db.query('SELECT * FROM invoice');
+    res.status(200).json(result.rows);
+  } catch (error) {
+    console.error('Error getting all invoices:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+router.get('/checkInvoice', async (req, res)=>{
+  const projectid = req.headers["projectid"];
+  try{
+    const result = await db.query('SELECT * FROM invoice WHERE invoice_project = $1;', [
+      projectid
+    ]);
+    console.log(result.rows.length);
+    if(result.rows.length>0){
+      res.send({ status: true, invoice:result.rows });
+    } else{
+      res.send({ status: false });
+    }
+    
+  } catch (error) {
+    console.error('Error checking invoice:', error);
+    res.status(500).json({ error: 'Internal Server Error in check invoice' });
+  }
+
+})
 
 export default router;

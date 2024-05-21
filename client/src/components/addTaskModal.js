@@ -1,8 +1,9 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useCallback} from "react";
 import {
     InputLabel,
     ErrorToast
 } from ".";
+import axios from 'axios';
 
 function AddTaskModal(props){
     //Task Details
@@ -13,13 +14,14 @@ function AddTaskModal(props){
     const emps = props.employees&&props.employees;
     const [taskDescription, setTaskDescription] = useState("");
     const status ="In Progress";
+    const [users, setUsers] = useState([]);
     
     //checks
     const [isFilled, setIsFilled] = useState(true);
     const [nameExist, setNameExist] = useState(false);
     const [nameExistError, setNameExistError]= useState(false);
     const getUsername = (userId) => {
-        const user = props.users&&props.users.find(user => user.id === userId);
+        const user = users.find(user => user.id === userId);
         return user ? user.username : 'Unknown';
     };
     const amountCheck = checkEmptyAmount(amount);
@@ -27,6 +29,7 @@ function AddTaskModal(props){
     useEffect(() => {
         if (!props.isOpen) {
             setTaskTitle('Do This');
+            setUsers([]);
             setPaymentType(1);
             setPriority(1);
             setAmount([]);
@@ -34,9 +37,23 @@ function AddTaskModal(props){
             setIsFilled(true);
             setNameExist(false);
             setNameExistError(false);
+        } else {
+            memoizedFetchUsers();
         }
 
     }, [props]);
+
+    const memoizedFetchUsers = useCallback(() => {
+        axios
+        // .get('https://dowee2-server2.vercel.app/getUsers', {})
+        .get('http://localhost:3000/getUsers', {})
+        .then((response)=>{
+            setUsers(response.data.users);
+        })
+        .catch((error) =>{
+            console.log(error);
+        });
+    },[setUsers]);
 
     function getAmount(e, index){
         const updatedAmount = [...amount];
@@ -74,12 +91,12 @@ function AddTaskModal(props){
     }
 
     function addTask(){
-        const taskExist = props.tasks?props.tasks.some((task)=>task.name===taskTitle&&task.projectid===props.projectId):false;
+        const taskExist = props.tasks?props.tasks.some((task)=>task.name===taskTitle&&task.projectid===props.project.id):false;
 
         if(taskExist===false && taskTitle !== ''&& emps.length!==0 && !amountCheck && taskDescription!==''){
             props.addNewTasks(
                 {
-                    projectid: props.projectId,
+                    projectid: props.project.id,
                     name: taskTitle,
                     paymenttype: paymentType,
                     priority:priority,

@@ -12,7 +12,7 @@ const Login = (props) => {
   const [validUserError, setValidUserError] = useState(false);
   const [isFilled, setIsFilled] = useState(true);
   const [isFilledError, setIsFilledError] = useState(false);
-  const { login, userID } = useContext(AuthContext);
+  const { login, userID, setUserID } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleUsernameChange = (e) => {
@@ -42,12 +42,13 @@ const Login = (props) => {
     };
   
     await axios
-    .post("https://dowee2-server2.vercel.app/login", loginData)
-    // .post("http://localhost:3000/login", loginData)
+    // .post("https://dowee2-server2.vercel.app/login", loginData)
+    .post("http://localhost:3000/login", loginData)
     .then((response) => {
       if (response.data.status === true) {
         // props.login(true);
         // localStorage.setItem("isLoggedIn", true);
+        setUserID(response.data.data);
         login(response.data.data);
         console.log("Navigating to home");
         navigate("/home");
@@ -66,15 +67,14 @@ const Login = (props) => {
 
   useEffect(()=>{
     axios
-    .get('https://dowee2-server2.vercel.app/login', {
-    // .get("http://localhost:3000/login", {
+    // .get('https://dowee2-server2.vercel.app/login', {
+    .get("http://localhost:3000/login", {
       headers:{ 
         userId: userID
       }
     })
     .then((response)=>{
       if (response.data.status === true) {
-        localStorage.setItem('isLoggedIn', true);
         navigate("/home");
       }
     }).catch((error) =>{

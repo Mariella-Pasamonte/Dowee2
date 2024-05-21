@@ -1,4 +1,5 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useCallback} from "react";
+import axios from "axios";
 
 function TaskModal(props){
     const [taskTitle, setTaskTitle] = useState(props.task.name);
@@ -10,7 +11,7 @@ function TaskModal(props){
     const emps = props.task.employeelist;
 
     const getUsername = (userId) => {
-        const user = props.users&&props.users.find(user => user.id === userId);
+        const user = props.users.find(user => user.id === userId);
         return user ? user.username : 'Unknown';
     };
 
@@ -23,7 +24,6 @@ function TaskModal(props){
             setAmount(props.task.amount);
             setStatus(props.setStatus);
         }
-
     }, [props]);
 
     var inputLabelClassName="flex flex-row text-sm";
@@ -51,7 +51,7 @@ function TaskModal(props){
                             <div className="flex flex-row">
                                 <label
                                     id="taskTitleLabel"
-                                    classname={inputLabelClassName}
+                                    className={inputLabelClassName}
                                 >
                                     Task name
                                 </label>
@@ -88,7 +88,7 @@ function TaskModal(props){
                                 <div className='flex flex-row w-1/2 mr-2'>
                                     <label
                                         id='taskEmployeeAssignedLabel'
-                                        classname={inputLabelClassName}
+                                        className={inputLabelClassName}
                                     >
                                         Assigned: 
                                     </label>
@@ -96,7 +96,7 @@ function TaskModal(props){
                                 <div className="flex flex-row w-1/2">
                                     <label
                                         id="taskAmountLabel"
-                                        classname={`${inputLabelClassName} mb-[5.5px]`}
+                                        className={`${inputLabelClassName} mb-[5.5px]`}
                                     >
                                         Amount:
                                     </label>
@@ -144,7 +144,7 @@ function TaskModal(props){
                         <div className='flex flex-col mt-1 mb-2'>
                             <label
                                 id="taskDescriptionLabel"
-                                classname={inputLabelClassName}
+                                className={inputLabelClassName}
                             >
                                 Task description
                             </label>

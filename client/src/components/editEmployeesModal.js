@@ -7,14 +7,13 @@ function EditEmployeesModal(props){
     const [openDropdown, setOpenDropdown] =useState(false);
     const [showAllList, setShowAllList] =useState(false);
     const [isFilled, setIsFilled] = useState(true);
-    const [users, setUsers] = useState([]);
     const [displayedEmployees, setDisplayedEmployees] = useState([]);
     const getFName = (userId) => {
-        const user = users.find(user => user.id === userId);
+        const user = props.users.find(user => user.id === userId);
         return user ? user.fname : 'Unknown';
     };
     const getLName = (userId) => {
-        const user = users.find(user => user.id === userId);
+        const user = props.users.find(user => user.id === userId);
         return user ? user.lname : 'Unknown';
     };
     
@@ -86,22 +85,8 @@ function EditEmployeesModal(props){
         }
     }
 
-    //get users from backend
-    const memoizedFetchUsers = useCallback(() => {
-        axios
-        .get('https://dowee2-server2.vercel.app/getUsers', {})
-        // .get('http://localhost:5000/getUsers', {})
-        .then((response)=>{
-            setUsers(response.data.users);
-        })
-        .catch((error) =>{
-            console.log(error);
-        });
-    },[setUsers]);
-
     //This is used to ensure every variable has a value
     useEffect(() => {
-        memoizedFetchUsers();
         setDisplayedEmployees(props.employees&&props.employees.slice(showAllList===true?0:props.employees&&props.employees.length<=4?0:props.employees&&props.employees.length-4, props.employees&&props.employees.length).reverse());
         setIsFilled(props.employees===null?true:props.employees.length>0?true:false);
         setShowAllList(showAllList);
@@ -150,7 +135,7 @@ function EditEmployeesModal(props){
                             { openDropdown===true &&
                                 <div className="absolute top-10 z-20 divide-y rounded-lg shadow w-full bg-gray-600">
                                     <ul className="py-2 text-sm text-white ">
-                                        {users.map((user,index)=>
+                                        {props.users.map((user,index)=>
                                             <li key={index}>
                                                 <button key={index} onClick={() => addEmployee(user)} className="block w-full px-4 py-2 hover:bg-gray-400">{user.fname} {user.lname}</button>
                                             </li>

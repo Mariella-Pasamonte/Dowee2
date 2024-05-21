@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   AddProjectModal,
   EditEmployeesModal,
@@ -6,6 +6,7 @@ import {
   WarningModal,
   Tooltips,
 } from "../components";
+import AuthContext from "../utilities/AuthContext";
 import axios from "axios";
 
 function Sidebar(props) {
@@ -17,12 +18,11 @@ function Sidebar(props) {
   const [editProject, setEditProject] = useState(null);
   const [deleteProject, setDeleteProject] = useState(null);
   const [isTooltipOpen, setIsTooltipOpen] = useState(false);
-  const [projectFocus, setProjectFocus] = useState(null);
   const [dropdownId, setDropdownId] = useState(null);
   const [employees, setEmployees] = useState([]);
+  const {userID} = useContext(AuthContext);
 
   var projLength = props.projList ? props.projList.length : 0;
-  let userId = parseInt(localStorage.getItem("userId"));
 
   const toggleTooltipEnter = () => {
     setIsTooltipOpen(true);
@@ -49,8 +49,8 @@ function Sidebar(props) {
 
     function addNewProject(newProject){
         axios
-        .post("https://dowee2-server2.vercel.app/addProject", newProject)
-        // .post("http://localhost:5000/addProject", newProject)
+        // .post("https://dowee2-server2.vercel.app/addProject", newProject)
+        .post("http://localhost:3000/addProject", newProject)
         .then((res) => {
             console.log(newProject);
         })
@@ -58,14 +58,13 @@ function Sidebar(props) {
             console.log("Error: ", error);
         }); 
         props.setProject(newProject);
-        setProjectFocus(newProject.id);
-        props.fetchData(userId);
+        props.fetchData(userID);
     }
 
     function editedProject(editedProject){
         axios
-        .post("https://dowee2-server2.vercel.app/editProject",editedProject)
-        // .post("http://localhost:5000/editProject",editedProject)
+        // .post("https://dowee2-server2.vercel.app/editProject",editedProject)
+        .post("http://localhost:3000/editProject",editedProject)
         .then((res) => {
             console.log(editedProject);
         })
@@ -73,31 +72,29 @@ function Sidebar(props) {
             console.log("Error: ", error);
         }); 
         props.setProject(editedProject); 
-        setProjectFocus(editedProject.id);
-        props.fetchData(userId);
+        props.setProjectFocus(editedProject.id);
+        props.fetchData(userID);
     }
 
     function deletingProject(deleteProject){
         axios
-        .post("https://dowee2-server2.vercel.app/deleteProject",deleteProject)
-        // .post("http://localhost:5000/deleteProject",deleteProject)
+        // .post("https://dowee2-server2.vercel.app/deleteProject",deleteProject)
+        .post("http://localhost:3000/deleteProject",deleteProject)
         .then((res) => {
             console.log(deleteProject);
         })
         .catch((error) => {
             console.log("Error: ", error);
         });
-        props.setProject(null); 
-        setProjectFocus(null);
-        localStorage.removeItem("projectId");
-        props.fetchData(userId);
+        props.setProject(props.projList[0]); 
+        props.setProjectFocus(props.projList[0].id);
+        console.log(props.projList[0]);
+        props.fetchData(userID);
     }
 
-  const handleButtonClick = (projectId) => {
-    setProjectFocus(projectId);
-    const proj = props.projList.find((proj) => proj.id === projectId);
-    props.setProject(proj);
-    localStorage.setItem("projectId", projectId);
+  const handleButtonClick = (project) => {
+    props.setProjectFocus(project.id);
+    props.setProject(project);
   };
 
   const handleOpenDropdown = (projectId) => {
@@ -111,10 +108,6 @@ function Sidebar(props) {
     setEditProject(project);
   }
 
-  useEffect(() => {
-    let projId = parseInt(localStorage.getItem("projectId"));
-    setProjectFocus(projId);
-  }, [setProjectFocus]);
   return (
     <>
       <div className="h-full w-full">
@@ -251,9 +244,9 @@ function Sidebar(props) {
                   {props.projList.map((project) => (
                     <button
                       key={project.id}
-                      onClick={(e) => handleButtonClick(project.id)}
+                      onClick={(e) => handleButtonClick(project)}
                       className={`flex flex-row w-full justify-between pt-1 px-1 rounded-md ${
-                        projectFocus === project.id ? "bg-white/20" : null
+                        props.projectFocus === project.id ? "bg-white/20" : null
                       }`}>
                       <div className="flex flex-row">
                         <div className="flex flex-col font-bold">
@@ -289,7 +282,7 @@ function Sidebar(props) {
                           {project.name}{" "}
                         </div>
                       </div>
-                      {project.userid === userId && (
+                      {project.userid === userID && (
                         <div className="relative">
                           <div
                             data-tooltip-target={project.id}

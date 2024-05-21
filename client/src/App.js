@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route,} from "react-router-dom";
 import React from "react";
-import { Login, Home, Register, Invoice } from "./pages";
+import { Login, Home, Register, InvoicePage } from "./pages";
 import PrivateRoute from "./utilities/PrivateRoute";
 import { AuthProvider } from './utilities/AuthContext';
 import "./App.css";
@@ -40,7 +40,7 @@ function App() {
           />
           <Route
             path="/invoice/:id"
-            element={<PrivateRoute><Invoice/></PrivateRoute>}
+            element={<PrivateRoute><InvoicePage/></PrivateRoute>}
           />
           <Route 
             path="/register" 
