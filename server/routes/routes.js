@@ -11,9 +11,9 @@ const db = new pg.Client({
   host: "localhost",
   database: "Doify",
   //Akoa's password
-   password: "doifywebapp",
+  //  password: "doifywebapp",
   //Mariela's password
-  //password: "doifyapp",
+  password: "doifyapp",
   port: 5432,
 });
 
@@ -320,11 +320,12 @@ router.post("/runTimer", async (req, res) => {
   const hours = req.body.hours;
   const minutes = req.body.minutes;
   const seconds = req.body.seconds;
+  const pendingamount = req.body.pendingamount;
   
   try{
     const result = await db.query(
-      "UPDATE hourlog SET id = $1, starttimer = $2, hours = $3, minutes = $4, seconds = $5 WHERE id = $1",
-      [id, starttimer, hours, minutes, seconds]
+      "UPDATE hourlog SET id = $1, starttimer = $2, hours = $3, minutes = $4, seconds = $5, pendingamount = $6 WHERE id = $1",
+      [id, starttimer, hours, minutes, seconds, pendingamount]
     );
   }catch{
     console.error("post. /runTimer error Error: ", error);
