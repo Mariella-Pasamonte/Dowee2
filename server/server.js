@@ -1,22 +1,22 @@
-//import { db } from '@vercel/postgres';
+import { db } from '@vercel/postgres';
 import express from "express";
 import cors from "cors";
 import router from "./routes/routes.js";
-import pg from "pg";
+// import pg from "pg";
 
 // To connect to database local. Remove vercel db connection and uncomment ("import pg from "pg")
 const port = process.env.PORT || 5000;
 // For localhost
-const db = new pg.Client({
-  user: "postgres",
-  host: "localhost",
-  database: "Doify",
-  //Akoa's password
-  //  password: "doifywebapp",
-  //Mariella's password
-  password: "doifyapp",
-  port: 5432,
-});
+// const db = new pg.Client({
+//   user: "postgres",
+//   host: "localhost",
+//   database: "Doify",
+//   //Akoa's password
+//   //  password: "doifywebapp",
+//   //Mariella's password
+//   password: "doifyapp",
+//   port: 5432,
+// });
 
 const app = express();
 

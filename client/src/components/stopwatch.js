@@ -128,8 +128,8 @@ function Stopwatch(props) {
             )
         })
         axios
-        // .post("https://dowee2-server2.vercel.app/addHourlog",newHourlog)
-        .post("http://localhost:3000/addHourlog",newHourlog)
+        .post("https://dowee2-server2.vercel.app/addHourlog",newHourlog)
+        // .post("http://localhost:3000/addHourlog",newHourlog)
         .then((res) => {
             console.log(newHourlog)
         })
@@ -141,8 +141,8 @@ function Stopwatch(props) {
 
     function setTimer(time){
         axios
-        // .post("https://dowee2-server2.vercel.app/runTimer",time)
-        .post("http://localhost:3000/runTimer",time)
+        .post("https://dowee2-server2.vercel.app/runTimer",time)
+        // .post("http://localhost:3000/runTimer",time)
         .then((res) => {
             console.log(time);
         })

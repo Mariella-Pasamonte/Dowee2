@@ -6,7 +6,6 @@ import AuthContext from "../utilities/AuthContext";
 
 
 function Invoice(props) {
-
   const [openInvoiceTemplateModal, setOpenInvoiceTemplateModal] = useState(false);
   const [openAddInvoiceModal, isOpenAddInvoiceModal] = useState(false);
   const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
@@ -49,8 +48,8 @@ function Invoice(props) {
     if(projectInvoices.some(pi=>pi.invoice_project===project.id)){
       const existingInvoice = projectInvoices.find(pi=>pi.invoice_project===project.id)
       axios
-      // .post(`{https://dowee2-server2.vercel.app/updateInvoice/${userID}}`, invoice)
-      .post(`{http://localhost:3000/updateInvoice/${existingInvoice.id}}`, invoice)
+      .post(`{https://dowee2-server2.vercel.app/updateInvoice/${existingInvoice.id}}`, invoice)
+      // .post(`{http://localhost:3000/updateInvoice/${existingInvoice.id}}`, invoice)
       .then()
       .catch((error) => {
           console.log(error);
@@ -115,15 +114,6 @@ function Invoice(props) {
               )}
             </div>
           )}
-          {/* <InvoiceTemplate /> */}
-          {/* <div className="w-full h-full border-[#AEAEE3] border-[1px]  rounded-lg  flex flex-row gap-5 xl:gap-x-5 xl:gap-y-3 2xl:gap-5 px-3 justify-center flex-wrap">
-              <InvoiceSmallTemplate />
-              <InvoiceSmallTemplate/>
-              <InvoiceSmallTemplate/>
-              <InvoiceSmallTemplate />
-              <InvoiceSmallTemplate/>
-              <InvoiceSmallTemplate/>
-           </div> */}
         </div>
       </div>
     </>

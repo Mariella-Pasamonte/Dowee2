@@ -48,8 +48,8 @@ function EditTaskModal(props){
 
     const memoizedFetchUsers = useCallback(() => {
         axios
-        // .get('https://dowee2-server2.vercel.app/getUsers', {})
-        .get('http://localhost:3000/getUsers', {})
+        .get('https://dowee2-server2.vercel.app/getUsers', {})
+        // .get('http://localhost:3000/getUsers', {})
         .then((response)=>{
             setUsers(response.data.users);
         })
