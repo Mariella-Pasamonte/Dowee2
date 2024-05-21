@@ -22,8 +22,6 @@ function Invoice(props) {
   const hourlog = props.hourlog;
 
   console.log("invoices",projectInvoices)
-  console.log("tasks",tasks)
-
   return (
     <>
       <div>

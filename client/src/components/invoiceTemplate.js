@@ -52,9 +52,10 @@ function InvoiceTemplate(props) {
 
   const validHourlog = Array.isArray(props.hourlog) && props.hourlog.length > 0 ? props.hourlog : [];
   const hourlogMain = validHourlog.filter(hourlog => hourlog.taskid === tasks.id)
-
+  console.log("tasks", tasks);
   const total = calculateTotal(hourlog);
   console.log("hourlog", hourlog);
+
 
   return (
     <div className="invoice-faq7 thq-section-padding scroll-smooth">
