@@ -18,7 +18,6 @@ function Sidebar(props) {
   const [editProject, setEditProject] = useState(null);
   const [deleteProject, setDeleteProject] = useState(null);
   const [isTooltipOpen, setIsTooltipOpen] = useState(false);
-  const [projectFocus, setProjectFocus] = useState(null);
   const [dropdownId, setDropdownId] = useState(null);
   const [employees, setEmployees] = useState([]);
   const {userID} = useContext(AuthContext);
@@ -59,7 +58,6 @@ function Sidebar(props) {
             console.log("Error: ", error);
         }); 
         props.setProject(newProject);
-        setProjectFocus(newProject.id);
         props.fetchData(userID);
     }
 
@@ -74,7 +72,7 @@ function Sidebar(props) {
             console.log("Error: ", error);
         }); 
         props.setProject(editedProject); 
-        setProjectFocus(editedProject.id);
+        props.setProjectFocus(editedProject.id);
         props.fetchData(userID);
     }
 
@@ -88,14 +86,14 @@ function Sidebar(props) {
         .catch((error) => {
             console.log("Error: ", error);
         });
-        props.setProject(null); 
-        setProjectFocus(null);
-        localStorage.removeItem("projectId");
+        props.setProject(props.projList[0]); 
+        props.setProjectFocus(props.projList[0].id);
+        console.log(props.projList[0]);
         props.fetchData(userID);
     }
 
   const handleButtonClick = (project) => {
-    setProjectFocus(project.id);
+    props.setProjectFocus(project.id);
     props.setProject(project);
   };
 
@@ -110,10 +108,6 @@ function Sidebar(props) {
     setEditProject(project);
   }
 
-  useEffect(() => {
-    let projId = parseInt(localStorage.getItem("projectId"));
-    setProjectFocus(projId);
-  }, [setProjectFocus]);
   return (
     <>
       <div className="h-full w-full">
@@ -252,7 +246,7 @@ function Sidebar(props) {
                       key={project.id}
                       onClick={(e) => handleButtonClick(project)}
                       className={`flex flex-row w-full justify-between pt-1 px-1 rounded-md ${
-                        projectFocus === project.id ? "bg-white/20" : null
+                        props.projectFocus === project.id ? "bg-white/20" : null
                       }`}>
                       <div className="flex flex-row">
                         <div className="flex flex-col font-bold">

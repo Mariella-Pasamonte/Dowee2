@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { InvoiceTemplate } from "../components";
 
 
-const Invoice = () => {
+const InvoicePage = () => {
     const {id} = useParams("id");
     const navigate = useNavigate();
     const isLoggedIn= localStorage.getItem("isLoggedIn");
@@ -19,4 +19,4 @@ const Invoice = () => {
     )
 }
 
-export default Invoice;
+export default InvoicePage;

@@ -1,6 +1,7 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import { getClickedDate } from '../utilities/date';
 import axios from 'axios';
+import AuthContext from '../utilities/AuthContext';
 
 function Stopwatch(props) {
     const [isRunning,setIsRunning]= useState(false);
@@ -8,22 +9,23 @@ function Stopwatch(props) {
     let newHours=0;
     let newMinutes=0;
     let newSeconds=0;
+    const {userID} = useContext(AuthContext);
     const [time, setTime] = useState(settingTime());
 
     function settingTime(){
         if(props.hourlog===null){
             return {
                 starttimer:false,
-                employeeassigned:props.userId,
+                employeeassigned: userID,
                 date:today,
                 seconds:0,
                 minutes:0,
                 hours:0
             }
         }else{
-            let hl=props.hourlog.some((hl)=>hl.taskid===props.task.id&&hl.employeeassigned===props.userId&&hl.date===today);
+            let hl=props.hourlog.some((hl)=>hl.taskid===props.task.id&&hl.employeeassigned===userID&&hl.date===today);
             if(hl===true){
-                hl=props.hourlog.find((hl)=>hl.taskid===props.task.id&&hl.employeeassigned===props.userId&&hl.date===today);
+                hl=props.hourlog.find((hl)=>hl.taskid===props.task.id&&hl.employeeassigned===userID&&hl.date===today);
                 return {
                     employeeassigned:hl.employeeassigned,
                     date:hl.date,
@@ -36,7 +38,7 @@ function Stopwatch(props) {
             else{
                 return {
                     starttimer:false,
-                    employeeassigned:props.userId,
+                    employeeassigned:userID,
                     date:today,
                     seconds:0,
                     minutes:0,
@@ -111,7 +113,7 @@ function Stopwatch(props) {
         let newHourlog = null;
 
         hourlog.map((hl)=>{
-            hl.employee===props.userId&&(
+            hl.employee===userID&&(
                 newHourlog={
                     taskId: task.id,
                     employeeassigned: hl.employee,
@@ -127,27 +129,27 @@ function Stopwatch(props) {
         })
         axios
         // .post("https://dowee2-server2.vercel.app/addHourlog",newHourlog)
-        .post("http://localhost:5000/addHourlog",newHourlog)
+        .post("http://localhost:3000/addHourlog",newHourlog)
         .then((res) => {
             console.log(newHourlog)
         })
         .catch((error) => {
             console.log("Error: ", error);
         }); 
-        props.fetchData(props.userId)
+        props.fetchData(userID)
     }
 
     function setTimer(time){
         axios
         // .post("https://dowee2-server2.vercel.app/runTimer",time)
-        .post("http://localhost:5000/runTimer",time)
+        .post("http://localhost:3000/runTimer",time)
         .then((res) => {
             console.log(time);
         })
         .catch((error) => {
             console.log("Error: ", error);
         }); 
-        props.fetchData(props.userId);
+        props.fetchData(userID);
     }
 
     function toggleTimer(time) {
@@ -155,9 +157,9 @@ function Stopwatch(props) {
             if(props.hourlog===null){
                 addNewHourlog(props.task,pairItems(props.task),time);
             }else{
-                let hl=props.hourlog.some((hl)=>hl.taskid===props.task.id&&hl.employeeassigned===props.userId&&hl.date===today);
+                let hl=props.hourlog.some((hl)=>hl.taskid===props.task.id&&hl.employeeassigned===userID&&hl.date===today);
                 if(hl===true){
-                    hl=props.hourlog.find((hl)=>hl.taskid===props.task.id&&hl.employeeassigned===props.userId&&hl.date===today);
+                    hl=props.hourlog.find((hl)=>hl.taskid===props.task.id&&hl.employeeassigned===userID&&hl.date===today);
                     hl.starttimer=time.starttimer;
                     hl.employeeassigned=time.employeeassigned;
                     hl.seconds=time.seconds;

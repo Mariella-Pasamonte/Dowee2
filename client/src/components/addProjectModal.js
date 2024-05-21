@@ -127,7 +127,7 @@ function AddProjectModal(props){
             setIsFilled(true);
             props.addNewProject(
                 {
-                    userId: userID,
+                    userid: userID,
                     name: projTitle,
                     clientname: clientName,
                     clientemadd: emailAddress,

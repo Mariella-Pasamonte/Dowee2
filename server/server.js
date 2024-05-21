@@ -12,7 +12,7 @@ const db = new pg.Client({
   host: "localhost",
   database: "Doify",
   //Akoa's password
-  // password: "doifywebapp",
+  //  password: "doifywebapp",
   //Mariella's password
   password: "doifyapp",
   port: 5432,

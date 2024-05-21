@@ -140,7 +140,7 @@ function Task(props){
                 <td className='rounded-r-md border-1 border-black font-light py-3 w-40'>
                     {task.employeelist.map((emp)=>
                         emp === userID&&
-                        <Stopwatch isOpen={task.paymenttype} task={task} hourlog={props.hourlog} userId={userID} fetchData={props.fetchData}/>
+                        <Stopwatch isOpen={task.paymenttype} task={task} hourlog={props.hourlog} fetchData={props.fetchData}/>
                     )}
                 </td>
             </tr>

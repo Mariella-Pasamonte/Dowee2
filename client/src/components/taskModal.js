@@ -51,7 +51,7 @@ function TaskModal(props){
                             <div className="flex flex-row">
                                 <label
                                     id="taskTitleLabel"
-                                    classname={inputLabelClassName}
+                                    className={inputLabelClassName}
                                 >
                                     Task name
                                 </label>
@@ -88,7 +88,7 @@ function TaskModal(props){
                                 <div className='flex flex-row w-1/2 mr-2'>
                                     <label
                                         id='taskEmployeeAssignedLabel'
-                                        classname={inputLabelClassName}
+                                        className={inputLabelClassName}
                                     >
                                         Assigned: 
                                     </label>
@@ -96,7 +96,7 @@ function TaskModal(props){
                                 <div className="flex flex-row w-1/2">
                                     <label
                                         id="taskAmountLabel"
-                                        classname={`${inputLabelClassName} mb-[5.5px]`}
+                                        className={`${inputLabelClassName} mb-[5.5px]`}
                                     >
                                         Amount:
                                     </label>
@@ -144,7 +144,7 @@ function TaskModal(props){
                         <div className='flex flex-col mt-1 mb-2'>
                             <label
                                 id="taskDescriptionLabel"
-                                classname={inputLabelClassName}
+                                className={inputLabelClassName}
                             >
                                 Task description
                             </label>

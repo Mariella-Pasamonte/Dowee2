@@ -11,7 +11,7 @@ const db = new pg.Client({
   host: "localhost",
   database: "Doify",
   //Akoa's password
-  // password: "doifywebapp",
+  //  password: "doifywebapp",
   //Mariela's password
   password: "doifyapp",
   port: 5432,
@@ -105,10 +105,13 @@ router.post("/register", async (req, res) => {
 
     if (checkExistingUsername.rows.length > 0) {
       res.send(exist);
+      console.log("Username already exists")
     } else if (checkExistingContact.rows.length > 0) {
       res.send(exist);
+      console.log("Contact number already exists")
     } else if (checkExistingEmail.rows.length > 0) {
       res.send(exist);
+      console.log("Email already exists")
     } else {
       const result = await db.query(
         "INSERT INTO users (fname, lname, username, password, email, contactno, gender, birthdate) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
@@ -124,7 +127,7 @@ router.post("/register", async (req, res) => {
 });
 
 router.post("/addProject", async (req, res) => {
-  const userid = req.body.userId;
+  const userid = req.body.userid;
   const name = req.body.name;
   const clientname = req.body.clientname;
   const clientemadd = req.body.clientemadd;
@@ -149,7 +152,6 @@ router.post("/addProject", async (req, res) => {
         employees,
       ]
     );
-    console.log(result);
   }catch{
     console.error("post. /addProject error Error: ", error);
     res.status(500).send("Shit hit the fan Error in addProject");
@@ -158,7 +160,7 @@ router.post("/addProject", async (req, res) => {
 
 router.post("/editProject", async (req, res) => {
   const id = req.body.id;
-  const userid = req.body.userId;
+  const userid = req.body.userid;
   const name = req.body.name;
   const clientname = req.body.clientname;
   const clientemadd = req.body.clientemadd;
@@ -318,11 +320,12 @@ router.post("/runTimer", async (req, res) => {
   const hours = req.body.hours;
   const minutes = req.body.minutes;
   const seconds = req.body.seconds;
+  const pendingamount = req.body.pendingamount;
   
   try{
     const result = await db.query(
-      "UPDATE hourlog SET id = $1, starttimer = $2, hours = $3, minutes = $4, seconds = $5 WHERE id = $1",
-      [id, starttimer, hours, minutes, seconds]
+      "UPDATE hourlog SET id = $1, starttimer = $2, hours = $3, minutes = $4, seconds = $5, pendingamount = $6 WHERE id = $1",
+      [id, starttimer, hours, minutes, seconds, pendingamount]
     );
   }catch{
     console.error("post. /runTimer error Error: ", error);

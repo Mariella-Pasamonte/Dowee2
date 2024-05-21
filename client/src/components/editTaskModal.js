@@ -49,7 +49,7 @@ function EditTaskModal(props){
     const memoizedFetchUsers = useCallback(() => {
         axios
         // .get('https://dowee2-server2.vercel.app/getUsers', {})
-        .get('http://localhost:5000/getUsers', {})
+        .get('http://localhost:3000/getUsers', {})
         .then((response)=>{
             setUsers(response.data.users);
         })
@@ -95,9 +95,6 @@ function EditTaskModal(props){
 
     function editTask(){
         const taskExist = props.tasks?props.tasks.some((task)=>task.name===taskTitle&&task.projectid===props.project.id):false;
-        if(status==="Finished"){
-            finishedTask();
-        }
         if(taskExist===false && taskTitle !== ''&& emps.length!==0 && !amountCheck && taskDescription!==''){
             props.editTask(
                 {
@@ -123,62 +120,6 @@ function EditTaskModal(props){
             setIsFilled(false);
         }
     };
-
-    function finishedTask(){
-        axios
-        // .get("https://dowee2-server2.vercel.app/checkInvoice", invoiceData)
-        .get("http://localhost:3000/checkInvoice", {
-            headers:{ 
-                projectid: props.task.projectid
-            }
-        })
-        .then((res)=>{
-            console.log('status:', res.data.status);
-            const taskids = [taskId];
-            const hourlogs = props.hourlog.map((hl)=>
-                hl.taskid===taskId&&hl.employeeassigned===userID&&hl.id
-            )
-            const filteredHourlogs = props.hourlog.filter(
-                (item) =>
-                    item.employeeassigned === userID && item.taskid === taskId
-            );
-            let total = filteredHourlogs.reduce((acc, hl) => acc+parseFloat(hl.pendingamount),0).toFixed(2);
-            
-            if (res.data.status===true){
-                const invoice = res.data.invoice;
-                axios
-                // .post(`{https://dowee2-server2.vercel.app/updateInvoice/${userID}}`, invoice)
-                .post(`{http://localhost:3000/updateInvoice/${userID}}`, invoice)
-                .then((res))
-                .catch((error) => {
-                    console.log(error);
-                }); 
-            } else{
-                const newInvoice = {
-                    invoice_number: props.invoices?props.invoices.length+1:1,
-                    invoice_to_clientName: props.project.clientname,
-                    invoice_to_clientEmAdd: props.project.clientemadd,
-                    invoice_from_userId: userID,
-                    notes: "Thank you for your service",
-                    invoice_project:props.project.id,
-                    invoice_tasks: taskids,
-                    invoice_hourlogs: hourlogs,
-                    invoice_total: parseFloat(total)
-                }
-                axios
-                // .post("https://dowee2-server2.vercel.app/generateInvoice")
-                .post("http://localhost:3000/generateInvoice", newInvoice)
-                .then((res))
-                .catch((error) => {
-                    console.log(error);
-                });
-                
-            }
-        })
-        .catch((error) => {
-            console.log(error);
-          });
-    }
     
     var inputLabelClassName="flex flex-row text-sm";
 
