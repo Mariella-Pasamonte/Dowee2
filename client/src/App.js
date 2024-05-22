@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route,} from "react-router-dom";
 import React from "react";
-import { Login, Home, Register, InvoicePage } from "./pages";
+import { Login, Home, Register, ViewInvoicePage, ProjectTaskPage, ProjectInvoicePage } from "./pages";
 import PrivateRoute from "./utilities/PrivateRoute";
 import { AuthProvider } from './utilities/AuthContext';
 import "./App.css";
@@ -40,7 +40,15 @@ function App() {
           />
           <Route
             path="/invoice/:id"
-            element={<PrivateRoute><InvoicePage/></PrivateRoute>}
+            element={<PrivateRoute><ViewInvoicePage/></PrivateRoute>}
+          />
+          <Route
+            path="/project/:name/:userid/0"
+            element={<PrivateRoute><ProjectTaskPage/></PrivateRoute>}
+          />
+          <Route
+            path="/project/:name/:userid/1"
+            element={<PrivateRoute><ProjectInvoicePage/></PrivateRoute>}
           />
           <Route 
             path="/register" 

@@ -210,27 +210,27 @@ router.post("/deleteProject", async (req, res) => {
 });
 
 router.post("/addTask", async (req, res) => {
-  const projectid = req.body.projectid;
-  const name = req.body.name;
-  const paymenttype = req.body.paymenttype;
-  const priority = req.body.priority;
-  const amount = req.body.amount;
-  const employeelist = req.body.employeelist;
-  const description = req.body.desc;
-  const status = req.body.status;
+  // const projectid = req.body.projectid;
+  // const name = req.body.name;
+  // const paymenttype = req.body.paymenttype;
+  // const priority = req.body.priority;
+  // const amount = req.body.amount;
+  // const employeelist = req.body.employeelist;
+  // const description = req.body.desc;
+  // const status = req.body.status;
   
   try{
     const result = await db.query(
       "INSERT INTO tasks (projectid, name, paymenttype, priority, amount, employeelist, description, status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
       [
-        projectid,
-        name,
-        paymenttype,
-        priority,
-        amount,
-        employeelist,
-        description,
-        status,
+        req.body.projectid,
+        req.body.name,
+        req.body.paymenttype,
+        req.body.priority,
+        req.body.amount,
+        req.body.employeelist,
+        req.body.description,
+        req.body.status,
       ]
     );
   }catch{

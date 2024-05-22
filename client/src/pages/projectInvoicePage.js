@@ -3,15 +3,23 @@ import React, {useState, useEffect, useCallback, useContext} from "react";
 import { ProjectModal } from "../components";
 import Navbar from "../modules/navbar";
 import Sidebar from "../modules/sidebar";
-import Project from "../modules/projectTask";
+import ProjectInvoice from "../modules/projectInvoice";
 import axios from "axios";
 import AuthContext from "../utilities/AuthContext";
+import { useParams } from "react-router-dom";
 
-const Home = (props) => {
+const ProjectInvoicePage = (props) => {
+    const {name, userid} = useParams();
+    console.log("projectname:", name);
+    console.log("projectuserid:", userid)
     const [projList, setProjList] = useState(null);
     const [project, setProject] = useState(null);
     const [projectFocus, setProjectFocus] = useState(null);
+    const [tasks, setTasks] = useState(null);
     const [users, setUsers] = useState(null);
+    const [hourlog, setHourlog] = useState(null);
+    const [invoices, setInvoices] = useState(null);
+    const [openProjectModal, setOpenProjectModal] = useState(false);
     const {userID} = useContext(AuthContext);
 
     const memoizedFetchData = useCallback((userId) => {
@@ -24,12 +32,17 @@ const Home = (props) => {
         })
         .then((response)=>{
             setProjList(response.data.projects);
+            setTasks(response.data.tasks);
             setUsers(response.data.users);
+            setHourlog(response.data.hourlog);
+            setInvoices(response.data.invoices);
+            setProject(response.data.projects.find((proj)=>proj.userid==userid&&proj.name==name));
+            setProjectFocus(response.data.projects.find((proj)=>proj.userid===userid&&proj.name===name&&proj.id));
         })
         .catch((error) =>{
             console.log(error);
         });
-    },[setProjList, setUsers]);
+    },[name, userid, setProjList, setTasks, setHourlog, setInvoices]);
 
     useEffect(() => {
         memoizedFetchData(userID);
@@ -45,10 +58,23 @@ const Home = (props) => {
                 </div>
                 <div className="h-full flex flex-row">
                     <div className="h-full w-1/6 mr-2">
-                        <Sidebar projectFocus={projectFocus} projList={projList} users={users} fetchData={memoizedFetchData}/>
+                        <Sidebar projectFocus={projectFocus} projList={projList} users={users}/>
                     </div>
                     <div className="relative h-full w-5/6 pl-2">
+                        {project&&<ProjectModal isOpen={openProjectModal} closeModal={setOpenProjectModal} project={project} users={users}/>}
                         <div className="h-full border-y-[1px] border-l-[1px] border-white/20 bg-gradient-to-r from-[#6F6483]/60 to-[#4F2E5D]/60 rounded-l-3xl">
+                            {project && 
+                                <ProjectInvoice 
+                                    project={project} 
+                                    setOpenProjectModal={setOpenProjectModal} 
+                                    projects={projList}  
+                                    tasks={tasks} 
+                                    users={users} 
+                                    hourlog={hourlog} 
+                                    invoices={invoices} 
+                                    fetchData={memoizedFetchData}
+                                />
+                            }
                         </div>
                     </div>
                 </div>
@@ -57,4 +83,4 @@ const Home = (props) => {
     );
 }
 
-export default Home;
+export default ProjectInvoicePage;

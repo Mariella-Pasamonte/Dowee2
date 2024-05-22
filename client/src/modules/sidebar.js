@@ -6,6 +6,7 @@ import {
   WarningModal,
   Tooltips,
 } from "../components";
+import { useNavigate } from "react-router-dom";
 import AuthContext from "../utilities/AuthContext";
 import axios from "axios";
 
@@ -21,6 +22,7 @@ function Sidebar(props) {
   const [dropdownId, setDropdownId] = useState(null);
   const [employees, setEmployees] = useState([]);
   const {userID} = useContext(AuthContext);
+  const navigate = useNavigate();
 
   var projLength = props.projList ? props.projList.length : 0;
 
@@ -57,8 +59,7 @@ function Sidebar(props) {
         .catch((error) => {
             console.log("Error: ", error);
         }); 
-        props.setProject(newProject);
-        props.fetchData(userID);
+        navigate(`/project/${newProject.name}/${newProject.userid}/0`);
     }
 
     function editedProject(editedProject){
@@ -71,9 +72,7 @@ function Sidebar(props) {
         .catch((error) => {
             console.log("Error: ", error);
         }); 
-        props.setProject(editedProject); 
-        props.setProjectFocus(editedProject.id);
-        props.fetchData(userID);
+        navigate(`/project/${editedProject.name}/${editedProject.userid}/0`);
     }
 
     function deletingProject(deleteProject){
@@ -86,15 +85,12 @@ function Sidebar(props) {
         .catch((error) => {
             console.log("Error: ", error);
         });
-        props.setProject(props.projList[0]); 
-        props.setProjectFocus(props.projList[0].id);
-        console.log(props.projList[0]);
+        navigate(`/project/${props.projList[0].name}/${props.projList[0].userid}/0`);
         props.fetchData(userID);
     }
 
   const handleButtonClick = (project) => {
-    props.setProjectFocus(project.id);
-    props.setProject(project);
+    navigate(`/project/${project.name}/${project.userid}/0`);
   };
 
   const handleOpenDropdown = (projectId) => {

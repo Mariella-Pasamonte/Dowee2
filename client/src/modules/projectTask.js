@@ -11,14 +11,15 @@ import {
 } from "../components";
 import axios from "axios";
 import AuthContext from "../utilities/AuthContext";
+import { useNavigate } from "react-router-dom";
 
-function Project(props) {
+function ProjectTask(props) {
+  const navigate = useNavigate();
   const [openAddTaskModal, setOpenAddTaskModal] = useState(false);
   const [openEditTaskModal, setOpenEditTaskModal] = useState(false);
   const [openDeleteWarningModal, setOpenDeleteWarningModal] = useState(false);
   const [openTaskModal, setOpenTaskModal] = useState(false);
   const [projectButtonsFocus, setProjectButtonsFocus] = useState(0);
-  const [taskOrInvoiceFocus, setTaskOrInvoiceFocus] = useState(0);
   const [employeeList, setEmployeeList] = useState([]);
   const [openEmployeesModal, setOpenEmployeesModal] = useState(false);
   const [edit, setEdit] = useState(false);
@@ -87,17 +88,18 @@ function Project(props) {
   }
 
   const onClickCreateTask = () => {
-    setTaskOrInvoiceFocus(0);
     setOpenAddTaskModal(true);
     setEdit(false);
   };
 
   const onClickInvoice = () => {
-    setTaskOrInvoiceFocus(1);
+    navigate(`/project/${props.project.name}/${props.project.userid}/1`);
   };
   const onClickViewTask = () => {
-    setTaskOrInvoiceFocus(0);
+    navigate(`/project/${props.project.name}/${props.project.userid}/0`);
   };
+
+  console.log("project userID:", props.project.userid===userID);
   return (
     <>
       <div className="h-full w-full px-5 py-3">
@@ -135,31 +137,31 @@ function Project(props) {
                     </svg>
                   </button>
                 </div>
-                <div className="relative flex flex-row just text-white">
-                  <div className="relative flex flex-col justify-center h-full text-white font-thin">
-                    <button
-                      key={0}
-                      onClick={() => onClickCreateTask()}
-                      className={`p-1 pr-3 pl-8 rounded-md bg-[#292944] hover:bg-[#4b4b79]`}>
-                      <div className="absolute -inset-x-0 -inset-y-0 top-[20%] left-[6%] flex pointer-events-none">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          strokeWidth="1.5"
-                          stroke="currentColor"
-                          className="w-5 h-5">
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M12 4.5v15m7.5-7.5h-15"
-                          />
-                        </svg>
-                      </div>
-                      Create task
-                    </button>
+                  <div className="relative flex flex-row just text-white">
+                    <div className="relative flex flex-col justify-center h-full text-white font-thin">
+                      <button
+                        key={0}
+                        onClick={() => onClickCreateTask()}
+                        className={`p-1 pr-3 pl-8 rounded-md bg-[#292944] hover:bg-[#4b4b79]`}>
+                        <div className="absolute -inset-x-0 -inset-y-0 top-[20%] left-[6%] flex pointer-events-none">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            strokeWidth="1.5"
+                            stroke="currentColor"
+                            className="w-5 h-5">
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M12 4.5v15m7.5-7.5h-15"
+                            />
+                          </svg>
+                        </div>
+                        Create task
+                      </button>
+                    </div>
                   </div>
-                </div>
               </div>
               <hr className="w-full h-1 bg-[#8381BB] border-0 rounded dark:bg-gray-700" />
             </div>
@@ -299,9 +301,7 @@ function Project(props) {
               <button
                 key={0}
                 onClick={() => onClickViewTask()}
-                className={`p-1 pr-3 pl-8 rounded-md ${
-                  taskOrInvoiceFocus === 0 ? "bg-[#397AB9]" : "bg-[#7890A8]"
-                } `}>
+                className='p-1 pr-3 pl-8 rounded-md bg-[#397AB9]'>
                 View Tasks
               </button>
             </div>
@@ -325,9 +325,7 @@ function Project(props) {
               <button
                 key={1}
                 onClick={() => onClickInvoice()}
-                className={`p-1 pr-3 pl-8 rounded-md ${
-                  taskOrInvoiceFocus === 1 ? "bg-[#397AB9]" : "bg-[#7890A8]"
-                } `}>
+                className='p-1 pr-3 pl-8 rounded-md bg-[#7890A8]'>
                 Invoice
               </button>
             </div>
@@ -355,7 +353,6 @@ function Project(props) {
                 employees={employeeList}
                 setEmployees={setEmployeeList}
                 hourlog={props.hourlog}
-                invoices={props.invoices}
               />
             )}
             {task && (
@@ -381,35 +378,24 @@ function Project(props) {
             </WarningModal>
           </div>
           <div>
-            {taskOrInvoiceFocus === 0 ? (
-              <Task
-                tasks={props.tasks}
-                projectId={props.project.id}
-                issuedDate={props.project.issueddate}
-                dueDate={props.project.duedate}
-                userId={props.project.userid}
-                hourlog={props.hourlog}
-                edit={edit}
-                setEdit={setEdit}
-                setEditedTask={setEditedTask}
-                setDeletedTask={setDeletedTask}
-                setOpenEditTaskModal={setOpenEditTaskModal}
-                setOpenDeleteWarningModal={setOpenDeleteWarningModal}
-                setEmployees={setEmployeeList}
-                setOpenTaskModal={setOpenTaskModal}
-                setTask={setTask}
-                fetchData={props.fetchData}
-              />
-            ) : (
-              <Invoice
-                invoices={props.invoices}
-                projects={props.projects}
-                tasks={props.tasks}
-                hourlog={props.hourlog}
-                users={props.users}
-                fetchData={props.fetchData}
-              />
-            )}
+            <Task
+              tasks={props.tasks}
+              projectId={props.project.id}
+              issuedDate={props.project.issueddate}
+              dueDate={props.project.duedate}
+              userId={props.project.userid}
+              hourlog={props.hourlog}
+              edit={edit}
+              setEdit={setEdit}
+              setEditedTask={setEditedTask}
+              setDeletedTask={setDeletedTask}
+              setOpenEditTaskModal={setOpenEditTaskModal}
+              setOpenDeleteWarningModal={setOpenDeleteWarningModal}
+              setEmployees={setEmployeeList}
+              setOpenTaskModal={setOpenTaskModal}
+              setTask={setTask}
+              fetchData={props.fetchData}
+            />
           </div>
         </div>
       </div>
@@ -417,4 +403,4 @@ function Project(props) {
   );
 }
 
-export default Project;
+export default ProjectTask;
