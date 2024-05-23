@@ -78,7 +78,7 @@ function Task(props){
     const memoizedTaskRows = useCallback(() => {
         return props.tasks&&(props.tasks.map((task)=>
             task.projectid === props.projectId &&
-            <tr onClick={(e)=>{taskFocus===task.id?setTaskFocus(null):setTaskFocus(task.id)} } className={`ml-2 font-Inter h-14 w-fit text-white text-sm ${taskFocus===task.id?'bg-[#6C93B9]/60':'bg-[#6C93B9]/40'}`}>
+            <tr onClick={(e)=>{taskFocus===task.id?setTaskFocus(null):setTaskFocus(task.id)} } className={`ml-2 my-5 font-Inter h-14 w-fit text-white text-sm ${taskFocus===task.id?'bg-[#6C93B9]/60':'bg-[#6C93B9]/40'}`}>
                 <td className={`rounded-l-md font-light w-24  h-14 ${props.edit?'w-24':'w-10'}`}>
                     <div className=' my-2 flex flex-row justify-center h-full'>
                         <button
@@ -124,6 +124,9 @@ function Task(props){
                 <td className='text-center pl-2 py-2 font-light w-24 '>
                     {task.name}
                 </td>
+                <td className={`text-center pl-2 py-2 font-light w-24 ${task.priority===1?'text-[#22E864]':task.priority===2?'text-[#F2FF62]':'text-[#FF6247]'} `}>
+                    {task.priority === 1?"Low":task.priority===2?"Medium":"High"}
+                </td>
                 <td className=' text-center w-44 font-light py-2 px-5'>
                     {truncatedDescription(task.description)}
                 </td>
@@ -148,7 +151,7 @@ function Task(props){
 
     useEffect(() => {
         memoizedFetchUsers();
-    })
+    },[memoizedFetchUsers])
     return(
         <>
             <div className='relative'>
@@ -172,13 +175,16 @@ function Task(props){
                     </div>
                 </div>
                 <div className='overflow-hidden max-h-80 w-fit rounded-b-md'>
-                    <table className='flex flex-col w-full'>
+                    <table className='flex flex-col w-full h-full border-separate border-spacing-y-1'>
                         <thead className='sticky top-0 w-full'>
                             <tr className='bg-[#4785C1] font-Inter text-white text-sm'>
                                 <th scope="col" className='rounded-l-md font-light h-8 w-24'>
                                 </th>
                                 <th scope="col" className=' pl-2 py-2 font-light w-24 h-4'>
                                     Task Name
+                                </th>
+                                <th scope="col" className=' pl-2 py-2 font-light w-24 h-4'>
+                                    Priority
                                 </th>
                                 <th scope="col" className='  w-44 font-light py-2 px-5 h-4'>
                                     Task Description
@@ -197,7 +203,7 @@ function Task(props){
                                 </th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody className='h-full'>
                             {props.tasks &&
                                 memoizedTaskRows()
                             }

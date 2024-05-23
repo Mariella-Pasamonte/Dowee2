@@ -6,7 +6,6 @@ import { InvoiceTemplate } from "../components";
 
 const ViewInvoicePage = () => {
     const {id} = useParams("id");
-    const navigate = useNavigate();
 
     return(
         <InvoiceTemplate id={id}/>      

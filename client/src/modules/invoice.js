@@ -27,6 +27,7 @@ function Invoice(props) {
   function onClickGenerateInvoice(){
     console.log("this is done once");
     projects&&projects.map((project)=>generateInvoice(project));
+    
     invoices&&invoices.map((invoice)=>
       {
         if(projectInvoices.some(pi=>pi.invoice_project===invoice.invoice_project)){
