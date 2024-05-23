@@ -15,9 +15,7 @@ function Task(props){
         const user = users.find(user => user.id === userId);
         return user ? user.username : 'Unknown';
     };
-    const tasks = useMemo(()=> {
-        return props.tasks?props.tasks.filter((task)=>task.projectid === props.projectId):[];
-    },[props]);
+    
 
     const memoizedFetchUsers = useCallback(() => {
         axios
@@ -72,12 +70,13 @@ function Task(props){
     }
 
     const truncatedDescription =(desc)=>{
-        if(desc.length === 0) return 'N/A';
+        if(desc === null ) return 'N/A';
+        else if(desc.length === 0) return 'N/A';
         else return desc.length > 15 ? desc.slice(0, 15) + '...' : desc;
     }
 
     const memoizedTaskRows = useCallback(() => {
-        return tasks.map((task)=>
+        return props.tasks&&(props.tasks.map((task)=>
             task.projectid === props.projectId &&
             <tr onClick={(e)=>{taskFocus===task.id?setTaskFocus(null):setTaskFocus(task.id)} } className={`ml-2 font-Inter h-14 w-fit text-white text-sm ${taskFocus===task.id?'bg-[#6C93B9]/60':'bg-[#6C93B9]/40'}`}>
                 <td className={`rounded-l-md font-light w-24  h-14 ${props.edit?'w-24':'w-10'}`}>
@@ -144,8 +143,8 @@ function Task(props){
                     )}
                 </td>
             </tr>
-        )
-    },[tasks, props, taskFocus, truncatedEmpNames, userID]);
+        ))
+    },[ props, taskFocus, truncatedEmpNames, userID]);
 
     useEffect(() => {
         memoizedFetchUsers();
@@ -174,7 +173,7 @@ function Task(props){
                 </div>
                 <div className='overflow-hidden max-h-80 w-fit rounded-b-md'>
                     <table className='flex flex-col w-full'>
-                        <thead className='sticky top-0'>
+                        <thead className='sticky top-0 w-full'>
                             <tr className='bg-[#4785C1] font-Inter text-white text-sm'>
                                 <th scope="col" className='rounded-l-md font-light h-8 w-24'>
                                 </th>
@@ -202,7 +201,7 @@ function Task(props){
                             {props.tasks &&
                                 memoizedTaskRows()
                             }
-                            {tasks.length===0&&
+                            {props.tasks&&props.tasks.length===0&&
                                 <div className="flex flex-col justify-center h-48 ">
                                     <div className="flex flex-row justify-center text-white/70">
                                         Press "Create Task" button to add new Task

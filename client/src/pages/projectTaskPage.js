@@ -7,11 +7,11 @@ import ProjectTask from "../modules/projectTask";
 import axios from "axios";
 import AuthContext from "../utilities/AuthContext";
 import { useParams } from "react-router-dom";
+import "../components/css/style.css"
 
 const ProjectTaskPage = (props) => {
     const {name, userid} = useParams();
-    console.log("projectname:", name);
-    console.log("projectuserid:", userid)
+    const [isLoading, setIsLoading] = useState(false);
     const [projList, setProjList] = useState(null);
     const [project, setProject] = useState(null);
     const [projectFocus, setProjectFocus] = useState(null);
@@ -22,6 +22,7 @@ const ProjectTaskPage = (props) => {
     const {userID} = useContext(AuthContext);
 
     const memoizedFetchData = useCallback((userId) => {
+        setIsLoading(true);
         axios
         .get('https://dowee2-server2.vercel.app/home', {
         // .get('http://localhost:3000/home', {
@@ -34,12 +35,15 @@ const ProjectTaskPage = (props) => {
             setTasks(response.data.tasks);
             setUsers(response.data.users);
             setHourlog(response.data.hourlog);
-            setProject(response.data.projects.find((proj)=>proj.userid==userid&&proj.name==name));
+            setProject(response.data.projects.find((proj)=>proj.userid==userid&&proj.name===name));
             setProjectFocus(response.data.projects.find((proj)=>proj.userid===userid&&proj.name===name&&proj.id));
         })
         .catch((error) =>{
             console.log(error);
-        });
+        })
+        .finally((response)=>{
+            setIsLoading(false);
+        })
     },[name, userid, setProjList, setTasks, setHourlog]);
 
     useEffect(() => {
@@ -47,9 +51,9 @@ const ProjectTaskPage = (props) => {
     },[ userID, memoizedFetchData])
 
     let username = users && users.find(user => user.id === userID).username;
-
     return( 
         <div className='static flex flex-col h-dvh'>
+            {isLoading&&<div id="loading-animation"></div>}
             <div className='relative my-3 ml-3 flex flex-col h-full justify-center'>
                 <div className='mb-3 mr-3'>
                     <Navbar user={username} userid={userID}/>

@@ -59,6 +59,7 @@ function Sidebar(props) {
         .catch((error) => {
             console.log("Error: ", error);
         }); 
+        props.fetchData(userID);
         navigate(`/project/${newProject.name}/${newProject.userid}/0`);
     }
 
@@ -72,6 +73,7 @@ function Sidebar(props) {
         .catch((error) => {
             console.log("Error: ", error);
         }); 
+        props.fetchData(userID);
         navigate(`/project/${editedProject.name}/${editedProject.userid}/0`);
     }
 
@@ -85,8 +87,8 @@ function Sidebar(props) {
         .catch((error) => {
             console.log("Error: ", error);
         });
-        navigate(`/project/${props.projList[0].name}/${props.projList[0].userid}/0`);
         props.fetchData(userID);
+        navigate(`/project/${props.projList[0].name}/${props.projList[0].userid}/0`);
     }
 
   const handleButtonClick = (project) => {

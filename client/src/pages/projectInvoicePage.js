@@ -7,9 +7,11 @@ import ProjectInvoice from "../modules/projectInvoice";
 import axios from "axios";
 import AuthContext from "../utilities/AuthContext";
 import { useParams } from "react-router-dom";
+import "../components/css/style.css"
 
 const ProjectInvoicePage = (props) => {
     const {name, userid} = useParams();
+    const [isLoading, setIsLoading] = useState(false);
     console.log("projectname:", name);
     console.log("projectuserid:", userid)
     const [projList, setProjList] = useState(null);
@@ -23,6 +25,7 @@ const ProjectInvoicePage = (props) => {
     const {userID} = useContext(AuthContext);
 
     const memoizedFetchData = useCallback((userId) => {
+        setIsLoading(true)
         axios
         .get('https://dowee2-server2.vercel.app/home', {
         // .get('http://localhost:3000/home', {
@@ -41,7 +44,10 @@ const ProjectInvoicePage = (props) => {
         })
         .catch((error) =>{
             console.log(error);
-        });
+        })
+        .finally((response)=>{
+            setIsLoading(false);
+        })
     },[name, userid, setProjList, setTasks, setHourlog, setInvoices]);
 
     useEffect(() => {
@@ -52,6 +58,7 @@ const ProjectInvoicePage = (props) => {
 
     return( 
         <div className='static flex flex-col h-dvh'>
+            {isLoading&&<div id="loading-animation"></div>}
             <div className='relative my-3 ml-3 flex flex-col h-full justify-center'>
                 <div className='mb-3 mr-3'>
                     <Navbar user={username} userid={userID}/>

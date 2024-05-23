@@ -1,7 +1,6 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useMemo } from "react";
 //import {Link} from "react-router-dom";
 import Task from "./task";
-import Invoice from "./invoice";
 import {
   AddTaskModal,
   EditTaskModal,
@@ -24,7 +23,9 @@ function ProjectTask(props) {
   const [openEmployeesModal, setOpenEmployeesModal] = useState(false);
   const [edit, setEdit] = useState(false);
   const [editedTask, setEditedTask] = useState(null);
-
+  const tasks = useMemo(()=> {
+    return props.tasks?props.tasks.filter((task)=>task.projectid === props.project.id):[];
+  },[props]);
   const [deletedTask, setDeletedTask] = useState(null);
   const [task, setTask] = useState(null);
   const users = props.project.employees.map((emp) =>
@@ -47,19 +48,6 @@ function ProjectTask(props) {
     );
     setEmployeeList(editedEmployees);
   };
-
-  function addNewTask(newTask) {
-    axios
-      .post("https://dowee2-server2.vercel.app/addTask",newTask)
-      // .post("http://localhost:3000/addTask", newTask)
-      .then((res) => {
-        console.log(newTask);
-      })
-      .catch((error) => {
-        console.log("Error: ", error);
-      });
-    props.fetchData(userID);
-  }
 
   function editTask(editedTask) {
     axios
@@ -335,11 +323,12 @@ function ProjectTask(props) {
               isOpen={openAddTaskModal}
               openEmployeesModal={setOpenEmployeesModal}
               closeModal={setOpenAddTaskModal}
-              addNewTasks={addNewTask}
               tasks={props.tasks}
+              users={props.users}
               project={props.project}
               employees={employeeList}
               setEmployees={setEmployeeList}
+              fetchData={props.fetchData}
             />
             {editedTask && (
               <EditTaskModal
@@ -379,7 +368,7 @@ function ProjectTask(props) {
           </div>
           <div>
             <Task
-              tasks={props.tasks}
+              tasks={tasks}
               projectId={props.project.id}
               issuedDate={props.project.issueddate}
               dueDate={props.project.duedate}

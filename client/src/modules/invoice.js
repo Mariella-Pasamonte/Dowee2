@@ -6,6 +6,7 @@ import AuthContext from "../utilities/AuthContext";
 
 
 function Invoice(props) {
+  const [invoices, setInvoices] = useState(null);
   const [openInvoiceTemplateModal, setOpenInvoiceTemplateModal] = useState(false);
   const [openAddInvoiceModal, isOpenAddInvoiceModal] = useState(false);
   const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
@@ -22,6 +23,21 @@ function Invoice(props) {
   const user = props.users.filter((user)=> user.id === userID);
   const projects = props.projects.filter(project=>tasks.some(task=>task.projectid===project.id));
   const hourlog = props.hourlog;
+
+  function onClickGenerateInvoice(){
+    console.log("this is done once");
+    projects&&projects.map((project)=>generateInvoice(project));
+    invoices&&invoices.map((invoice)=>
+      {
+        if(projectInvoices.some(pi=>pi.invoice_project===invoice.invoice_project)){
+          const existingInvoice = projectInvoices.find(pi=>pi.invoice_project===invoice.invoice_project)
+          updateInvoice(existingInvoice, invoice)
+        }else{
+          newInvoice(invoice)
+        } 
+      }
+    )
+  }
 
   function generateInvoice(project){
     let filterTasks = tasks.filter(task=>task.projectid===project.id);
@@ -44,29 +60,34 @@ function Invoice(props) {
       invoice_hourlogs: hourlogids,
       invoice_total: parseFloat(total)
     }
-
-    if(projectInvoices.some(pi=>pi.invoice_project===project.id)){
-      const existingInvoice = projectInvoices.find(pi=>pi.invoice_project===project.id)
-      axios
-      .post(`{https://dowee2-server2.vercel.app/updateInvoice/${existingInvoice.id}}`, invoice)
-      // .post(`{http://localhost:3000/updateInvoice/${existingInvoice.id}}`, invoice)
-      .then()
-      .catch((error) => {
-          console.log(error);
-      });
-      props.fetchData(userID);
+    if(invoices===null){
+      setInvoices([invoice]);
     }else{
-      axios
-      // .post("https://dowee2-server2.vercel.app/generateInvoice")
-      .post("http://localhost:3000/generateInvoice", invoice)
-      .then()
-      .catch((error) => {
-          console.log(error);
-      });
-      props.fetchData(userID);
-    }       
+      setInvoices(prev=>[...prev,invoice])
+    }  
   }
 
+  function newInvoice(invoice){
+    axios
+    .post("https://dowee2-server2.vercel.app/generateInvoice",invoice)
+    // .post("http://localhost:3000/generateInvoice", invoice)
+    .then()
+    .catch((error) => {
+        console.log(error);
+    });
+    props.fetchData(userID);
+  }
+
+  function updateInvoice(existingInvoice, invoice){
+    axios
+    .post(`{https://dowee2-server2.vercel.app/updateInvoice/${existingInvoice.id}}`, invoice)
+    // .post(`{http://localhost:3000/updateInvoice/${existingInvoice.id}}`, invoice)
+    .then()
+    .catch((error) => {
+        console.log(error);
+    });
+    props.fetchData(userID);
+  }
   
 
   return (
@@ -77,7 +98,7 @@ function Invoice(props) {
             Project Invoice
           </div>
           <div className="relative flex flex-col justify-center h-full ml-2 text-white font-thin">
-            <button onClick={()=>{projects.map((project)=>generateInvoice(project))}} className="font-Inter text-sm py-1 px-3 rounded-md bg-[#212628]/50">
+            <button onClick={()=>onClickGenerateInvoice()} className="font-Inter text-sm py-1 px-3 rounded-md bg-[#212628]/50">
               Generate Invoice
             </button>
           </div>

@@ -47,7 +47,7 @@ function InvoiceTemplate(props) {
   };
 
   const calculateTotal = (hourlog) => {
-    return hourlog.reduce((total, hourlog) => total + hourlog.pendingamount, 0);
+    return hourlog.reduce((acc, hl) => acc+parseFloat(hl.pendingamount),0).toFixed(2);
   };
 
   const validHourlog = Array.isArray(props.hourlog) && props.hourlog.length > 0 ? props.hourlog : [];
@@ -147,7 +147,7 @@ function InvoiceTemplate(props) {
               <h1 className="invoice-text25">TOTAL</h1>
             </div>
             <div className="invoice-container16">
-              <h1 className="invoice-text25">{total.substring(1)}</h1>
+              <h1 className="invoice-text25">{total}</h1>
             </div>
           </div>
         </div>

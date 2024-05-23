@@ -222,10 +222,7 @@ router.post("/addTask", async (req, res) => {
   try{
     const result = await db.query(
       "INSERT INTO tasks (projectid, name, paymenttype, priority, amount, employeelist, description, status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
-      [
-        req.body.projectid,
-        req.body.name,
-        req.body.paymenttype,
+      [ req.body.projectid, req.body.name, req.body.paymenttype,
         req.body.priority,
         req.body.amount,
         req.body.employeelist,
@@ -519,6 +516,34 @@ router.get('/checkInvoice', async (req, res)=>{
     res.status(500).json({ error: 'Internal Server Error in check invoice' });
   }
 
+});
+
+router.get('/viewInvoice/:id', async (req, res)=>{
+  const { id } = req.params;
+  
+  try{
+    const result = await db.query('SELECT 1 FROM invoice WHERE id = $1;', [
+      id
+    ]);
+
+    const tasks = await db.query('SELECT * FROM tasks WHERE tasks.id IN $1', [
+      result.rows[0].invoice_tasks
+    ]);
+
+    const hourlog = await db.query('SELECT * FROM hourlog WHERE hourlog.id IN $1', [
+      result.rows[0].invoice_hourlogs
+    ]);
+
+    const project = await db.query('SELECT * FROM projects WHERE projects.id = $1', [
+      result.rows[0].invoice_project
+    ]);
+
+    res.send({invoice:result.rows, tasks: tasks.rows, hourlog:hourlog.rows, project: project.rows});
+    
+  } catch (error) {
+    console.error('Error checking invoice:', error);
+    res.status(500).json({ error: 'Internal Server Error in check invoice' });
+  }
 })
 
 export default router;

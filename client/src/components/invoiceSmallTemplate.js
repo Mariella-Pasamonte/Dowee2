@@ -23,7 +23,7 @@ function InvoiceSmallTemplate(props){
             <div className="w-full flex justify-center">
                 <button 
                     onClick={()=>
-                        navigate(`/invoice/${props.id}`, {
+                        navigate(`/invoice/${props.invoice.id}`, {
                             state: {
                                 invoices:props.invoice,
                                 projects:props.projects,

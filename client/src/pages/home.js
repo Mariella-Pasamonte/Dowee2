@@ -1,13 +1,13 @@
 import React, {useState, useEffect, useCallback, useContext} from "react";
 //import {Link} from "react-router-dom";
-import { ProjectModal } from "../components";
 import Navbar from "../modules/navbar";
 import Sidebar from "../modules/sidebar";
-import Project from "../modules/projectTask";
 import axios from "axios";
 import AuthContext from "../utilities/AuthContext";
+import "../components/css/style.css"
 
 const Home = (props) => {
+    const [isLoading, setIsLoading] = useState(false);
     const [projList, setProjList] = useState(null);
     const [project, setProject] = useState(null);
     const [projectFocus, setProjectFocus] = useState(null);
@@ -15,6 +15,7 @@ const Home = (props) => {
     const {userID} = useContext(AuthContext);
 
     const memoizedFetchData = useCallback((userId) => {
+        setIsLoading(true);
         axios
         .get('https://dowee2-server2.vercel.app/home', {
         // .get('http://localhost:3000/home', {
@@ -28,6 +29,9 @@ const Home = (props) => {
         })
         .catch((error) =>{
             console.log(error);
+        })
+        .finally((res)=>{
+            setIsLoading(false);
         });
     },[setProjList, setUsers]);
 
@@ -39,6 +43,7 @@ const Home = (props) => {
 
     return( 
         <div className='static flex flex-col h-dvh'>
+            {isLoading&&<div id="loading-animation"></div>}
             <div className='relative my-3 ml-3 flex flex-col h-full justify-center'>
                 <div className='mb-3 mr-3'>
                     <Navbar user={username} userid={userID}/>

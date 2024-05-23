@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef, useCallback} from "react";
+import React, {useState, useEffect, useRef, useCallback, useContext} from "react";
 import { Calendar } from "@natscale/react-calendar";
 import {
     ErrorToast,
@@ -6,8 +6,10 @@ import {
 } from "../components";
 import {convertToDate, convertToTextDate, onChangeDate} from '../utilities/date';
 import axios from 'axios';
+import AuthContext from "../utilities/AuthContext";
 
 function HourlogModal(props){
+    const {userID} = useContext(AuthContext);
     const [taskTitle, setTaskTitle] = useState('');
     const [task, setTask] = useState(null)
     const [hourlogDate, setHourlogDate] = useState('');
@@ -115,18 +117,16 @@ function HourlogModal(props){
                 }
             )
         })
-        axios.post("https://dowee2-server2.vercel.app/home", {
-            headers:{
-                function: 'addNewHourlog'
-            },newHourlog
-        })
+        axios
+        .post("https://dowee2-server2.vercel.app/addHourlog",newHourlog)
         .then((res) => {
             console.log(newHourlog)
         })
         .catch((error) => {
             console.log("Error: ", error);
         }); 
-        props.fetchData(props.userId)
+        props.fetchData(userID);
+        props.closeModal(false);
     }
 
     function pairItems(task) {

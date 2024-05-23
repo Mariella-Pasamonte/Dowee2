@@ -7,14 +7,8 @@ import { InvoiceTemplate } from "../components";
 const ViewInvoicePage = () => {
     const {id} = useParams("id");
     const navigate = useNavigate();
-    const isLoggedIn= localStorage.getItem("isLoggedIn");
 
-    useEffect(()=>{
-        if(isLoggedIn===false){
-            navigate("/");
-        }
-    },[])
-    return isLoggedIn&&(
+    return(
         <InvoiceTemplate id={id}/>      
     )
 }
