@@ -29,10 +29,10 @@ function Navbar(props){
                         <div className='text-[#A5D9D0]'>DO</div>
                         <div className='text-white'>IFY</div>
                     </Link>
-                    <div className='flex flex-row gap-2 text-white font-Montserrat text-[20px]'>
-                        Welcome to doify {props.user}
+                    <div className='flex flex-row h-full'>
+                        <div className='flex flex-col justify-center h-full text-white font-Montserrat text-[20px]'>
+                            Welcome to doify {props.user}
                         </div>
-                    <div>
                         <button 
                             onMouseEnter={(e)=>toggleTooltipEnter}
                             onMouseLeave={(e)=>toggleTooltipLeave}

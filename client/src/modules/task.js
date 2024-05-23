@@ -8,6 +8,7 @@ import axios from 'axios';
 
 function Task(props){
     const {userID} = useContext(AuthContext);
+    const [edit, setEdit] = useState(false);
     const [taskFocus, setTaskFocus] = useState(null);
     const [isOpenHourlog, setIsOpenHourlog] = useState(false);
     const [users, setUsers] = useState([]);
@@ -79,7 +80,7 @@ function Task(props){
         return props.tasks&&(props.tasks.map((task)=>
             task.projectid === props.projectId &&
             <tr onClick={(e)=>{taskFocus===task.id?setTaskFocus(null):setTaskFocus(task.id)} } className={`ml-2 my-5 font-Inter h-14 w-fit text-white text-sm ${taskFocus===task.id?'bg-[#6C93B9]/60':'bg-[#6C93B9]/40'}`}>
-                <td className={`rounded-l-md font-light w-24  h-14 ${props.edit?'w-24':'w-10'}`}>
+                <td className={`rounded-l-md font-light w-24  h-14 ${edit?'w-24':'w-10'}`}>
                     <div className=' my-2 flex flex-row justify-center h-full'>
                         <button
                             onClick={()=>{
@@ -92,7 +93,7 @@ function Task(props){
                                 <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
                             </svg>
                         </button>
-                        {props.edit&&
+                        {edit&&
                             <div className='flex flex-row'>
                                 <button
                                     onClick={(e)=>{
@@ -160,6 +161,44 @@ function Task(props){
                     <div className="text-xl mb-2 mr-4 w-fit font-medium text-white">
                         Tasks
                     </div>
+                    {props.projectuserid === userID && (
+                    <div className="relative flex flex-col justify-center h-full text-white mr-2">
+                    {edit ? (
+                        <button
+                            onClick={() => {
+                                setEdit(false);
+                            }}
+                            className="font-Inter text-sm p-1 pr-3 pl-8 rounded-md bg-[#212628]/50"
+                        >
+                            Cancel
+                        </button>
+                    ) : (
+                        <button
+                            onClick={() => {
+                                setEdit(true);
+                            }}
+                            className="font-Inter text-sm p-1 pr-3 pl-8 rounded-md bg-[#212628]/50"
+                        >
+                            <div className="absolute -inset-x-0 -inset-y-0 top-1 left-[12%] flex pointer-events-none">
+                                <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                strokeWidth="1.5"
+                                stroke="currentColor"
+                                className="w-5 h-5">
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
+                                />
+                                </svg>
+                            </div>
+                                Edit
+                            </button>
+                        )}
+                        </div>
+                    )}
                     <div className="relative flex flex-col justify-center h-full mr-2 text-white font-thin">
                         <div className="absolute pl-2 flex pointer-events-none">
                             <svg width="800px" height="800px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="#D5D8E3" className="w-4 h-4">

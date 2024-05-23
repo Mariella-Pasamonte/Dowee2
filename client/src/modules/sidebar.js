@@ -238,7 +238,7 @@ function Sidebar(props) {
             </div>
             <div>
               {props.projList && (
-                <div className="h-fit">
+                <div className="overflow-y-auto max-h-full">
                   {props.projList.map((project) => (
                     <button
                       key={project.id}

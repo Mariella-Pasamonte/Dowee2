@@ -93,10 +93,10 @@ function EditTaskModal(props){
         }
     }
 
-    function editTask(){
+    function edit(){
         const taskExist = props.tasks?props.tasks.some((task)=>task.name===taskTitle&&task.projectid===props.project.id):false;
         if(taskExist===false && taskTitle !== ''&& emps.length!==0 && !amountCheck && taskDescription!==''){
-            props.editTask(
+            editTask(
                 {
                     id:taskId,
                     projectid: props.task.projectid,
@@ -121,6 +121,19 @@ function EditTaskModal(props){
         }
     };
     
+    function editTask(editedTask) {
+        axios
+        .post("https://dowee2-server2.vercel.app/editTask",editedTask)
+        // .post("http://localhost:3000/editTask", editedTask)
+        .then((res) => {
+        console.log(editedTask);
+        })
+        .catch((error) => {
+        console.log("Error: ", error);
+        });
+        props.fetchData(userID);
+    }
+
     var inputLabelClassName="flex flex-row text-sm";
 
     return props.isOpen&&(
@@ -371,7 +384,7 @@ function EditTaskModal(props){
                             <button 
                                 type="button" 
                                 onClick={()=>{
-                                    editTask();
+                                    edit();
                                 }}
                                 className='bg-[#50C4F1]/50 px-4 py-2 ml-1 rounded-3xl text-xs'
                             > 

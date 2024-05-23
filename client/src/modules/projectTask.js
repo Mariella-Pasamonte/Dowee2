@@ -21,7 +21,6 @@ function ProjectTask(props) {
   const [projectButtonsFocus, setProjectButtonsFocus] = useState(0);
   const [employeeList, setEmployeeList] = useState([]);
   const [openEmployeesModal, setOpenEmployeesModal] = useState(false);
-  const [edit, setEdit] = useState(false);
   const [editedTask, setEditedTask] = useState(null);
   const tasks = useMemo(()=> {
     return props.tasks?props.tasks.filter((task)=>task.projectid === props.project.id):[];
@@ -49,19 +48,6 @@ function ProjectTask(props) {
     setEmployeeList(editedEmployees);
   };
 
-  function editTask(editedTask) {
-    axios
-      .post("https://dowee2-server2.vercel.app/editTask",editedTask)
-      // .post("http://localhost:3000/editTask", editedTask)
-      .then((res) => {
-        console.log(editedTask);
-      })
-      .catch((error) => {
-        console.log("Error: ", error);
-      });
-    props.fetchData(userID);
-  }
-
   function deleteTask(deleteTask) {
     axios
       .post("https://dowee2-server2.vercel.app/deleteTask",deleteTask)
@@ -77,7 +63,6 @@ function ProjectTask(props) {
 
   const onClickCreateTask = () => {
     setOpenAddTaskModal(true);
-    setEdit(false);
   };
 
   const onClickInvoice = () => {
@@ -154,59 +139,10 @@ function ProjectTask(props) {
               <hr className="w-full h-1 bg-[#8381BB] border-0 rounded dark:bg-gray-700" />
             </div>
             <div className="flex flex-row text-[#AEAEE3] justify-end font-thin w-64 mb-3 pr-2">
-              {props.project.userid === userID && (
-                <div className="relative flex flex-col justify-center h-full">
-                  {edit ? (
-                    <button
-                      key={2}
-                      onClick={() => {
-                        setEdit(false);
-                        setProjectButtonsFocus(2);
-                      }}
-                      className={`p-1 px-3 rounded-md ${
-                        projectButtonsFocus === 2
-                          ? "bg-[#4A4999] text-[#D5D5FF]"
-                          : "bg-[#292944]"
-                      } `}>
-                      Cancel
-                    </button>
-                  ) : (
-                    <button
-                      key={2}
-                      onClick={() => {
-                        setEdit(true);
-                        setProjectButtonsFocus(2);
-                      }}
-                      className={`p-1 pr-3 pl-8 rounded-md ${
-                        projectButtonsFocus === 2
-                          ? "bg-[#4A4999] text-[#D5D5FF]"
-                          : "bg-[#292944]"
-                      } `}>
-                      <div className="absolute -inset-x-0 -inset-y-0 top-1/4 left-[12%] flex pointer-events-none">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          strokeWidth="1.5"
-                          stroke="currentColor"
-                          className="w-5 h-5">
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
-                          />
-                        </svg>
-                      </div>
-                      Edit
-                    </button>
-                  )}
-                </div>
-              )}
               <div className="relative ml-2 flex flex-col justify-center h-full">
                 <button
                   key={1}
                   onClick={() => {
-                    setEdit(false);
                     setProjectButtonsFocus(1);
                   }}
                   className={`p-1 pr-3 pl-8 rounded-md ${
@@ -236,7 +172,6 @@ function ProjectTask(props) {
                 <button
                   key={0}
                   onClick={() => {
-                    setEdit(false);
                     setProjectButtonsFocus(0);
                   }}
                   className={`p-1 pr-3 pl-8 rounded-md ${
@@ -335,13 +270,13 @@ function ProjectTask(props) {
                 isOpen={openEditTaskModal}
                 openEmployeesModal={setOpenEmployeesModal}
                 closeModal={setOpenEditTaskModal}
-                editTask={editTask}
                 task={editedTask}
                 setTask={setEditedTask}
                 project={props.project}
                 employees={employeeList}
                 setEmployees={setEmployeeList}
                 hourlog={props.hourlog}
+                fetchData={props.fetchData}
               />
             )}
             {task && (
@@ -370,12 +305,11 @@ function ProjectTask(props) {
             <Task
               tasks={tasks}
               projectId={props.project.id}
+              projectuserid={props.project.userid}
               issuedDate={props.project.issueddate}
               dueDate={props.project.duedate}
               userId={props.project.userid}
               hourlog={props.hourlog}
-              edit={edit}
-              setEdit={setEdit}
               setEditedTask={setEditedTask}
               setDeletedTask={setDeletedTask}
               setOpenEditTaskModal={setOpenEditTaskModal}
