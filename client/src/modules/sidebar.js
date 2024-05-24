@@ -88,7 +88,9 @@ function Sidebar(props) {
             console.log("Error: ", error);
         });
         props.fetchData(userID);
-        navigate(`/project/${props.projList[0].name}/${props.projList[0].userid}/0`);
+        if(projList!==null){
+          navigate(`/project/${props.projList[0].name}/${props.projList[0].userid}/0`);
+        };
     }
 
   const handleButtonClick = (project) => {
@@ -238,7 +240,7 @@ function Sidebar(props) {
             </div>
             <div>
               {props.projList && (
-                <div className="overflow-y-auto max-h-full">
+                <div className="overflow-y-auto w-full max-h-96">
                   {props.projList.map((project) => (
                     <button
                       key={project.id}
