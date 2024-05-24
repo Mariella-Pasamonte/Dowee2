@@ -90,7 +90,9 @@ function Sidebar(props) {
         props.fetchData(userID);
         if(projList!==null){
           navigate(`/project/${props.projList[0].name}/${props.projList[0].userid}/0`);
-        };
+        }else{
+          navigate('/home');
+        }
     }
 
   const handleButtonClick = (project) => {
